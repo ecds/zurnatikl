@@ -6,11 +6,11 @@ Network
 Models
 ^^^^^^
 
-.. automodule:: danowski.apps.network.models
+.. automodule:: danowski.apps.networks.models
    :members:
 
 Views
 ^^^^^
 
-.. automodule:: danowski.apps.network.views
+.. automodule:: danowski.apps.networks.views
    :members:

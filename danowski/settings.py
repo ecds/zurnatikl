@@ -25,7 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     ##################################
     'south', # DB migrations
-    'danowski.apps.network', # Main app
+    'danowski.apps.networks', # Main app
 )
 
 MIDDLEWARE_CLASSES = (
