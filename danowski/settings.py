@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     ##################################
     'south', # DB migrations
     'danowski.apps.networks', # Main app
+    'danowski.apps.geo' # geo info
 )
 
 MIDDLEWARE_CLASSES = (
