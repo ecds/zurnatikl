@@ -1,5 +1,6 @@
 from django.contrib import admin
 from danowski.apps.networks.models import Location, School, Person, AltName, PenName
+from danowski.apps.networks.forms import PersonForm
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -32,4 +33,5 @@ class PersonAdmin(admin.ModelAdmin):
         AltNamesInline,
         PenNamesInline
     ]
+    form = PersonForm
 admin.site.register(Person, PersonAdmin)
