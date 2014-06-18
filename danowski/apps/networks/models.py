@@ -13,7 +13,6 @@ class Location(models.Model):
     city = models.CharField(max_length=255, help_text='City name')
     '''City name'''
     state = models.CharField(max_length=2, blank=True, help_text='State name', choices=STATE_CHOICES)
-    '''State name'''
     zipcode = models.CharField(max_length=10, blank=True)
     country = models.CharField(max_length=2, help_text='Country name', choices=COUNTRY_CHOICES)
     ''' Country name'''
@@ -38,7 +37,7 @@ class School(models.Model):
     categorizer = models.CharField(max_length=100, blank=True, choices=CATEGORIZER_CHOICES)
     '''Name of categorizer'''
     location = models.ForeignKey(Location, blank=True, null=True)
-    ''':class:`danowski.apps.network.models.Location` of school of poetry'''
+    ''':class:`Location` of school of poetry'''
     notes = models.TextField(blank=True)
 
     def __unicode__(self):

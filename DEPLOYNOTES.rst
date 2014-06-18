@@ -79,6 +79,12 @@ tables and initial data using::
   $ python manage.py syncdb
   $ python manage.py migrate
 
+.. Note::
+  If the database is not set to use the ``UTF8`` character set by default you will have to create the database
+  with the followng command::
+
+    CREATE DATABASE <DBNAME> DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+
 
 
 Upgrade Notes

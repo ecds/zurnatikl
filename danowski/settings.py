@@ -24,9 +24,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     ##################################
-    'south', # DB migrations
+    'danowski.apps.geo', # geo info
     'danowski.apps.networks', # Main app
-    'danowski.apps.geo' # geo info
+    'south', # DB migrations
 )
 
 MIDDLEWARE_CLASSES = (
