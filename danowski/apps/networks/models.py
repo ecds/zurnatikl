@@ -27,18 +27,18 @@ class Location(models.Model):
 
 
 class School(models.Model):
-    '''School of Writing'''
+    '''School of poetry'''
 
     CATEGORIZER_CHOICES =(
         ('Donald Allen', 'Donald Allen'),
     )
 
     name = models.CharField(max_length=255)
-    ''' Name of school'''
+    ''' Name of school of poetry'''
     categorizer = models.CharField(max_length=100, blank=True, choices=CATEGORIZER_CHOICES)
     '''Name of categorizer'''
     location = models.ForeignKey(Location, blank=True, null=True)
-    '''Location / Address of school'''
+    ''':class:`danowski.apps.network.models.Location` of school of poetry'''
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
@@ -46,3 +46,47 @@ class School(models.Model):
 
     class Meta:
         unique_together = ('name', 'categorizer', 'location')
+
+
+class AltName(models.Model):
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100)
+    person = models.ForeignKey('Person')
+
+class PenName(models.Model):
+    name = models.CharField(max_length=200)
+    person = models.ForeignKey('Person')
+
+class Person(models.Model):
+
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female')
+    )
+
+    RACE_CHOICES = (
+        ('White', 'White'),
+        ('Black or African American', 'Black or African American'),
+        ('American Indian or Alaska Native', 'American Indian or Alaska Native'),
+        ('Asian', 'Asian'),
+        ('Native Hawaiian or Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander'),
+        ('Hispanic', 'Hispanic'),
+        ('Latino', 'Latino'),
+    )
+
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100)
+    race = models.CharField(max_length=50, blank=True, choices=RACE_CHOICES)
+    racial_self_description = models.CharField(max_length=100, blank=True)
+    gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
+    schools = models.ManyToManyField('School', blank=True)
+    uri = models.URLField(unique=True)
+    dwelling = models.ManyToManyField('Location', blank=True)
+    notes = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    class Meta:
+        verbose_name_plural = 'People'
+        unique_together = ('first_name', 'last_name')
