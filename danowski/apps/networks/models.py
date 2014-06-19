@@ -79,7 +79,7 @@ class Person(models.Model):
     racial_self_description = models.CharField(max_length=100, blank=True)
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
     schools = models.ManyToManyField('School', blank=True)
-    uri = models.URLField(unique=True)
+    uri = models.URLField(blank=True)
     dwelling = models.ManyToManyField('Location', blank=True)
     notes = models.TextField(blank=True)
 
@@ -89,3 +89,11 @@ class Person(models.Model):
     class Meta:
         verbose_name_plural = 'People'
         unique_together = ('first_name', 'last_name')
+
+class Journal(models.Model):
+    title = models.CharField(max_length=255)
+    uri = models.URLField(blank=True)
+    publisher = models.CharField(max_length=100)
+    issn = models.CharField(max_length=50, blank=True)
+    schools = models.ManyToManyField('School', blank=True)
+    notes = models.TextField(blank=True)
