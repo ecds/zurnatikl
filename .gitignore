@@ -1,2 +1,3 @@
 *.pyc
 test-results/
+doc/_build/
