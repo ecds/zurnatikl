@@ -1,6 +1,6 @@
 from django.contrib import admin
-from danowski.apps.networks.models import Location, School, Person, AltName, PenName, Journal
-from danowski.apps.networks.forms import PersonForm, JournalForm
+from danowski.apps.networks.models import Location, School, Person, AltName, PenName, Journal, Issue
+from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -30,7 +30,7 @@ class PenNamesInline(admin.TabularInline):
 
 class PersonAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
-    search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri']
+    search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     inlines = [
         AltNamesInline,
         PenNamesInline
@@ -44,3 +44,10 @@ class JournalAdmin(admin.ModelAdmin):
     search_fields = list_display = ['title', 'uri', 'publisher', 'issn', 'notes']
     form = JournalForm
 admin.site.register(Journal, JournalAdmin)
+
+
+class IssueAdmin(admin.ModelAdmin):
+     list_display = ['journal', 'volume', 'issue', 'publication_date', 'season', 'physical_description', 'numbered_pages']
+     search_fields = list_display = ['journal', 'volume', 'issue', 'physical_description', 'notes']
+     form = IssueForm
+admin.site.register(Issue, IssueAdmin)

@@ -1,5 +1,8 @@
 from django.db import models
 from danowski.apps.geo.models import GeonamesCountry, StateCode
+
+from django_date_extensions import fields as ddx
+
 class Location(models.Model):
     """
     Locations or Addresses
@@ -97,3 +100,33 @@ class Journal(models.Model):
     issn = models.CharField(max_length=50, blank=True)
     schools = models.ManyToManyField('School', blank=True)
     notes = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+
+class Issue(models.Model):
+
+    SEASON_CHOICES = (
+        ('Winter', 'Winter'),
+        ('Spring', 'Spring'),
+        ('Summer', 'Summer'),
+        ('Fall', 'Fall')
+    )
+
+    journal = models.ForeignKey('Journal')
+    volume = models.CharField(max_length=255)
+    issue = models.CharField(max_length=255)
+    publication_date = ddx.ApproximateDateField(help_text='YYYY , MM/YYYY, MM/DD/YYYY')
+    season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
+    editors = models.ManyToManyField("Person")
+    contributing_editors = models.ManyToManyField("Person", related_name='contributing_editors', blank=True, null=True)
+    publication_address = models.ForeignKey("Location", help_text="address of publication", related_name='publication_address')
+    print_address = models.ForeignKey("Location", blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
+    mailing_addresses  = models.ManyToManyField("Location", blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
+    physical_description = models.CharField(max_length=255)
+    numbered_pages = models.BooleanField()
+    notes = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return '%s vol. %s issue %s' % (self.journal, self.volume, self.issue)
