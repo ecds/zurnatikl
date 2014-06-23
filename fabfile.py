@@ -168,14 +168,15 @@ def configure_site():
         sudo('cp localsettings.py %(build_dir)s/%(project)s/localsettings.py' % env,
              user=env.remote_acct)
 
-    with prefix('source /opt/rh/python27/enable'):
-        with cd('%(remote_path)s/%(build_dir)s' % env):
-            with prefix('source env/bin/activate'):
-                sudo('python manage.py collectstatic --noinput' % env,
-                     user=env.remote_acct)
-                # make static files world-readable
-                sudo('chmod -R a+r `env DJANGO_SETTINGS_MODULE=\'%(project)s.settings\' python -c \'from django.conf import settings; print settings.STATIC_ROOT\'`' % env,
-                     user=env.remote_acct)
+    # Reenable this if staic fles are needed.
+    # with prefix('source /opt/rh/python27/enable'):
+    #     with cd('%(remote_path)s/%(build_dir)s' % env):
+    #         with prefix('source env/bin/activate'):
+    #             sudo('python manage.py collectstatic --noinput' % env,
+    #                  user=env.remote_acct)
+    #             # make static files world-readable
+    #             sudo('chmod -R a+r `env DJANGO_SETTINGS_MODULE=\'%(project)s.settings\' python -c \'from django.conf import settings; print settings.STATIC_ROOT\'`' % env,
+    #                  user=env.remote_acct)
 
 
 def update_links():
