@@ -1,6 +1,6 @@
 from django.contrib import admin
-from danowski.apps.networks.models import Location, School, Person, AltName, PenName, Journal, Issue
-from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm
+from danowski.apps.networks.models import Location, School, Person, AltName, PenName, Journal, Issue, IssueItem, CreatorName
+from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm, IssueItemForm
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -51,3 +51,18 @@ class IssueAdmin(admin.ModelAdmin):
      search_fields = list_display = ['journal', 'volume', 'issue', 'physical_description', 'notes']
      form = IssueForm
 admin.site.register(Issue, IssueAdmin)
+
+class CreatorNameInline(admin.TabularInline):
+    model = CreatorName
+    extra = 1
+
+
+class IssueItemAdmin(admin.ModelAdmin):
+#      list_display = ['journal', 'volume', 'issue', 'publication_date', 'season', 'physical_description', 'numbered_pages']
+#      search_fields = list_display = ['journal', 'volume', 'issue', 'physical_description', 'notes']
+    form = IssueItemForm
+
+    inlines = [
+        CreatorNameInline
+    ]
+#admin.site.register(IssueItem, IssueItemAdmin)

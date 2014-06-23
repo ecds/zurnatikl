@@ -1,5 +1,5 @@
 from django import forms
-from danowski.apps.networks.models import Person, Journal, Issue
+from danowski.apps.networks.models import Person, Journal, Issue, IssueItem
 
 class PersonForm(forms.ModelForm):
     class Meta:
@@ -34,3 +34,7 @@ class IssueForm(forms.ModelForm):
             'publication_address': forms.Select(attrs={'style': "width:482px",
                                                     'width' : '482px'})
         }
+
+class IssueItemForm(forms.ModelForm):
+    class Meta:
+        model = IssueItem
