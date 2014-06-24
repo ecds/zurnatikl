@@ -60,14 +60,23 @@ class Name(models.Model):
     last_name = models.CharField(max_length=100)
     person = models.ForeignKey('Person')
 
+    def __unicode__(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
 class PenName(models.Model):
     name = models.CharField(max_length=200)
     person = models.ForeignKey('Person')
+
+    def __unicode__(self):
+        return self.name
 
 
 class PlaceName(models.Model):
     name = models.CharField(max_length=200)
     person = models.ForeignKey('IssueItem')
+
+    def __unicode__(self):
+        return self.name
 
 
 
@@ -152,6 +161,7 @@ class Genre(models.Model):
         return self.name
 
 class IssueItem(models.Model):
+    issue = models.ForeignKey('Issue')
     title = models.CharField(max_length=255)
     creators = models.ManyToManyField('Person', through='CreatorName', related_name='creators_name')
     anonymous = models.BooleanField(help_text='check if labeled as by Anonymous')
@@ -173,3 +183,6 @@ class CreatorName(models.Model):
     issue_item = models.ForeignKey("IssueItem")
     person = models.ForeignKey("Person")
     name_used = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.title

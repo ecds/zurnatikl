@@ -1,6 +1,6 @@
 from django.contrib import admin
 from danowski.apps.networks.models import Location, School, Person, Name, PenName, Journal, Issue, IssueItem, CreatorName, Genre, PlaceName
-from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm
+from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm, SchoolForm, IssueItemForm
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -11,7 +11,8 @@ admin.site.register(Location, LocationAdmin)
 
 
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ['name', 'categorizer', 'location', 'notes']
+    form = SchoolForm
+    list_display = ['name', 'categorizer', 'location']
     search_fields = ['name', 'categorizer', 'notes']
 admin.site.register(School, SchoolAdmin)
 
@@ -61,14 +62,14 @@ class CreatorNameInline(admin.TabularInline):
     model = CreatorName
     extra = 1
 
-class GenreAdmin(admin.ModelAdmin):
-     def has_add_permission(self, request):
-        return False
-     def has_delete_permission(self, request, obj=None):
-        return False
-     actions = None
-     readonly_fields = ['name']
-admin.site.register(Genre, GenreAdmin)
+# class GenreAdmin(admin.ModelAdmin):
+#      def has_add_permission(self, request):
+#         return False
+#      def has_delete_permission(self, request, obj=None):
+#         return False
+#      actions = None
+#      readonly_fields = ['name']
+admin.site.register(Genre)
 
 
 class IssueItemAdmin(admin.ModelAdmin):
@@ -78,6 +79,9 @@ class IssueItemAdmin(admin.ModelAdmin):
         CreatorNameInline,
         PlaceNamesInline
     ]
+
+class IssueItemAdmin(admin.ModelAdmin):
+    form = IssueItemForm
 admin.site.register(IssueItem, IssueItemAdmin)
 
 
