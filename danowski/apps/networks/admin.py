@@ -1,6 +1,6 @@
 from django.contrib import admin
-from danowski.apps.networks.models import Location, School, Person, AltName, PenName, Journal, Issue, IssueItem, CreatorName
-from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm, IssueItemForm
+from danowski.apps.networks.models import Location, School, Person, Name, PenName, Journal, Issue, IssueItem, CreatorName, Genre, PlaceName
+from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -17,13 +17,18 @@ admin.site.register(School, SchoolAdmin)
 
 
 class AltNamesInline(admin.TabularInline):
-    model = AltName
+    model = Name
     verbose_name_plural = 'Alternate Names'
     extra = 1
 
 class PenNamesInline(admin.TabularInline):
     model = PenName
     verbose_name_plural = 'Pen Names'
+    extra = 1
+
+class PlaceNamesInline(admin.TabularInline):
+    model = PlaceName
+    verbose_name_plural = 'Places Mentioned'
     extra = 1
 
 
@@ -56,13 +61,25 @@ class CreatorNameInline(admin.TabularInline):
     model = CreatorName
     extra = 1
 
+class GenreAdmin(admin.ModelAdmin):
+     def has_add_permission(self, request):
+        return False
+     def has_delete_permission(self, request, obj=None):
+        return False
+     actions = None
+     readonly_fields = ['name']
+admin.site.register(Genre, GenreAdmin)
+
 
 class IssueItemAdmin(admin.ModelAdmin):
-#      list_display = ['journal', 'volume', 'issue', 'publication_date', 'season', 'physical_description', 'numbered_pages']
-#      search_fields = list_display = ['journal', 'volume', 'issue', 'physical_description', 'notes']
-    form = IssueItemForm
-
+    list_display = ['title', 'start_page', 'end_page']
+    search_fields = ['title', 'notes']
     inlines = [
-        CreatorNameInline
+        CreatorNameInline,
+        PlaceNamesInline
     ]
-#admin.site.register(IssueItem, IssueItemAdmin)
+admin.site.register(IssueItem, IssueItemAdmin)
+
+
+
+

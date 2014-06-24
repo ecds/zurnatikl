@@ -55,7 +55,7 @@ class School(models.Model):
         unique_together = ('name', 'categorizer', 'location')
 
 
-class AltName(models.Model):
+class Name(models.Model):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
     person = models.ForeignKey('Person')
@@ -63,6 +63,13 @@ class AltName(models.Model):
 class PenName(models.Model):
     name = models.CharField(max_length=200)
     person = models.ForeignKey('Person')
+
+
+class PlaceName(models.Model):
+    name = models.CharField(max_length=200)
+    person = models.ForeignKey('IssueItem')
+
+
 
 class Person(models.Model):
 
@@ -141,33 +148,26 @@ class Issue(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=50)
 
+    def __unicode__(self):
+        return self.name
+
 class IssueItem(models.Model):
-
-    GENRE_CHOICES = (
-        ('Poem', 'Poem'),
-        ('Play', 'Play'),
-        ('Story', 'Story'),
-        ('Art', 'Art'),
-        ('Review', 'Review'),
-        ('Advertisement', 'Advertisement'),
-        ('Title of Contents', 'Title of Contents')
-    )
-
     title = models.CharField(max_length=255)
-    creators = models.ManyToManyField("Person", blank=True, null=True, related_name='creators')
-    creators_name_listed = models.ManyToManyField('Person', through='CreatorName', related_name='creators_name')
+    creators = models.ManyToManyField('Person', through='CreatorName', related_name='creators_name')
     anonymous = models.BooleanField(help_text='check if labeled as by Anonymous')
     no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous')
-    # * translator (optional)
+    translator = models.ManyToManyField('Person', related_name='translator_name', blank=True, null=True)
     start_page = models.IntegerField(max_length=6)
     end_page = models.IntegerField(max_length=6)
-    genre = models.ManyToManyField('Genre', choices=GENRE_CHOICES)
+    genre = models.ManyToManyField('Genre')
     abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc')
-    # * persons mentioned (could be useful to have linked to persons category)
-    # * place names mentioned
-    # * addresses
+    persons_mentioned= models.ManyToManyField('Person', related_name='persons_mentioned', blank=True, null=True)
+    addresses = models.ManyToManyField('Location', blank=True, null=True)
     literary_advertisement = models.BooleanField()
     notes = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.title
 
 class CreatorName(models.Model):
     issue_item = models.ForeignKey("IssueItem")

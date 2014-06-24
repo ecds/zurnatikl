@@ -1,0 +1,51 @@
+[
+{
+    "pk": 1, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Poem"
+    }
+},
+{
+    "pk": 2, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Play"
+    }
+},
+{
+    "pk": 3, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Story"
+    }
+},
+{
+    "pk": 4, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Art"
+    }
+},
+{
+    "pk": 5, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Review"
+    }
+},
+{
+    "pk": 6, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Advertisement"
+    }
+},
+{
+    "pk": 7, 
+    "model": "networks.genre", 
+    "fields": {
+        "name": "Title of Contents"
+    }
+}
+]

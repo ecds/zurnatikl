@@ -34,7 +34,3 @@ class IssueForm(forms.ModelForm):
             'publication_address': forms.Select(attrs={'style': "width:482px",
                                                     'width' : '482px'})
         }
-
-class IssueItemForm(forms.ModelForm):
-    class Meta:
-        model = IssueItem
