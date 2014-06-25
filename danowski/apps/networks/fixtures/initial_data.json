@@ -47,5 +47,37 @@
     "fields": {
         "name": "Title of Contents"
     }
+},
+{
+    "pk": 1, 
+    "model": "auth.group", 
+    "fields": {
+        "name": "Data Entry Group", 
+        "permissions": [
+            58, 
+            59, 
+            49, 
+            50, 
+            55, 
+            56, 
+            46, 
+            47, 
+            31, 
+            32, 
+            61, 
+            62, 
+            63, 
+            40, 
+            41, 
+            42, 
+            43, 
+            44, 
+            64, 
+            65, 
+            66, 
+            34, 
+            35
+        ]
+    }
 }
 ]
