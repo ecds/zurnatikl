@@ -3,11 +3,11 @@ from danowski.apps.geo.models import GeonamesCountry, StateCode
 from django_date_extensions import fields as ddx
 
 
-def country_choices():
-    return tuple((c.code, '%s (%s)' % (c.name, c.code)) for c in GeonamesCountry.objects.all())
-
-def state_choices():
-    return tuple((s.code, '%s (%s)' % (s.name, s.code),) for s in StateCode.objects.all())
+# def country_choices():
+#     return tuple((c.code, '%s (%s)' % (c.name, c.code)) for c in GeonamesCountry.objects.all())
+#
+# def state_choices():
+#     return tuple((s.code, '%s (%s)' % (s.name, s.code),) for s in StateCode.objects.all())
 
 
 
@@ -20,9 +20,9 @@ class Location(models.Model):
     '''Street name and number'''
     city = models.CharField(max_length=255, help_text='City name')
     '''City name'''
-    state = models.CharField(max_length=2, blank=True, help_text='State name', choices=state_choices())
+    state = models.ForeignKey(StateCode, blank=True, null=True, help_text='State name')
     zipcode = models.CharField(max_length=10, blank=True)
-    country = models.CharField(max_length=2, help_text='Country name', choices=country_choices())
+    country = models.ForeignKey(GeonamesCountry, help_text='Country name')
     ''' Country name'''
 
     def __unicode__(self):
@@ -163,7 +163,7 @@ class Genre(models.Model):
 class IssueItem(models.Model):
     issue = models.ForeignKey('Issue')
     title = models.CharField(max_length=255)
-    creators = models.ManyToManyField('Person', through='CreatorName', related_name='creators_name')
+    creators = models.ManyToManyField('Person', through='CreatorName', related_name='creators_name', null=True, blank=True)
     anonymous = models.BooleanField(help_text='check if labeled as by Anonymous')
     no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous')
     translator = models.ManyToManyField('Person', related_name='translator_name', blank=True, null=True)
@@ -185,4 +185,4 @@ class CreatorName(models.Model):
     name_used = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return self.title
+        return self.person

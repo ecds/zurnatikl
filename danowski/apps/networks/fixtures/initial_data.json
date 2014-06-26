@@ -54,30 +54,182 @@
     "fields": {
         "name": "Data Entry Group", 
         "permissions": [
-            58, 
-            59, 
-            49, 
-            50, 
-            55, 
-            56, 
-            46, 
-            47, 
-            31, 
-            32, 
-            61, 
-            62, 
-            63, 
-            40, 
-            41, 
-            42, 
-            43, 
-            44, 
-            64, 
-            65, 
-            66, 
-            34, 
-            35
+            [
+                "add_creatorname", 
+                "networks", 
+                "creatorname"
+            ], 
+            [
+                "change_creatorname", 
+                "networks", 
+                "creatorname"
+            ], 
+            [
+                "delete_creatorname", 
+                "networks", 
+                "creatorname"
+            ], 
+            [
+                "add_issue", 
+                "networks", 
+                "issue"
+            ], 
+            [
+                "change_issue", 
+                "networks", 
+                "issue"
+            ], 
+            [
+                "add_issueitem", 
+                "networks", 
+                "issueitem"
+            ], 
+            [
+                "change_issueitem", 
+                "networks", 
+                "issueitem"
+            ], 
+            [
+                "add_journal", 
+                "networks", 
+                "journal"
+            ], 
+            [
+                "change_journal", 
+                "networks", 
+                "journal"
+            ], 
+            [
+                "add_location", 
+                "networks", 
+                "location"
+            ], 
+            [
+                "change_location", 
+                "networks", 
+                "location"
+            ], 
+            [
+                "add_name", 
+                "networks", 
+                "name"
+            ], 
+            [
+                "change_name", 
+                "networks", 
+                "name"
+            ], 
+            [
+                "delete_name", 
+                "networks", 
+                "name"
+            ], 
+            [
+                "add_penname", 
+                "networks", 
+                "penname"
+            ], 
+            [
+                "change_penname", 
+                "networks", 
+                "penname"
+            ], 
+            [
+                "delete_penname", 
+                "networks", 
+                "penname"
+            ], 
+            [
+                "add_person", 
+                "networks", 
+                "person"
+            ], 
+            [
+                "change_person", 
+                "networks", 
+                "person"
+            ], 
+            [
+                "add_placename", 
+                "networks", 
+                "placename"
+            ], 
+            [
+                "change_placename", 
+                "networks", 
+                "placename"
+            ], 
+            [
+                "delete_placename", 
+                "networks", 
+                "placename"
+            ], 
+            [
+                "add_school", 
+                "networks", 
+                "school"
+            ], 
+            [
+                "change_school", 
+                "networks", 
+                "school"
+            ], 
+            [
+                "add_migrationhistory", 
+                "south", 
+                "migrationhistory"
+            ], 
+            [
+                "change_migrationhistory", 
+                "south", 
+                "migrationhistory"
+            ], 
+            [
+                "delete_migrationhistory", 
+                "south", 
+                "migrationhistory"
+            ]
         ]
+    }
+},
+{
+    "pk": 3, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "admin", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2014-06-26T15:55:58Z", 
+        "groups": [], 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$12000$NSLHqGCh4A2k$1JUYWEGuVPLAjC3lDBYLGocnB4Z1c5phFY4Ws38offc=", 
+        "email": "", 
+        "date_joined": "2014-06-25T17:06:25Z"
+    }
+},
+{
+    "pk": 4, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "usr", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": false, 
+        "is_staff": true, 
+        "last_login": "2014-06-26T16:02:45Z", 
+        "groups": [
+            [
+                "Data Entry Group"
+            ]
+        ], 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$12000$EnOUqGVLwywQ$/L535k0T1KEvVU0batX8aD9NjD5l2LzKyGJ19XGhUqw=", 
+        "email": "", 
+        "date_joined": "2014-06-25T17:14:53Z"
     }
 }
 ]

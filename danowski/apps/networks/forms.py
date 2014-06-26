@@ -41,7 +41,7 @@ class IssueItemForm(forms.ModelForm):
         model = IssueItem
 
         widgets = {
-            'addresses': forms.Select(attrs={'style': "width:482px",
+            'addresses': forms.SelectMultiple(attrs={'style': "width:482px",
                                                     'width' : '482px'}),
         }
 

@@ -62,26 +62,17 @@ class CreatorNameInline(admin.TabularInline):
     model = CreatorName
     extra = 1
 
-# class GenreAdmin(admin.ModelAdmin):
-#      def has_add_permission(self, request):
-#         return False
-#      def has_delete_permission(self, request, obj=None):
-#         return False
-#      actions = None
-#      readonly_fields = ['name']
 admin.site.register(Genre)
 
 
 class IssueItemAdmin(admin.ModelAdmin):
+    form = IssueItemForm
     list_display = ['title', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
     inlines = [
         CreatorNameInline,
         PlaceNamesInline
     ]
-
-class IssueItemAdmin(admin.ModelAdmin):
-    form = IssueItemForm
 admin.site.register(IssueItem, IssueItemAdmin)
 
 
