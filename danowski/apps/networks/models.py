@@ -117,7 +117,7 @@ class Person(models.Model):
 class Journal(models.Model):
     title = models.CharField(max_length=255)
     uri = models.URLField(blank=True)
-    publisher = models.CharField(max_length=100)
+    publisher = models.CharField(max_length=100, blank=True, null=True)
     issn = models.CharField(max_length=50, blank=True)
     schools = models.ManyToManyField('School', blank=True)
     notes = models.TextField(blank=True)
@@ -136,18 +136,18 @@ class Issue(models.Model):
     )
 
     journal = models.ForeignKey('Journal')
-    volume = models.CharField(max_length=255)
-    issue = models.CharField(max_length=255)
+    volume = models.CharField(max_length=255, blank=True, null=True)
+    issue = models.CharField(max_length=255, blank=True, null=True)
     publication_date = ddx.ApproximateDateField(help_text='YYYY , MM/YYYY, MM/DD/YYYY')
     season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
     editors = models.ManyToManyField("Person")
     contributing_editors = models.ManyToManyField("Person", related_name='contributing_editors', blank=True, null=True)
-    publication_address = models.ForeignKey("Location", help_text="address of publication", related_name='publication_address')
+    publication_address = models.ForeignKey("Location", help_text="address of publication", related_name='publication_address', blank=True, null=True)
     print_address = models.ForeignKey("Location", blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
     mailing_addresses  = models.ManyToManyField("Location", blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
-    physical_description = models.CharField(max_length=255)
+    physical_description = models.CharField(max_length=255, blank=True, null=True)
     numbered_pages = models.BooleanField()
-    price = models.DecimalField(max_digits=7, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
