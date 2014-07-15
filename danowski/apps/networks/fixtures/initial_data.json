@@ -88,17 +88,7 @@
                 "change_issueitem", 
                 "networks", 
                 "issueitem"
-            ], 
-            [
-                "add_journal", 
-                "networks", 
-                "journal"
-            ], 
-            [
-                "change_journal", 
-                "networks", 
-                "journal"
-            ], 
+            ],
             [
                 "add_location", 
                 "networks", 
@@ -163,31 +153,6 @@
                 "delete_placename", 
                 "networks", 
                 "placename"
-            ], 
-            [
-                "add_school", 
-                "networks", 
-                "school"
-            ], 
-            [
-                "change_school", 
-                "networks", 
-                "school"
-            ], 
-            [
-                "add_migrationhistory", 
-                "south", 
-                "migrationhistory"
-            ], 
-            [
-                "change_migrationhistory", 
-                "south", 
-                "migrationhistory"
-            ], 
-            [
-                "delete_migrationhistory", 
-                "south", 
-                "migrationhistory"
             ]
         ]
     }
