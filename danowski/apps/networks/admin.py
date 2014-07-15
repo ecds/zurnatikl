@@ -4,9 +4,8 @@ from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm, Sch
 
 
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'street_address', 'city', 'state', 'zipcode', 'country']
+    list_display = ['street_address', 'city', 'state', 'zipcode', 'country']
     search_fields = ['street_address', 'city', 'state', 'zipcode', 'country']
-    list_display_linksf = ['id']
 admin.site.register(Location, LocationAdmin)
 
 
@@ -37,6 +36,7 @@ class PlaceNamesInline(admin.TabularInline):
 class PersonAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
+    list_display_links = ['first_name', 'last_name']
     inlines = [
         AltNamesInline,
         PenNamesInline
