@@ -1,6 +1,12 @@
 {% extends "admin/base.html" %}
 {% load i18n admin_reorder_tag %}
 
+   {% block extrastyle %}
+     <style type="text/css">
+       .breadcrumb { margin: 40px 0px 0px 0px !important; }
+     </style>
+{% endblock %}
+
 {% block title %} {% trans 'Danowski' %} | {{ title }} {% endblock %}
 
 {% block branding %}
