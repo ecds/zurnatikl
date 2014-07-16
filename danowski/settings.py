@@ -76,6 +76,11 @@ TEST_OUTPUT_DIR = 'test-results'
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = False
 
+# used with admin_reorder template tag
+ADMIN_REORDER = (
+    ("auth", ('Group', 'User')),
+    ("networks", ('School', 'Person', 'Journal', 'Issue', 'IssueItem', 'Genre', 'Location'))
+)
 
 import sys
 
