@@ -117,7 +117,7 @@ class Person(models.Model):
 class Journal(models.Model):
     title = models.CharField(max_length=255)
     uri = models.URLField(blank=True)
-    publisher = models.CharField(max_length=100, blank=True, null=True)
+    publisher = models.CharField(max_length=100, blank=True)
     issn = models.CharField(max_length=50, blank=True)
     schools = models.ManyToManyField('School', blank=True)
     notes = models.TextField(blank=True)
@@ -136,8 +136,8 @@ class Issue(models.Model):
     )
 
     journal = models.ForeignKey('Journal')
-    volume = models.CharField(max_length=255, blank=True, null=True)
-    issue = models.CharField(max_length=255, blank=True, null=True)
+    volume = models.CharField(max_length=255, blank=True)
+    issue = models.CharField(max_length=255, blank=True)
     publication_date = ddx.ApproximateDateField(help_text='YYYY , MM/YYYY, MM/DD/YYYY')
     season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
     editors = models.ManyToManyField("Person")
@@ -145,7 +145,7 @@ class Issue(models.Model):
     publication_address = models.ForeignKey("Location", help_text="address of publication", related_name='publication_address', blank=True, null=True)
     print_address = models.ForeignKey("Location", blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
     mailing_addresses  = models.ManyToManyField("Location", blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
-    physical_description = models.CharField(max_length=255, blank=True, null=True)
+    physical_description = models.CharField(max_length=255, blank=True)
     numbered_pages = models.BooleanField()
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     notes = models.TextField(blank=True)
@@ -182,7 +182,7 @@ class IssueItem(models.Model):
 class CreatorName(models.Model):
     issue_item = models.ForeignKey("IssueItem")
     person = models.ForeignKey("Person")
-    name_used = models.CharField(max_length=200)
+    name_used = models.CharField(max_length=200, blank=True)
 
     def __unicode__(self):
         return self.person
