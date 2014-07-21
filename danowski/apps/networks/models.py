@@ -111,7 +111,10 @@ class Person(models.Model):
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
-        return ", ".join([self.last_name, self.first_name])
+        if not self.first_name:
+            return self.last_name
+        else:
+            return '%s, %s' % (self.last_name, self.first_name)
 
     class Meta:
         verbose_name_plural = 'People'
