@@ -135,10 +135,11 @@ class Journal(models.Model):
 class Issue(models.Model):
 
     SEASON_CHOICES = (
-        ('Winter', 'Winter'),
+        ('Fall', 'Fall'),
         ('Spring', 'Spring'),
         ('Summer', 'Summer'),
-        ('Fall', 'Fall')
+        ('Winter', 'Winter'),
+
     )
 
     journal = models.ForeignKey('Journal')
