@@ -67,7 +67,7 @@ admin.site.register(Genre)
 
 class IssueItemAdmin(admin.ModelAdmin):
     form = IssueItemForm
-    list_display = ['title', 'start_page', 'end_page']
+    list_display = ['title', 'issue', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
     inlines = [
         CreatorNameInline,

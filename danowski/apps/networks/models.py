@@ -31,6 +31,7 @@ class Location(models.Model):
 
     class Meta:
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
+        ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
 
 
 class School(models.Model):
@@ -53,6 +54,7 @@ class School(models.Model):
 
     class Meta:
         unique_together = ('name', 'categorizer', 'location')
+        ordering = ['name']
 
 
 class Name(models.Model):
@@ -73,7 +75,8 @@ class PenName(models.Model):
 
 class PlaceName(models.Model):
     name = models.CharField(max_length=200)
-    person = models.ForeignKey('IssueItem')
+    location = models.ForeignKey('Location', blank=True, null=True)
+    issueItem = models.ForeignKey('IssueItem')
 
     def __unicode__(self):
         return self.name
@@ -83,18 +86,18 @@ class PlaceName(models.Model):
 class Person(models.Model):
 
     GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female')
+        ('F', 'Female'),
+        ('M', 'Male')
     )
 
     RACE_CHOICES = (
-        ('White', 'White'),
-        ('Black or African American', 'Black or African American'),
         ('American Indian or Alaska Native', 'American Indian or Alaska Native'),
         ('Asian', 'Asian'),
-        ('Native Hawaiian or Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander'),
+        ('Black or African American', 'Black or African American'),
         ('Hispanic', 'Hispanic'),
         ('Latino', 'Latino'),
+        ('Native Hawaiian or Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander'),
+        ('White', 'White'),
     )
 
     first_name = models.CharField(max_length=100, blank=True)
@@ -108,11 +111,12 @@ class Person(models.Model):
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return ", ".join([self.last_name, self.first_name])
 
     class Meta:
         verbose_name_plural = 'People'
         unique_together = ('first_name', 'last_name')
+        ordering = ['last_name', 'first_name']
 
 class Journal(models.Model):
     title = models.CharField(max_length=255)
@@ -125,6 +129,8 @@ class Journal(models.Model):
     def __unicode__(self):
         return self.title
 
+    class Meta:
+        ordering = ['title']
 
 class Issue(models.Model):
 
@@ -153,12 +159,18 @@ class Issue(models.Model):
     def __unicode__(self):
         return '%s vol. %s issue %s' % (self.journal, self.volume, self.issue)
 
+    class Meta:
+        ordering = ['journal', 'volume', 'issue']
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 class IssueItem(models.Model):
     issue = models.ForeignKey('Issue')
