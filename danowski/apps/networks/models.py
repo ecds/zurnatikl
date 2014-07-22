@@ -161,7 +161,7 @@ class Issue(models.Model):
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
-        return '%s vol. %s issue %s' % (self.journal, self.volume, self.issue)
+        return '%s vol. %s issue %s' % (self.journal.title, self.volume, self.issue)
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
