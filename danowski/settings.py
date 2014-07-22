@@ -24,9 +24,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     ##################################
-    'danowski.apps.geo', # geo info
-    'danowski.apps.networks', # Main app
-    'south', # DB migrations
+    'danowski.apps.geo',
+    'danowski.apps.people',
+    'danowski.apps.journals',
+    'south',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -94,7 +95,8 @@ SOUTH_TESTS_MIGRATE = False
 ADMIN_REORDER = (
     ("auth", ('Group', 'User')),
     ("geo", ('Location')),
-    ("networks", ('School', 'Person', 'Journal', 'Issue', 'IssueItem', 'Genre', 'Location'))
+    ("people", ('Person', 'School')),
+    ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
 )
 
 import sys
