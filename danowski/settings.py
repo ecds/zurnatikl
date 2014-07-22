@@ -93,6 +93,7 @@ SOUTH_TESTS_MIGRATE = False
 # used with admin_reorder template tag
 ADMIN_REORDER = (
     ("auth", ('Group', 'User')),
+    ("geo", ('Location')),
     ("networks", ('School', 'Person', 'Journal', 'Issue', 'IssueItem', 'Genre', 'Location'))
 )
 

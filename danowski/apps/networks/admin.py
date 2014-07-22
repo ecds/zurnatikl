@@ -1,12 +1,6 @@
 from django.contrib import admin
-from danowski.apps.networks.models import Location, School, Person, Name, PenName, Journal, Issue, IssueItem, CreatorName, Genre, PlaceName
+from danowski.apps.networks.models import School, Person, Name, PenName, Journal, Issue, IssueItem, CreatorName, Genre, PlaceName
 from danowski.apps.networks.forms import PersonForm, JournalForm, IssueForm, SchoolForm, IssueItemForm
-
-
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ['street_address', 'city', 'state', 'zipcode', 'country']
-    search_fields = ['street_address', 'city', 'state', 'zipcode', 'country']
-admin.site.register(Location, LocationAdmin)
 
 
 class SchoolAdmin(admin.ModelAdmin):

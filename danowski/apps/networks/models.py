@@ -1,5 +1,5 @@
 from django.db import models
-from danowski.apps.geo.models import GeonamesCountry, StateCode
+from danowski.apps.geo.models import GeonamesCountry, StateCode, Location
 from django_date_extensions import fields as ddx
 
 
@@ -9,29 +9,6 @@ from django_date_extensions import fields as ddx
 # def state_choices():
 #     return tuple((s.code, '%s (%s)' % (s.name, s.code),) for s in StateCode.objects.all())
 
-
-
-class Location(models.Model):
-    """
-    Locations or Addresses
-    """
-
-    street_address = models.CharField(max_length=255, blank=True, help_text='Street name and number')
-    '''Street name and number'''
-    city = models.CharField(max_length=255, help_text='City name')
-    '''City name'''
-    state = models.ForeignKey(StateCode, blank=True, null=True, help_text='State name')
-    zipcode = models.CharField(max_length=10, blank=True)
-    country = models.ForeignKey(GeonamesCountry, help_text='Country name')
-    ''' Country name'''
-
-    def __unicode__(self):
-        return '%s %s %s %s %s' \
-               % (self.street_address, self.city, self.state, self.zipcode, self.country)
-
-    class Meta:
-        unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
-        ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
 
 
 class School(models.Model):
@@ -45,7 +22,7 @@ class School(models.Model):
     ''' Name of school of poetry'''
     categorizer = models.CharField(max_length=100, blank=True, choices=CATEGORIZER_CHOICES)
     '''Name of categorizer'''
-    location = models.ForeignKey('Location', blank=True, null=True)
+    location = models.ForeignKey(Location, blank=True, null=True)
     ''':class:`Location` of school of poetry'''
     notes = models.TextField(blank=True)
 
@@ -75,7 +52,7 @@ class PenName(models.Model):
 
 class PlaceName(models.Model):
     name = models.CharField(max_length=200)
-    location = models.ForeignKey('Location', blank=True, null=True)
+    location = models.ForeignKey(Location, blank=True, null=True)
     issueItem = models.ForeignKey('IssueItem')
 
     def __unicode__(self):
@@ -107,7 +84,7 @@ class Person(models.Model):
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
     schools = models.ManyToManyField('School', blank=True)
     uri = models.URLField(blank=True)
-    dwelling = models.ManyToManyField('Location', blank=True)
+    dwelling = models.ManyToManyField(Location, blank=True)
     notes = models.TextField(blank=True)
 
     def __unicode__(self):
@@ -152,9 +129,9 @@ class Issue(models.Model):
     season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
     editors = models.ManyToManyField("Person")
     contributing_editors = models.ManyToManyField("Person", related_name='contributing_editors', blank=True, null=True)
-    publication_address = models.ForeignKey("Location", help_text="address of publication", related_name='publication_address', blank=True, null=True)
-    print_address = models.ForeignKey("Location", blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
-    mailing_addresses  = models.ManyToManyField("Location", blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
+    publication_address = models.ForeignKey(Location, help_text="address of publication", related_name='publication_address', blank=True, null=True)
+    print_address = models.ForeignKey(Location, blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
+    mailing_addresses  = models.ManyToManyField(Location, blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
     physical_description = models.CharField(max_length=255, blank=True)
     numbered_pages = models.BooleanField()
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
@@ -188,7 +165,7 @@ class IssueItem(models.Model):
     genre = models.ManyToManyField('Genre')
     abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc')
     persons_mentioned= models.ManyToManyField('Person', related_name='persons_mentioned', blank=True, null=True)
-    addresses = models.ManyToManyField('Location', blank=True, null=True)
+    addresses = models.ManyToManyField(Location, blank=True, null=True)
     literary_advertisement = models.BooleanField()
     notes = models.TextField(blank=True)
 

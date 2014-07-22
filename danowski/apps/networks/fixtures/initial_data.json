@@ -17,7 +17,7 @@
     "pk": 3, 
     "model": "networks.genre", 
     "fields": {
-        "name": "Story"
+        "name": "Fiction"
     }
 },
 {
@@ -42,10 +42,38 @@
     }
 },
 {
-    "pk": 7, 
-    "model": "networks.genre", 
+    "pk": 7,
+    "model": "networks.genre",
     "fields": {
-        "name": "Title of Contents"
+        "name": "Table of Contents"
+    }
+},
+{
+    "pk": 8,
+    "model": "networks.genre",
+    "fields": {
+        "name": "Manifesto"
+    }
+},
+{
+    "pk": 9,
+    "model": "networks.genre",
+    "fields": {
+        "name": "Epigraph"
+    }
+},
+{
+    "pk": 10,
+    "model": "networks.genre",
+    "fields": {
+        "name": "Letter"
+    }
+},
+{
+    "pk": 11,
+    "model": "networks.genre",
+    "fields": {
+        "name": "Essay"
     }
 },
 {
@@ -91,12 +119,12 @@
             ],
             [
                 "add_location", 
-                "networks", 
+                "geo",
                 "location"
             ], 
             [
                 "change_location", 
-                "networks", 
+                "geo",
                 "location"
             ], 
             [
