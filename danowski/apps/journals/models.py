@@ -2,7 +2,6 @@ from django.db import models
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
-from south.modelsinspector import add_introspection_rules
 
 
 class PlaceName(models.Model):
@@ -58,15 +57,6 @@ class Issue(models.Model):
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
-
-
-add_introspection_rules([
-    (
-        [ddx.ApproximateDateField],
-        [],
-        {},
-    ),
-], ['^django_date_extensions\.fields\.ApproximateDateField'])
 
 
 class Genre(models.Model):
