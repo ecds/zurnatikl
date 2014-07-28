@@ -2,7 +2,7 @@
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cl9p%d3kb%1esfir6)y5o*+-1hhjw=f6clms78@+gy5u3pbkrl'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
