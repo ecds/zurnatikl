@@ -2,3 +2,7 @@ Django>=1.6,<1.7
 mysql-python
 south
 django-admin-bootstrapped
+
+#partial dates
+git+git://github.com/dracos/django-date-extensions.git
+six

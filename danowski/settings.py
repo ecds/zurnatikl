@@ -24,9 +24,25 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     ##################################
-    'south', # DB migrations
-    'danowski.apps.networks', # Main app
+    'danowski.apps.geo',
+    'danowski.apps.people',
+    'danowski.apps.journals',
+    'south',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    # Default processors##############################
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    ##################################################
+    "django.core.context_processors.request",
+)
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -63,6 +79,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
@@ -74,6 +91,13 @@ TEST_OUTPUT_DIR = 'test-results'
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = False
 
+# used with admin_reorder template tag
+ADMIN_REORDER = (
+    ("auth", ('Group', 'User')),
+    ("geo", ('Location')),
+    ("people", ('Person', 'School')),
+    ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
+)
 
 import sys
 

@@ -1,0 +1,5 @@
+*.pyc
+test-results/
+doc/_build/
+dist/
+build/
