@@ -40,7 +40,7 @@ class Issue(models.Model):
     journal = models.ForeignKey('Journal')
     volume = models.CharField(max_length=255, blank=True)
     issue = models.CharField(max_length=255, blank=True)
-    publication_date = ddx.ApproximateDateField(help_text='YYYY , MM/YYYY, MM/DD/YYYY')
+    publication_date = ddx.ApproximateDateField(help_text='YYYY , MM/YYYY, DD/MM/YYYY')
     season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
     editors = models.ManyToManyField(Person)
     contributing_editors = models.ManyToManyField(Person, related_name='contributing_editors', blank=True, null=True)
