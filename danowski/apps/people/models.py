@@ -3,8 +3,15 @@ from danowski.apps.geo.models import Location
 
 
 #Schools
+class SchoolManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class School(models.Model):
     '''School of poetry'''
+
+    objects = SchoolManager()
 
     CATEGORIZER_CHOICES =(
         ('Donald Allen', 'Donald Allen'),
@@ -18,6 +25,9 @@ class School(models.Model):
     ''':class:`Location` of school of poetry'''
     notes = models.TextField(blank=True)
 
+    def natural_key(self):
+        return (self.name,)
+
     def __unicode__(self):
         return self.name
 
@@ -27,7 +37,13 @@ class School(models.Model):
 
 
 # Person and person parts
+class PersonManager(models.Manager):
+    def get_by_natural_key(self, first_name, last_name):
+        return self.get(first_name=first_name, last_name=last_name)
+
 class Person(models.Model):
+
+    objects = PersonManager()
 
     GENDER_CHOICES = (
         ('F', 'Female'),
@@ -54,6 +70,9 @@ class Person(models.Model):
     dwelling = models.ManyToManyField(Location, blank=True)
     notes = models.TextField(blank=True)
 
+    def natural_key(self):
+        return (self.first_name, self.last_name)
+
     def __unicode__(self):
         if not self.first_name:
             return self.last_name
@@ -66,19 +85,41 @@ class Person(models.Model):
         ordering = ['last_name', 'first_name']
 
 
+
+class NameManager(models.Manager):
+    def get_by_natural_key(self, first_name, last_name, person):
+        self.get(first_name=first_name, last_name=last_name)
+
+
 class Name(models.Model):
+
+    objects = NameManager()
+
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
     person = models.ForeignKey('Person')
+
+    def natural_key(self):
+        return (self.first_name, self.last_name)
 
     def __unicode__(self):
         return '%s %s' % (self.first_name, self.last_name)
 
 
+class PenNameManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class PenName(models.Model):
+
+    objects = PenNameManager()
+
     name = models.CharField(max_length=200)
     person = models.ForeignKey('Person')
+
+    def natural_key(self):
+        return (self.name)
 
     def __unicode__(self):
         return self.name
