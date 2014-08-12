@@ -28,6 +28,11 @@ INSTALLED_APPS = (
     'danowski.apps.people',
     'danowski.apps.journals',
     'south',
+    # uncomment in your greatest time of need!
+    #NOTE: as of 8/12/2014 the pypi version does not support Natural Keys
+    # This version does: https://github.com/athom09/django-fixture-magic
+    # Hopefully one day the guy will pull my PullRequest
+    #'fixture_magic',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

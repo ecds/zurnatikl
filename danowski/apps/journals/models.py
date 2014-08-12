@@ -3,17 +3,36 @@ from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
 
+# for parsing natural key
+class PlaceNameManager(models.Manager):
+    def get_by_natural_key(self, name, location, issueItem):
+        return self.get(name=name)
 
 class PlaceName(models.Model):
+
+    objects = PlaceNameManager()
+
     name = models.CharField(max_length=200)
     location = models.ForeignKey(Location, blank=True, null=True)
     issueItem = models.ForeignKey('IssueItem')
+
+    # generate natural key
+    def natural_key(self):
+        return (self.name)
 
     def __unicode__(self):
         return self.name
 
 
+# for parsing natural key
+class JournalManager(models.Manager):
+    def get_by_natural_key(self, title):
+        return self.get(title=title)
+
 class Journal(models.Model):
+
+    objects = JournalManager()
+
     title = models.CharField(max_length=255)
     uri = models.URLField(blank=True)
     publisher = models.CharField(max_length=100, blank=True)
@@ -21,13 +40,26 @@ class Journal(models.Model):
     schools = models.ManyToManyField(School, blank=True)
     notes = models.TextField(blank=True)
 
+
+    # generate natural key
+    def natural_key(self):
+        return (self.title,)
+
     def __unicode__(self):
         return self.title
 
     class Meta:
         ordering = ['title']
 
+
+class IssueManager(models.Manager):
+    def get_by_natural_key(self, volume, issue, season, journal):
+        j = Journal.objects.get(title=journal)
+        return self.get(volume=volume, issue=issue, season=season, journal=j)
+
 class Issue(models.Model):
+
+    objects = IssueManager()
 
     SEASON_CHOICES = (
         ('Fall', 'Fall'),
@@ -52,15 +84,31 @@ class Issue(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     notes = models.TextField(blank=True)
 
+
+    # generate natural key
+    def natural_key(self):
+        return (self.volume, self.issue, self.season, self.journal.title)
+
     def __unicode__(self):
         return '%s vol. %s issue %s' % (self.journal.title, self.volume, self.issue)
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
 
+class GenreManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class Genre(models.Model):
+
+    objects = GenreManager()
+
     name = models.CharField(max_length=50)
+
+    # generate natural key
+    def natural_key(self):
+        return (self.name,)
 
     def __unicode__(self):
         return self.name
@@ -68,7 +116,15 @@ class Genre(models.Model):
     class Meta:
         ordering = ['name']
 
+
+class IssueItemManager(models.Manager):
+    def get_by_natural_key(self, title):
+        return self.get(title=title)
+
 class IssueItem(models.Model):
+
+    objects = IssueItemManager()
+
     issue = models.ForeignKey('Issue')
     title = models.CharField(max_length=255)
     creators = models.ManyToManyField(Person, through='CreatorName', related_name='creators_name', null=True, blank=True)
@@ -84,13 +140,28 @@ class IssueItem(models.Model):
     literary_advertisement = models.BooleanField()
     notes = models.TextField(blank=True)
 
+    # generate natural key
+    def natural_key(self):
+        return (self.title)
+
     def __unicode__(self):
         return self.title
 
+
+class CreatorNameManager(models.Manager):
+    def get_by_natural_key(self, name_used):
+        return self.get(name_used=name_used)
+
 class CreatorName(models.Model):
+
+    objects = CreatorNameManager()
+
     issue_item = models.ForeignKey("IssueItem")
     person = models.ForeignKey(Person)
     name_used = models.CharField(max_length=200, blank=True)
+
+    def natural_key(self):
+        return (self.name_used,)
 
     def __unicode__(self):
         return self.person
