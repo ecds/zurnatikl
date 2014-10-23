@@ -3,3 +3,5 @@ test-results/
 doc/_build/
 dist/
 build/
+
+danowski/localsettings.py
