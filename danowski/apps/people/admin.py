@@ -28,4 +28,5 @@ class PersonAdmin(admin.ModelAdmin):
         PenNamesInline
     ]
     form = PersonForm
+
 admin.site.register(Person, PersonAdmin)

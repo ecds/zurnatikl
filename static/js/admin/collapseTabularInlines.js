@@ -1,6 +1,6 @@
 django.jQuery(document).ready(function(){
     // Array of the tabular inlines you want to collapse
-    var tabNames = ['Schools'];
+    var tabNames = ['Schools','Associated People','Journal'];
     for (var x in tabNames)
     {
         var selector = "h2:contains(" + tabNames[x] + ")";

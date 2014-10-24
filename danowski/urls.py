@@ -9,8 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
      url(r'^$', RedirectView.as_view(url='/admin', permanent=False)), # temp redirect to admin
-
-    url(r'^admin/', include(admin.site.urls)),
+     url(r'^admin/', include(admin.site.urls) ),
     
 )
 
