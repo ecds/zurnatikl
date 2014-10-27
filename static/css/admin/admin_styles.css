@@ -1,0 +1,18 @@
+/*
+*   Hide the object labels on the tabular inline display
+*/
+td.original p {
+  visibility: hidden
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 1em;
+}
+
+/*
+*   Make the select box of the persons mentioned larger
+*/
+select#id_persons_mentioned {
+  min-height: 200px;
+  min-width: 20%;
+}

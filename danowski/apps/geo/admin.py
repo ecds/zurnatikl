@@ -1,25 +1,14 @@
 from django.contrib import admin
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe 
 from danowski.apps.geo.models import GeonamesCountry, GeonamesContinent, StateCode, Location
 from danowski.apps.people.models import School, Person
 from danowski.apps.journals.models import Journal, Issue
-from danowski.apps.admin.models import LinkedInline
+from danowski.apps.admin.models import LinkedInline, get_admin_url
 
 # admin.site.register(GeonamesContinent)
 # admin.site.register(GeonamesCountry)
 # admin.site.register(StateCode)
-
-def get_admin_url(obj):
-    module_name = obj._meta.module_name.split('_')[0]
-    id = obj.id
-    url = "admin:%s_%s_change" % (obj._meta.app_label, module_name)
-    for property, value in vars(obj).iteritems():
-      if(property == module_name+"_id"):
-        print property, ": ", value
-        id = value
-    return reverse(url, args=(id,))
 
         
 class SchoolInline(LinkedInline):
@@ -74,7 +63,7 @@ class JournalMailingInline(admin.TabularInline):
 class LocationAdmin(admin.ModelAdmin):
     class Media:
       js = (settings.STATIC_URL + 'js/admin/collapseTabularInlines.js',)
-      css = { "all" : (settings.STATIC_URL +"css/admin/hide_admin_original.css",) }
+      css = { "all" : (settings.STATIC_URL +"css/admin/admin_styles.css",) }
      
     list_display = ['street_address', 'city', 'state', 'zipcode', 'country']
     search_fields = ['street_address', 'city', 'state', 'zipcode', 'country']
