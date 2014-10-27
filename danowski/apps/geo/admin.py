@@ -17,8 +17,8 @@ class SchoolInline(LinkedInline):
 class PersonInline(admin.TabularInline):
     model = Person.dwelling.through
     extra = 0
-    verbose_name = "Associated People"
-    verbose_name_plural = verbose_name
+    verbose_name = "Associated Person"
+    verbose_name_plural = "Associated People"
     readonly_fields = ['link']
     
     def link(self, obj):
