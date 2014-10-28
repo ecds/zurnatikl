@@ -13,6 +13,17 @@ td.original p {
 *   Make the select box of the persons mentioned larger
 */
 select#id_persons_mentioned {
-  min-height: 200px;
-  min-width: 20%;
+  min-height: 500px;
+  min-width: 50%;
+}
+
+select option{
+  padding:10px;
+  font-size:90%
+}
+
+@media (min-width: 970px) {
+  .form-horizontal .control-label {
+    text-align: left;
+  }
 }

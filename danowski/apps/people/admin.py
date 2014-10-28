@@ -23,47 +23,13 @@ class PenNamesInline(admin.TabularInline):
     verbose_name_plural = 'Pen Names'
     extra = 1
 
-class IssueEditorInline(admin.TabularInline):
-    model = Issue.editors.through
-    extra = 0
-    verbose_name = "Journal Editor for:"
-    verbose_name_plural = verbose_name
-    admin_model_parent = 'journals'
-    readonly_fields = ['link']
-    def link(self, obj):
-        url = get_admin_url(obj)
-        return mark_safe("<a href='%s'>edit</a>" % url)  
-
-    # the following is necessary if 'link' method is also used in list_display
-    link.allow_tags = True
-    
-class IssueTranslatorInline(admin.TabularInline):
-    model = IssueItem.translator.through
-    extra = 0
-    verbose_name = "Journal Translator for:"
-    verbose_name_plural = verbose_name
-    admin_model_parent = 'journals'
-    readonly_fields = ['link']
-    def link(self, obj):
-        url = get_admin_url(obj)
-        return mark_safe("<a href='%s'>edit</a>" % url)  
-
-    # the following is necessary if 'link' method is also used in list_display
-    link.allow_tags = True
-
-class IssueMentionedInline(admin.TabularInline):
+class IssueItemInline(LinkedInline):
     model = IssueItem.persons_mentioned.through
     extra = 0
-    verbose_name = "Journal Mentioned in:"
+    verbose_name = 'Mentioned In Issues'
     verbose_name_plural = verbose_name
-    admin_model_parent = 'journals'
-    readonly_fields = ['link']
-    def link(self, obj):
-        url = get_admin_url(obj)
-        return mark_safe("<a href='%s'>edit</a>" % url)  
-
-    # the following is necessary if 'link' method is also used in list_display
-    link.allow_tags = True
+    admin_model_parent = "journals"
+    admin_model_path = "issueitem"
 
 class PersonAdmin(admin.ModelAdmin):
     class Media:
@@ -75,9 +41,7 @@ class PersonAdmin(admin.ModelAdmin):
     inlines = [
         AltNamesInline,
         PenNamesInline,
-        IssueEditorInline,
-        IssueTranslatorInline,
-        IssueMentionedInline
+        IssueItemInline,
     ]
     form = PersonForm
 
