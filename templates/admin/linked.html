@@ -7,11 +7,14 @@
    {{ inline_admin_formset.formset.non_form_errors }}
    <table class="table table-striped table-bordered">
      <thead><tr>
+       <th class="hidden"> </th>
      {% for field in inline_admin_formset.fields %}
        {% if not field.widget.is_hidden %}
-         <th{% if forloop.first %} colspan="1"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}
-         {% if field.help_text %}<i class="glyphicon glyphicon-comment help help-tooltip" style="margin-left: 4px;" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}"></i>{% endif %}
-         </th>
+         {% ifnotequal field.label "Link" %}
+           <th{% if forloop.first %} colspan="1"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}
+           {% if field.help_text %}<i class="glyphicon glyphicon-comment help help-tooltip" style="margin-left: 4px;" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}"></i>{% endif %}
+           </th>
+         {% endifnotequal %}
        {% endif %}
      {% endfor %}
      <th>Edit</th>
@@ -25,8 +28,8 @@
         {% endif %}
         <tr class="form-row {% cycle "row1" "row2" %} {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
              id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-        {% if inline_admin_formset.opts.show_original %}
-        <td class="original">
+        {% if True %}
+        <td class="original hidden">
           {% if inline_admin_formset.opts.sortable_field_name %}
           <span class="btn btn-default btn-xs drag-handler pull-left"><i class="glyphicon glyphicon-move"></i></span>
           {% endif %}
@@ -50,6 +53,7 @@
         {% for fieldset in inline_admin_form %}
           {% for line in fieldset %}
             {% for field in line %}
+            {% ifnotequal field.field.label "Link" %}
               <td{% if field.field.name %} class="field-{{ field.field.name }}"{% endif %}>
               {% if field.is_readonly %}
                   <p>{{ field.contents }}</p>
@@ -60,10 +64,28 @@
                   {{ field.field }}
               {% endif %}
               </td>
+              {% endifnotequal %}
             {% endfor %}
           {% endfor %}
         {% endfor %}
-        <td><a href="/admin/{{ inline_admin_formset.opts.admin_model_parent }}/{{ inline_admin_formset.opts.admin_model_path }}/{{ inline_admin_form.original.pk }}/">Go to Entry</a></td>
+        
+        <td>
+          {% for fieldset in inline_admin_form %}
+            {% for line in fieldset %}
+              {% for field in line %}
+                {% ifequal field.field.label "Link" %}
+                <a href="{{field.contents}}">
+                {% else %}
+                <a href="/admin/{{ inline_admin_formset.opts.admin_model_parent }}/{{ inline_admin_formset.opts.admin_model_path }}/{{ inline_admin_form.original.pk }}/">
+                {% endifequal %}
+              {% endfor %}
+            {% endfor %}
+          {% endfor %}
+
+            Go to Entry
+            </a>
+        </td>
+        
         {% if inline_admin_formset.formset.can_delete %}
           <td class="delete">{% if inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</td>
         {% endif %}

@@ -4,7 +4,6 @@ from danowski.apps.people.forms import PersonForm, SchoolForm
 from danowski.apps.people.models import School, Person, Name, PenName
 from django.conf import settings
 from django.contrib import admin
-from django.utils.safestring import mark_safe 
 
 class SchoolAdmin(admin.ModelAdmin):
     form = SchoolForm
@@ -30,6 +29,22 @@ class IssueItemInline(LinkedInline):
     verbose_name_plural = verbose_name
     admin_model_parent = "journals"
     admin_model_path = "issueitem"
+    readonly_fields = ['link']
+    
+    def link(self, obj):
+        return get_admin_url(obj)
+
+    # the following is necessary if 'link' method is also used in list_display
+    link.allow_tags = True
+    
+class IssueItemCreatorsInline(LinkedInline):
+    model = IssueItem.creators.through
+    extra = 0
+    verbose_name = 'Assigned Creator for Issues'
+    verbose_name_plural = verbose_name
+    admin_model_parent = "journals"
+    admin_model_path = "issueitem"
+
 
 class PersonAdmin(admin.ModelAdmin):
     class Media:
@@ -42,6 +57,7 @@ class PersonAdmin(admin.ModelAdmin):
         AltNamesInline,
         PenNamesInline,
         IssueItemInline,
+        IssueItemCreatorsInline,
     ]
     form = PersonForm
 
