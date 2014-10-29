@@ -166,6 +166,12 @@ td.original {
   width: 1px;
 }
 
+.form-row select {
+  width: 300px;
+  float: left;
+  display: block;
+}
+
 /*
 *   Make the select box of the persons mentioned larger
 */
