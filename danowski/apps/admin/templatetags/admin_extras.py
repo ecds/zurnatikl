@@ -6,6 +6,6 @@ register = template.Library()
 @stringfilter
 def splitOutLink(s):
     str = s.split('"')
-    if len(str) == 3
+    if len(str) == 3:
       return s.split('"')[1];
     return s
