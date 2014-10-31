@@ -5,4 +5,7 @@ register = template.Library()
 @register.filter
 @stringfilter
 def splitOutLink(s):
-    return s.split('"')[1];
+    str = s.split('"')
+    if len(str) == 3
+      return s.split('"')[1];
+    return s
