@@ -33,7 +33,7 @@
 {% endif %}
 <tr class="{% cycle 'row1' 'row2' %}">
     {% for item in result %}
-        {% if "&nbsp;" in item %}
+        {% if "&nbsp;" in item and "th" in item %}
             <th><a href="{{ item |splitOutLink }}">[ None ]</a></th>
         {% else %}
             {{ item }}
