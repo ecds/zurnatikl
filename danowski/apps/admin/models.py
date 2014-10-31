@@ -18,7 +18,6 @@ class LinkedInline(admin.options.InlineModelAdmin):
     admin_model_parent = ''
     # used for creating the correct url path. Can be overwritten.
     
-    
     def __init__(self, *args):
         super(LinkedInline, self).__init__(*args)
         if self.admin_model_path is None:

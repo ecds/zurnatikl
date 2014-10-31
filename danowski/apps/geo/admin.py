@@ -27,5 +27,5 @@ class LocationAdmin(admin.ModelAdmin):
     inlines = [
         IssueItemInline,
         ]
-    
+
 admin.site.register(Location, LocationAdmin)

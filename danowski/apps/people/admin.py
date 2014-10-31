@@ -25,7 +25,7 @@ class PenNamesInline(admin.TabularInline):
 class IssueItemInline(LinkedInline):
     model = IssueItem.persons_mentioned.through
     extra = 0
-    verbose_name = 'Mentioned In Issues'
+    verbose_name = 'Mentioned In Issue Items'
     verbose_name_plural = verbose_name
     admin_model_parent = "journals"
     admin_model_path = "issueitem"
@@ -40,7 +40,7 @@ class IssueItemInline(LinkedInline):
 class IssueItemCreatorsInline(LinkedInline):
     model = IssueItem.creators.through
     extra = 0
-    verbose_name = 'Assigned Creator for Issues'
+    verbose_name = 'Assigned Creator for Issue Items'
     verbose_name_plural = verbose_name
     admin_model_parent = "journals"
     admin_model_path = "issueitem"
