@@ -1,0 +1,10 @@
+/*
+*   Hide the object labels on the tabular inline display
+*/
+td.original p {
+  visibility: hidden
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 1em;
+}

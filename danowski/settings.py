@@ -15,6 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Application definition
 
 INSTALLED_APPS = (
+    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     #default apps#####################
     'django.contrib.admin',
@@ -24,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     ##################################
+    'danowski.apps.admin',
     'danowski.apps.geo',
     'danowski.apps.people',
     'danowski.apps.journals',
@@ -82,9 +84,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
+# STATICFILES_DIRS = ( os.path.join('static'), )
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
