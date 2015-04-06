@@ -14,28 +14,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
-    #default apps#####################
+    #### default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    ##################################
+    #### local dependencies
+    'south',
+    #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
     'danowski.apps.people',
     'danowski.apps.journals',
-    'south',
     # uncomment in your greatest time of need!
-    #NOTE: as of 8/12/2014 the pypi version does not support Natural Keys
-    # This version does: https://github.com/athom09/django-fixture-magic
-    # Hopefully one day the guy will pull my PullRequest
+    # (migrating partial data from one DB to another, hopefully we never
+    # need this again)
     #'fixture_magic',
-)
+]
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # Default processors##############################
@@ -90,11 +90,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
-
-TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
-TEST_OUTPUT_DIR = 'test-results'
-
-
 # disable south tests and migrations when running tests
 # - without these settings, test fail on loading initial fixtured data
 SKIP_SOUTH_TESTS = True
@@ -108,13 +103,32 @@ ADMIN_REORDER = (
     ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
 )
 
-import sys
 
 # import localsettings
 # This will override any previously set value
 try:
     from localsettings import *
 except ImportError:
-    print >>sys.stderr, '''Settings not defined. Please configure a version
+    import sys
+    print >> sys.stderr, '''Settings not defined. Please configure a version
         of localsettings.py for this site. See localsettings.py.dist for
         setup details.'''
+
+# load & configure django_nose if available
+
+django_nose = None
+try:
+    # NOTE: errors if DATABASES is not configured (in some cases),
+    # so this must be done after importing localsettings
+    import django_nose
+except ImportError:
+    print 'django nose import error'
+    pass
+
+# - only if django_nose is installed, so it is only required for development
+if django_nose is not None:
+    INSTALLED_APPS.append('django_nose')
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+    # currently no plugins or extra command line options needed
+
+
