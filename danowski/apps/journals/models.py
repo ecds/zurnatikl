@@ -80,7 +80,7 @@ class Issue(models.Model):
     print_address = models.ForeignKey(Location, blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
     mailing_addresses  = models.ManyToManyField(Location, blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
     physical_description = models.CharField(max_length=255, blank=True)
-    numbered_pages = models.BooleanField()
+    numbered_pages = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     notes = models.TextField(blank=True)
 
@@ -128,16 +128,19 @@ class IssueItem(models.Model):
     issue = models.ForeignKey('Issue')
     title = models.CharField(max_length=255)
     creators = models.ManyToManyField(Person, through='CreatorName', related_name='creators_name', null=True, blank=True)
-    anonymous = models.BooleanField(help_text='check if labeled as by Anonymous')
-    no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous')
+    anonymous = models.BooleanField(help_text='check if labeled as by Anonymous',
+        default=False)
+    no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous]',
+        default=False)
     translator = models.ManyToManyField(Person, related_name='translator_name', blank=True, null=True)
     start_page = models.IntegerField(max_length=6)
     end_page = models.IntegerField(max_length=6)
     genre = models.ManyToManyField('Genre')
-    abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc')
+    abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc',
+        default=False)
     persons_mentioned= models.ManyToManyField(Person, related_name='persons_mentioned', blank=True, null=True)
     addresses = models.ManyToManyField(Location, blank=True, null=True)
-    literary_advertisement = models.BooleanField()
+    literary_advertisement = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
 
     # generate natural key
