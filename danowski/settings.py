@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #### local dependencies
-    'south',
+    # -
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -88,11 +88,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-
-# disable south tests and migrations when running tests
-# - without these settings, test fail on loading initial fixtured data
-SKIP_SOUTH_TESTS = True
-SOUTH_TESTS_MIGRATE = False
 
 # used with admin_reorder template tag
 ADMIN_REORDER = (
