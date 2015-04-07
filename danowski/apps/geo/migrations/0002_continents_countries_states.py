@@ -38,5 +38,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-    migrations.RunPython(load_fixture, reverse_code=unload_fixture)
+    migrations.RunPython(load_fixture, reverse_code=unload_fixture, atomic=False)
     ]
