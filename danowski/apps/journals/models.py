@@ -167,4 +167,4 @@ class CreatorName(models.Model):
         return (self.name_used,)
 
     def __unicode__(self):
-        return self.person
+        return unicode(self.person)
