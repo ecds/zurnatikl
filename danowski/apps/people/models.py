@@ -42,14 +42,16 @@ class PersonManager(models.Manager):
         return self.get(first_name=first_name, last_name=last_name)
 
 class Person(models.Model):
+    'A person associated with a school of poetry, journal issue, item, etc.'
 
     objects = PersonManager()
 
+    #: choices for :attr:`gender`
     GENDER_CHOICES = (
         ('F', 'Female'),
         ('M', 'Male')
     )
-
+    #: choices for :attr:`race`
     RACE_CHOICES = (
         ('American Indian or Alaska Native', 'American Indian or Alaska Native'),
         ('Asian', 'Asian'),
@@ -60,14 +62,23 @@ class Person(models.Model):
         ('White', 'White'),
     )
 
+    #: first name
     first_name = models.CharField(max_length=100, blank=True)
+    #: last name
     last_name = models.CharField(max_length=100)
+    #: race
     race = models.CharField(max_length=50, blank=True, choices=RACE_CHOICES)
+    #: race self-description
     racial_self_description = models.CharField(max_length=100, blank=True)
+    #: gender
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
+    #: schools associated with; many to many relation to :model:`School`
     schools = models.ManyToManyField('School', blank=True)
+    #: uri
     uri = models.URLField(blank=True)
+    #: dwelling locations
     dwelling = models.ManyToManyField(Location, blank=True, related_name = 'dwelling_info')
+    #: notes
     notes = models.TextField(blank=True)
 
     def natural_key(self):
@@ -78,7 +89,7 @@ class Person(models.Model):
             return self.last_name
         else:
             return '%s, %s' % (self.last_name, self.first_name)
-    
+
     class Meta:
         verbose_name_plural = 'People'
         unique_together = ('first_name', 'last_name')
