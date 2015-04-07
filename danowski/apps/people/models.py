@@ -35,6 +35,21 @@ class School(models.Model):
         unique_together = ('name', 'categorizer', 'location')
         ordering = ['name']
 
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'school:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        return {
+            'label': unicode(self),
+            'name': self.name,
+            'categorizer': self.categorizer,
+        }
+
+
 
 # Person and person parts
 class PersonManager(models.Manager):
@@ -68,7 +83,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=100)
     #: race
     race = models.CharField(max_length=50, blank=True, choices=RACE_CHOICES)
-    #: race self-description
+    #: raceself-description
     racial_self_description = models.CharField(max_length=100, blank=True)
     #: gender
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
@@ -94,6 +109,23 @@ class Person(models.Model):
         verbose_name_plural = 'People'
         unique_together = ('first_name', 'last_name')
         ordering = ['last_name', 'first_name']
+
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'person:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        return {
+            'label': unicode(self),
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'race': self.race,
+            'gender': self.gender,
+            'uri': self.uri
+        }
 
 
 
