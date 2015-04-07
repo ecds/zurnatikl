@@ -1,0 +1,79 @@
+[
+{
+    "pk": 1,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Poem"
+    }
+},
+{
+    "pk": 2,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Play"
+    }
+},
+{
+    "pk": 3,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Fiction"
+    }
+},
+{
+    "pk": 4,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Art"
+    }
+},
+{
+    "pk": 5,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Review"
+    }
+},
+{
+    "pk": 6,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Advertisement"
+    }
+},
+{
+    "pk": 7,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Table of Contents"
+    }
+},
+{
+    "pk": 8,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Manifesto"
+    }
+},
+{
+    "pk": 9,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Epigraph"
+    }
+},
+{
+    "pk": 10,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Letter"
+    }
+},
+{
+    "pk": 11,
+    "model": "journals.genre",
+    "fields": {
+        "name": "Essay"
+    }
+}
+]
