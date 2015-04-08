@@ -118,3 +118,35 @@ class Location(models.Model):
     class Meta:
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
         ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
+
+
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'location:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        attrs = {
+            'label': unicode(self),
+            'street address': self.street_address,
+            'city': self.city,
+            'zipcode': self.zipcode
+        }
+        if self.state:
+            attrs.update({
+                'state': self.state.name,
+                'state code': self.state.code,
+            })
+        if self.country:
+            attrs.update({
+                'country': self.country.name,
+                'country code': self.country.code
+            })
+        return attrs
+
+    @property
+    def has_network_edges(self):
+        # no edges originate from location, they are all *to* locations
+        return False

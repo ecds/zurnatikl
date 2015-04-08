@@ -63,6 +63,31 @@ class Journal(models.Model):
     class Meta:
         ordering = ['title']
 
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'journal:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        return {
+            'label': unicode(self),
+            'title': self.title,
+            'uri': self.uri,
+            'publisher': self.publisher,
+            'issn': self.issn
+        }
+
+    @property
+    def has_network_edges(self):
+        return self.schools.exists()
+
+    @property
+    def network_edges(self):
+        #: list of tuples for edges in the network
+        return [(self.network_id, school.network_id) for school in self.schools.all()]
+
 
 class IssueManager(models.Manager):
     def get_by_natural_key(self, volume, issue, season, journal):
@@ -121,6 +146,50 @@ class Issue(models.Model):
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
+
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'issue:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        return {
+            'label': unicode(self),
+            'volume': self.volume,
+            'issue': self.issue,
+            'publication_date': unicode(self.publication_date),
+            'season': self.season,
+            'numbered_pages': self.numbered_pages,
+            'price': unicode(self.price) or ''
+        }
+
+    @property
+    def has_network_edges(self):
+        return any([self.journal, self.editors.exists(), self.contributing_editors.exists(),
+                    self.publication_address, self.print_address, self.mailing_addresses.exists()])
+
+    @property
+    def network_edges(self):
+        #: list of tuples for edges in the network
+        edges = []
+        if self.journal:
+            edges.append((self.network_id, self.journal.network_id))
+        if self.publication_address:
+            edges.append((self.network_id, self.publication_address.network_id, {'label': 'publication address'}))
+        if self.print_address:
+            edges.append((self.network_id, self.print_address.network_id, {'label': 'print address'}))
+
+        edges.extend([(self.network_id, ed.network_id, {'label': 'editor'})
+            for ed in self.editors.all()])
+        edges.extend([(self.network_id, c_ed.network_id, {'label': 'contributing editor'})
+             for c_ed in self.contributing_editors.all()])
+        edges.extend([(self.network_id, loc.network_id, {'label': 'mailing address'})
+             for loc in self.mailing_addresses.all()])
+
+        return edges
+
 
 class GenreManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -191,6 +260,47 @@ class IssueItem(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def network_id(self):
+        #: node identifier when generating a network
+        return 'issueitem:%s' % self.id
+
+    @property
+    def network_attributes(self):
+        #: data to be included as node attributes when generating a network
+        return {
+            'label': unicode(self),
+            'anonymous': self.anonymous,
+            'no_creator': self.no_creator,
+            'start_page': self.start_page,
+            'end_page': self.end_page,
+            'genre': ', '.join([g.name for g in self.genre.all()]),
+            'abbreviated_text': self.abbreviated_text,
+            'literary_advertisement': self.literary_advertisement
+        }
+
+    @property
+    def has_network_edges(self):
+        return any([self.issue, self.creators.exists(), self.translator.exists(),
+                    self.persons_mentioned.exists(), self.addresses.exists()])
+
+    @property
+    def network_edges(self):
+        #: list of tuples for edges in the network
+        edges = []
+        if self.issue:
+            edges.append((self.network_id, self.issue.network_id))
+        edges.extend([(self.network_id, c.network_id, {'label': 'creator'})
+            for c in self.creators.all()])
+        edges.extend([(self.network_id, trans.network_id, {'label': 'translator'})
+             for trans in self.translator.all()])
+        edges.extend([(self.network_id, person.network_id, {'label': 'mentioned'})
+             for person in self.persons_mentioned.all()])
+        edges.extend([(self.network_id, loc.network_id)
+             for loc in self.addresses.all()])
+
+        return edges
 
 
 class CreatorNameManager(models.Manager):
