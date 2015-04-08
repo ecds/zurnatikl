@@ -6,3 +6,5 @@ django-admin-bootstrapped<=2.4
 #partial dates
 git+git://github.com/dracos/django-date-extensions.git
 six
+
+networkx

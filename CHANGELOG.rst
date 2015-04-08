@@ -3,14 +3,72 @@ CHANGELOG
 
 Release 1.0.2
 -------------
-* Added admin section to see objects associated with a particular location
-* Added admin section to see objects associated with a particular person
-* Updated UI style and added spacing for select options
+
+* As a user of the database, I want to see more entries in the "Persons
+  Mentioned" table so it's easier to see and select names of people
+  mentioned.  (admin section to see objects associated with a particular person)
+* As an admin, I want to be able to see which objects are associated
+  with a particular location so I can make corrections to incorrect
+  entries.  (admin section to see objects associated with a particular location)
+* As an admin, I want to be able to see which objects are associated
+  with a particular person so I can make corrections to incorrect
+  entries.  (Updated UI style and added spacing for select options)
+* bugfix: Pagination links are not visible
 
 Release 1.0.1
 -------------
 * Added Natural Keys to assist with data loading
 
-Release 1.0
------------
-* Initial Release
+Release 1.0 - Data Entry
+------------------------
+
+* As an admin, I want to be able to create user accounts and give
+  individual team members permission to edit the data so only permitted
+  people can work on the data.
+* As a team member, when I am editing a journal issue I want to be able
+  to create a new location(s) or link to a pre-existing one(s) so I can
+  capture place-based information about the issue.
+* As a team member, when I'm editing a text I want to be able to add a
+  new author without leaving the form so I can work efficiently.
+* As a team member, when I'm editing a person I want to be able to
+  create a new location or connect to a pre-existing one so I can
+  capture place-based information about the author.
+* As a team member, I want to add and edit people in order to describe
+  them and link them to publications.
+* As a team member, I want to add detailed information about schools of
+  writing so I can see how these schools compare to publication
+  networks.
+* As a team member, I want add detailed information about addresses or
+  locations so I can learn more about geographic distribution of the
+  network.
+* When a team member enters the admin framework they will be able to
+  navigate the database with breadcrumb navigation so it's easier to get
+  around the site.
+* When a team member enters the admin framework they will see the models
+  in the following order so they make hierarchical sense: Schools-
+  People-Journals-Issues-Issue Items-Genres-Locations.
+* Only admin users will be able to see the "Schools," "Journals," and
+  "Genres" models so they can control changes to these models.
+* As a team member, I want to add journals in order to describe them and
+  their individual issues.
+* As a team member, I want to add issues of a particular journal in order
+  to describe them and their contents.
+* When a team member goes to enter information into the database, they
+  will choose from several different apps that encompass the models,
+  namely Geo, People, and Journals.
+* A user should be able to add all unicode characters to fields in the
+  database so they can enter the text correctly.
+* As a team member, I want to enter detailed information about each item
+  in an issue so I can gather information about publication networks.
+* When a team member is selecting a country for a location, they will
+  see that the USA is the first choice in the list so they can save
+  time.
+* When a team member is looking at the Networks > Issue Items page, they
+  will be able to see and sort by "Issue" so they can find what they're
+  looking for more easily.
+* When a team member chooses from any pre-populated list (like persons
+  or issues), their choices are in alphabetical order (last-name first
+  for persons) so it's easier to find the object they're looking for.
+* When a user adds a "place mentioned" field in an "Issue Item", they
+  can connect that place to the "locations" model of the database so the
+  information becomes usable in multiple ways.
