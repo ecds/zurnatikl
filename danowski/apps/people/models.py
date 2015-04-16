@@ -45,7 +45,6 @@ class School(models.Model):
         #: data to be included as node attributes when generating a network
         return {
             'label': unicode(self),
-            'name': self.name,
             'categorizer': self.categorizer,
         }
 
@@ -136,7 +135,6 @@ class Person(models.Model):
             'last name': self.last_name,
             'race': self.race,
             'gender': self.gender,
-            'uri': self.uri
         }
 
     @property

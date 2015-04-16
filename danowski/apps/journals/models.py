@@ -73,10 +73,7 @@ class Journal(models.Model):
         #: data to be included as node attributes when generating a network
         return {
             'label': unicode(self),
-            'title': self.title,
-            'uri': self.uri,
             'publisher': self.publisher,
-            'issn': self.issn
         }
 
     @property
@@ -160,9 +157,6 @@ class Issue(models.Model):
             'volume': self.volume,
             'issue': self.issue,
             'publication_date': unicode(self.publication_date),
-            'season': self.season,
-            'numbered_pages': self.numbered_pages,
-            'price': unicode(self.price) or ''
         }
 
     @property
@@ -274,14 +268,10 @@ class IssueItem(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         return {
-            'label': unicode(self),
+            'label': self.title,
             'anonymous': self.anonymous,
             'no_creator': self.no_creator,
-            'start_page': self.start_page,
-            'end_page': self.end_page,
             'genre': ', '.join([g.name for g in self.genre.all()]),
-            'abbreviated_text': self.abbreviated_text,
-            'literary_advertisement': self.literary_advertisement
         }
 
     @property
