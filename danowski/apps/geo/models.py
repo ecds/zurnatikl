@@ -112,6 +112,9 @@ class Location(models.Model):
         return (self.street_address, self.city, self.zipcode)
 
     def __unicode__(self):
+        # FIXME: this is generating labels like:
+        # Mazatlan None Mexico (MX)
+        # " Pompeii None Italy (IT)"
         return '%s %s %s %s %s' \
                % (self.street_address, self.city, self.state, self.zipcode, self.country)
 
@@ -132,7 +135,8 @@ class Location(models.Model):
             'label': unicode(self),
             'street address': self.street_address,
             'city': self.city,
-            'zipcode': self.zipcode
+            'zipcode': self.zipcode,
+            'placenames': '; '.join(set(unicode(pn) for pn in self.placename_set.all()))
         }
         if self.state:
             attrs.update({
