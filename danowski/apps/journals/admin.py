@@ -33,8 +33,8 @@ admin.site.register(Genre)
 
 class IssueItemAdmin(admin.ModelAdmin):
     class Media:
-      js = (settings.STATIC_URL + 'js/admin/collapseTabularInlines.js',)
-      css = { "all" : (settings.STATIC_URL +"css/admin/admin_styles.css",) }
+      js = ('js/admin/collapseTabularInlines.js',)
+      css = { 'all' : ('css/admin/admin_styles.css',) }
     form = IssueItemForm
     list_display = ['title', 'issue', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
