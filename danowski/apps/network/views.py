@@ -1,6 +1,9 @@
+import logging
 import networkx as nx
-from networkx.readwrite import gexf
+from networkx.readwrite import gexf, graphml
 from StringIO import StringIO
+import time
+import unicodedata
 
 from django.http import HttpResponse
 
@@ -9,49 +12,103 @@ from danowski.apps.journals.models import Journal, Issue, IssueItem
 from danowski.apps.people.models import Person, School
 
 
-def full_gexf(request):
-    # generate a networkx and serialize as gexf
-    graph = nx.MultiDiGraph()
+logger = logging.getLogger(__name__)
+
+
+def to_ascii(d):
+    # convert unicode to ascii, converting accented characters to
+    # non-accented equivalents where possible
+    return {k: unicodedata.normalize('NFD', v).encode('ascii', 'ignore') if isinstance(v, unicode) else v
+                 for k, v in d.iteritems()}
+
+# NOTE: it might be cleaner to refactor into graph class with these methods
+
+def add_nodes_to_graph(qs, graph, node_type, use_ascii=False, chunksize=1000):
+    # some models have large number of items, handle them in chunks
+    for i in xrange(0, qs.count(), chunksize):
+        chunk = qs[i:i + chunksize]
+        # add to the network with attributes and the specified type
+        start = time.time()
+        graph.add_nodes_from(
+            [(n.network_id,
+              to_ascii(n.network_attributes) if use_ascii else n.network_attributes)
+             for n in chunk],
+            type=node_type)
+        logger.debug('Added %d %s nodes in %.2f sec' % \
+            (len(chunk), node_type, time.time() - start))
+
+def add_edges_to_graph(qs, graph, node_type):
+    # NOTE: should be possible to add a list of edges all at once,
+    # but will require testing to see if that is more efficient
+    logger.debug('adding %s edges' % node_type)
+    start = time.time()
+    for node in qs:
+        if node.has_network_edges:
+            graph.add_edges_from(node.network_edges)
+
+    logger.debug('Added edges for %d nodes in %.2f sec' % \
+        (qs.count(), time.time() - start))
+
+
+def generate_network_graph(use_ascii=False):
+    '''Generate a :class:`networkx.MultiGraph` from the connections among
+    schools, people, locations, journals, issues, and items.
+    Optionally convert unicode to ascii, if needed by the export tool.
+    '''
+
+    # generate a networkx graph for serialization
+    # TODO: probably need to add caching on this graph
+    graph = nx.MultiGraph()
+    start = time.time()
 
     # add all the high-level objects to the network as nodes
-
-    # dictionary of objects to be added to the network as nodes
-    # label for type of node -> Model class for the data
-    # models should have network_id and network_attributes properties
-    node_classes = {
-        'School': School,
-        'Person': Person,
-        'Location': Location,
-        'Journal': Journal,
-        'Issue': Issue,
-        'IssueItem': IssueItem,
-    }
-    nodes = {}
-
-    # TODO: add logging here so it is easier to tell what is going on
-
-
-    for node_type, model in node_classes.iteritems():
-        # find all objects
-        nodes[node_type] = model.objects.all()
-        # add to the network with attributes and the specified type
-        graph.add_nodes_from(
-            [(n.network_id, n.network_attributes) for n in nodes[node_type]],
-            type=node_type)
+    schools = School.objects.all()
+    add_nodes_to_graph(schools, graph, 'School', use_ascii)
+    people = Person.objects.all().prefetch_related('schools', 'dwelling')
+    add_nodes_to_graph(people, graph, 'Person', use_ascii)
+    locations = Location.objects.all().prefetch_related('placename_set')
+    add_nodes_to_graph(locations, graph, 'Location', use_ascii)
+    journals = Journal.objects.all()
+    add_nodes_to_graph(journals, graph, 'Journal', use_ascii)
+    issues = Issue.objects.all().prefetch_related('editors',
+        'contributing_editors', 'publication_address', 'print_address',
+        'mailing_addresses')
+    add_nodes_to_graph(issues, graph, 'Issue', use_ascii)
+    items = IssueItem.objects.all().prefetch_related('issue', 'creators',
+        'translator', 'persons_mentioned', 'addresses', 'genre')
+    add_nodes_to_graph(items, graph, 'Issue Item', use_ascii)
 
     # then add edges to connect everything
-    for node_group in nodes.itervalues():
-        # NOTE: should be possible to add a list of edges all at once,
-        # but will require testing to see if that is more efficient
-        for node in node_group:
-            if node.has_network_edges:
-                graph.add_edges_from(node.network_edges)
 
-    # write out as GEXF and return
+    add_edges_to_graph(schools, graph, 'School')
+    add_edges_to_graph(people, graph, 'Person')
+    # locations do not have any outbound edges
+    add_edges_to_graph(journals, graph, 'Journal')
+    add_edges_to_graph(issues, graph, 'Issue')
+    add_edges_to_graph(items, graph, 'Issue Item')
+
+    logger.debug('Generated full graph in %.2f sec' % (time.time() - start))
+
+    return graph
+
+
+def export_network(request, fmt):
+    '''Export the full network graph for use in external network analysis
+    software.'''
+    # NOTE: GEXF supports unicode, but Gephi seems to have an import bug
+    # with unicode, so disabling it now
+    use_ascii = (fmt == 'gexf')
+    graph = generate_network_graph(use_ascii=use_ascii)
+    # write out in requested format and return
     buf = StringIO()
-    gexf.write_gexf(graph, buf)
-    response = HttpResponse(buf.getvalue(), content_type='application/gexf+xml')
-    response['Content-Disposition'] = 'attachment; filename=danowski_data.gexf'
+    if fmt == 'gexf':
+        gexf.write_gexf(graph, buf)
+        mimetype = 'application/gexf+xml'
+    elif fmt == 'graphml':
+        graphml.write_graphml(graph, buf)
+        mimetype = 'application/graphml+xml'   # maybe?
+    response = HttpResponse(buf.getvalue(), content_type=mimetype)
+    response['Content-Disposition'] = 'attachment; filename=danowski_data.%s' % fmt
     return response
 
 
