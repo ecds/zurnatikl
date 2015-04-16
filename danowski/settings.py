@@ -15,7 +15,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Application definition
 
 INSTALLED_APPS = [
-    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     #### default apps
     'django.contrib.admin',
@@ -25,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #### local dependencies
-    'south',
+    # -
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -84,16 +83,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-# STATICFILES_DIRS = ( os.path.join('static'), )
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Additional locations of static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'sitemedia'),
+]
 
-# disable south tests and migrations when running tests
-# - without these settings, test fail on loading initial fixtured data
-SKIP_SOUTH_TESTS = True
-SOUTH_TESTS_MIGRATE = False
 
 # used with admin_reorder template tag
 ADMIN_REORDER = (

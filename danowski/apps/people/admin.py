@@ -30,13 +30,13 @@ class IssueItemInline(LinkedInline):
     admin_model_parent = "journals"
     admin_model_path = "issueitem"
     readonly_fields = ['link']
-    
+
     def link(self, obj):
         return get_admin_url(obj)
 
     # the following is necessary if 'link' method is also used in list_display
     link.allow_tags = True
-    
+
 class IssueItemCreatorsInline(LinkedInline):
     model = IssueItem.creators.through
     extra = 0
@@ -48,8 +48,8 @@ class IssueItemCreatorsInline(LinkedInline):
 
 class PersonAdmin(admin.ModelAdmin):
     class Media:
-      js = (settings.STATIC_URL + 'js/admin/collapseTabularInlines.js',)
-      css = { "all" : (settings.STATIC_URL +"css/admin/admin_styles.css",) }
+        js = ('js/admin/collapseTabularInlines.js',)
+        css = { 'all' : ('css/admin/admin_styles.css',) }
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']

@@ -130,7 +130,7 @@ class Issue(models.Model):
     #: physical description
     physical_description = models.CharField(max_length=255, blank=True)
     #: boolean indicating if pages are numbered
-    numbered_pages = models.BooleanField()
+    numbered_pages = models.BooleanField(default=False)
     #: price
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     #: text notes
@@ -232,9 +232,11 @@ class IssueItem(models.Model):
     #: related via :class:`~danowski.apps.people.models.CreatorName`,
     creators = models.ManyToManyField(Person, through='CreatorName', related_name='creators_name', null=True, blank=True)
     #: anonymous
-    anonymous = models.BooleanField(help_text='check if labeled as by Anonymous')
+    anonymous = models.BooleanField(help_text='check if labeled as by Anonymous',
+        default=False)
     #: no creator listed
-    no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous')
+    no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous]',
+        default=False)
     #: translator, :class:`~danowski.apps.people.models.Person`,
     translator = models.ManyToManyField(Person, related_name='translator_name', blank=True, null=True)
     #: start page
@@ -244,14 +246,16 @@ class IssueItem(models.Model):
     #: :class:`Genre`
     genre = models.ManyToManyField('Genre')
     #: includes abbreviated text
-    abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc')
+    abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc',
+        default=False)
     #: mentioned people, many-to-many to :class:`~danowski.apps.people.models.Person`
     persons_mentioned= models.ManyToManyField(Person, related_name='persons_mentioned', blank=True, null=True)
     #: addressse, many-to-many to :class:`danowski.apps.geo.models.Location`
     addresses = models.ManyToManyField(Location, blank=True, null=True)
     #: indicates if it is a literary advertisement
-    literary_advertisement = models.BooleanField()
+    literary_advertisement = models.BooleanField(default=False)
     #: notes
+
     notes = models.TextField(blank=True)
 
     # generate natural key
@@ -319,4 +323,4 @@ class CreatorName(models.Model):
         return (self.name_used,)
 
     def __unicode__(self):
-        return self.person
+        return unicode(self.person)

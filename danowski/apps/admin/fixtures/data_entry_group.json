@@ -1,82 +1,5 @@
 [
 {
-    "pk": 1, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Poem"
-    }
-},
-{
-    "pk": 2, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Play"
-    }
-},
-{
-    "pk": 3, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Fiction"
-    }
-},
-{
-    "pk": 4, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Art"
-    }
-},
-{
-    "pk": 5, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Review"
-    }
-},
-{
-    "pk": 6, 
-    "model": "journals.genre", 
-    "fields": {
-        "name": "Advertisement"
-    }
-},
-{
-    "pk": 7,
-    "model": "journals.genre",
-    "fields": {
-        "name": "Table of Contents"
-    }
-},
-{
-    "pk": 8,
-    "model": "journals.genre",
-    "fields": {
-        "name": "Manifesto"
-    }
-},
-{
-    "pk": 9,
-    "model": "journals.genre",
-    "fields": {
-        "name": "Epigraph"
-    }
-},
-{
-    "pk": 10,
-    "model": "journals.genre",
-    "fields": {
-        "name": "Letter"
-    }
-},
-{
-    "pk": 11,
-    "model": "journals.genre",
-    "fields": {
-        "name": "Essay"
-    }
-},
-{
     "pk": 1,
     "model": "auth.group",
     "fields": {
@@ -183,46 +106,6 @@
                 "placename"
             ]
         ]
-    }
-},
-{
-    "pk": 3,
-    "model": "auth.user",
-    "fields": {
-        "username": "admin",
-        "first_name": "",
-        "last_name": "",
-        "is_active": true,
-        "is_superuser": true,
-        "is_staff": true,
-        "last_login": "2014-06-26T15:55:58Z",
-        "groups": [],
-        "user_permissions": [],
-        "password": "pbkdf2_sha256$12000$NSLHqGCh4A2k$1JUYWEGuVPLAjC3lDBYLGocnB4Z1c5phFY4Ws38offc=",
-        "email": "",
-        "date_joined": "2014-06-25T17:06:25Z"
-    }
-},
-{
-    "pk": 4,
-    "model": "auth.user",
-    "fields": {
-        "username": "usr",
-        "first_name": "",
-        "last_name": "",
-        "is_active": true,
-        "is_superuser": false,
-        "is_staff": true,
-        "last_login": "2014-06-26T16:02:45Z",
-        "groups": [
-            [
-                "Data Entry"
-            ]
-        ],
-        "user_permissions": [],
-        "password": "pbkdf2_sha256$12000$EnOUqGVLwywQ$/L535k0T1KEvVU0batX8aD9NjD5l2LzKyGJ19XGhUqw=",
-        "email": "",
-        "date_joined": "2014-06-25T17:14:53Z"
     }
 }
 ]

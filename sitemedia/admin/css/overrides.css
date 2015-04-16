@@ -208,3 +208,7 @@ select[multiple]{
 #content-main+.navbar.navbar-default+div>.pagination+p{
     opacity:0.5;
 }
+
+.pagination .this-page {
+    background-color: #1abc9c;
+}

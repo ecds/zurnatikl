@@ -89,4 +89,13 @@ tables and initial data using::
 
 Upgrade Notes
 =============
-PLACEHOLDER FOR UPGRADE NOTES
+
+
+1.2
+---
+
+* This update includes an upgrade from Django 1.6 to 1.7, which replaces
+  south migrations with Django migrations.  Existing installations with
+  data should fake the new initial migrations::
+
+      python manage.py migrate --fake
