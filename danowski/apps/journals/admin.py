@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.conf import settings
-from danowski.apps.journals.models import Journal, Issue, IssueItem, CreatorName, Genre, PlaceName
+from danowski.apps.journals.models import Journal, Issue, IssueItem, \
+  CreatorName, Genre, PlaceName
 from danowski.apps.journals.forms import JournalForm, IssueForm, IssueItemForm
 
 
@@ -21,6 +21,7 @@ admin.site.register(Journal, JournalAdmin)
 class IssueAdmin(admin.ModelAdmin):
      list_display = ['journal', 'volume', 'issue', 'publication_date', 'season', 'physical_description', 'numbered_pages']
      search_fields = list_display = ['journal', 'volume', 'issue', 'physical_description', 'notes']
+     list_filter = ['journal']
      form = IssueForm
 admin.site.register(Issue, IssueAdmin)
 
@@ -38,6 +39,7 @@ class IssueItemAdmin(admin.ModelAdmin):
     form = IssueItemForm
     list_display = ['title', 'issue', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
+    list_filter = ['issue__journal']
     inlines = [
         CreatorNameInline,
         PlaceNamesInline
