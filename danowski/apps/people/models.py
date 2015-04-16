@@ -148,7 +148,11 @@ class Person(models.Model):
         #: list of tuples for edges in the network
         # tuple format:
         # source node id, target node id, optional dict of attributes (i.e. edge label)
-        return [(self.network_id, school.network_id) for school in self.schools.all()]
+        # schools
+        edges = [(self.network_id, school.network_id) for school in self.schools.all()]
+        # dwelling locations
+        edges.extend([(self.network_id, loc.network_id) for loc in self.dwelling.all()])
+        return edges
 
 
 class NameManager(models.Manager):
