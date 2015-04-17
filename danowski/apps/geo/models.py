@@ -112,11 +112,10 @@ class Location(models.Model):
         return (self.street_address, self.city, self.zipcode)
 
     def __unicode__(self):
-        # FIXME: this is generating labels like:
-        # Mazatlan None Mexico (MX)
-        # " Pompeii None Italy (IT)"
-        return '%s %s %s %s %s' \
-               % (self.street_address, self.city, self.state, self.zipcode, self.country)
+        # only include fields that are not empty
+        fields = [self.street_address, self.city, self.state, self.zipcode, self.country]
+        return ' '.join([unicode(f) for f in fields if f])
+
 
     class Meta:
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
