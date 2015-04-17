@@ -1,0 +1,608 @@
+[
+{
+    "fields": {
+        "city": "New York City",
+        "state": 37,
+        "zipcode": "",
+        "street_address": "",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 1
+},
+{
+    "fields": {
+        "city": "San Francisco",
+        "state": 6,
+        "zipcode": "",
+        "street_address": "",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 2
+},
+{
+    "fields": {
+        "city": "Black Mountain",
+        "state": 30,
+        "zipcode": "",
+        "street_address": "",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 3
+},
+{
+    "fields": {
+        "city": "San Francisco",
+        "state": 6,
+        "zipcode": "",
+        "street_address": "14 Bannam Alley",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 4
+},
+{
+    "fields": {
+        "city": "New York City",
+        "state": 37,
+        "zipcode": "",
+        "street_address": "319 West 100th St",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 5
+},
+{
+    "fields": {
+        "city": "New York",
+        "state": 37,
+        "zipcode": "3",
+        "street_address": "333 East 5th St Apt A4",
+        "country": 1
+    },
+    "model": "geo.location",
+    "pk": 6
+},
+{
+    "fields": {
+        "categorizer": "Donald Allen",
+        "notes": "This encompasses poets that Allen places in his fifth, unnamed section of *The New American Poetry*.",
+        "name": "5th group",
+        "location": null
+    },
+    "model": "people.school",
+    "pk": 1
+},
+{
+    "fields": {
+        "categorizer": "Donald Allen",
+        "notes": "",
+        "name": "The Beat Generation",
+        "location": null
+    },
+    "model": "people.school",
+    "pk": 2
+},
+{
+    "fields": {
+        "categorizer": "Donald Allen",
+        "notes": "",
+        "name": "Black Mountain",
+        "location": 3
+    },
+    "model": "people.school",
+    "pk": 3
+},
+{
+    "fields": {
+        "categorizer": "Donald Allen",
+        "notes": "Not sure if we should assign a location to this group or not.",
+        "name": "The San Francisco Renaissance",
+        "location": 2
+    },
+    "model": "people.school",
+    "pk": 4
+},
+{
+    "fields": {
+        "categorizer": "Donald Allen",
+        "notes": "",
+        "name": "The New York Poets",
+        "location": 1
+    },
+    "model": "people.school",
+    "pk": 5
+},
+{
+    "fields": {
+        "first_name": "John",
+        "last_name": "Kelly",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 1
+},
+{
+    "fields": {
+        "first_name": "Ted",
+        "last_name": "Berrigan",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 2
+},
+{
+    "fields": {
+        "first_name": "Allen",
+        "last_name": "De Loach",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 3
+},
+{
+    "fields": {
+        "first_name": "Ji",
+        "last_name": "Zhang",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 4
+},
+{
+    "fields": {
+        "first_name": "Carl",
+        "last_name": "Solomon",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 5
+},
+{
+    "fields": {
+        "first_name": "Dante",
+        "last_name": "Alighieri",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 6
+},
+{
+    "fields": {
+        "first_name": "Douglas",
+        "last_name": "MacArthur",
+        "dwelling": [],
+        "racial_self_description": "",
+        "gender": "",
+        "notes": "",
+        "uri": "",
+        "race": "",
+        "schools": []
+    },
+    "model": "people.person",
+    "pk": 7
+},
+{
+    "fields": {
+        "publisher": "",
+        "title": "Y\u016bgen",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 4
+},
+{
+    "fields": {
+        "publisher": "",
+        "title": "The Floating Bear: a newsletter",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 5
+},
+{
+    "fields": {
+        "publisher": "John Kelly",
+        "title": "Beatitude",
+        "notes": "",
+        "issn": "0408-7461",
+        "uri": "",
+        "schools": [
+            2
+        ]
+    },
+    "model": "journals.journal",
+    "pk": 6
+},
+{
+    "fields": {
+        "publisher": "",
+        "title": "Origin",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 7
+},
+{
+    "fields": {
+        "publisher": "Allen de Loach",
+        "title": "Intrepid",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 8
+},
+{
+    "fields": {
+        "publisher": "Big Table, Inc.",
+        "title": "Big Table",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 9
+},
+{
+    "fields": {
+        "publisher": "Unknown",
+        "title": "J: A Magazine of Poetry",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 10
+},
+{
+    "fields": {
+        "publisher": "Ed Sanders",
+        "title": "Fuck You",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 11
+},
+{
+    "fields": {
+        "publisher": "Black Mountain College",
+        "title": "The Black Mountain Review",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": [
+            3
+        ]
+    },
+    "model": "journals.journal",
+    "pk": 12
+},
+{
+    "fields": {
+        "publisher": "John Wieners",
+        "title": "Measure",
+        "notes": "",
+        "issn": "",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 13
+},
+{
+    "fields": {
+        "publisher": "Lorenz Gude",
+        "title": "C: A Journal of Poetry",
+        "notes": "",
+        "issn": "0574-9115",
+        "uri": "",
+        "schools": [
+            5
+        ]
+    },
+    "model": "journals.journal",
+    "pk": 14
+},
+{
+    "fields": {
+        "publisher": "Grove Press",
+        "title": "Evergreen Review",
+        "notes": "",
+        "issn": "0014-3758",
+        "uri": "",
+        "schools": []
+    },
+    "model": "journals.journal",
+    "pk": 15
+},
+{
+    "fields": {
+        "physical_description": "",
+        "print_address": null,
+        "mailing_addresses": [],
+        "season": "",
+        "journal": 6,
+        "publication_address": 4,
+        "editors": [
+            1
+        ],
+        "volume": "",
+        "contributing_editors": [],
+        "notes": "Cover by Mel Fowler",
+        "publication_date": "1959-09-05",
+        "numbered_pages": false,
+        "issue": "1",
+        "price": "0.25"
+    },
+    "model": "journals.issue",
+    "pk": 1
+},
+{
+    "fields": {
+        "physical_description": "",
+        "print_address": null,
+        "mailing_addresses": [],
+        "season": "",
+        "journal": 14,
+        "publication_address": 5,
+        "editors": [
+            2
+        ],
+        "volume": "1",
+        "contributing_editors": [],
+        "notes": "",
+        "publication_date": "1963-06-00",
+        "numbered_pages": false,
+        "issue": "2",
+        "price": null
+    },
+    "model": "journals.issue",
+    "pk": 2
+},
+{
+    "fields": {
+        "physical_description": "",
+        "print_address": null,
+        "mailing_addresses": [],
+        "season": "",
+        "journal": 8,
+        "publication_address": 6,
+        "editors": [
+            3
+        ],
+        "volume": "",
+        "contributing_editors": [],
+        "notes": "",
+        "publication_date": "1964-03-00",
+        "numbered_pages": false,
+        "issue": "1",
+        "price": null
+    },
+    "model": "journals.issue",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "Poem"
+    },
+    "model": "journals.genre",
+    "pk": 1
+},
+{
+    "fields": {
+        "name": "Play"
+    },
+    "model": "journals.genre",
+    "pk": 2
+},
+{
+    "fields": {
+        "name": "Fiction"
+    },
+    "model": "journals.genre",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "Art"
+    },
+    "model": "journals.genre",
+    "pk": 4
+},
+{
+    "fields": {
+        "name": "Review"
+    },
+    "model": "journals.genre",
+    "pk": 5
+},
+{
+    "fields": {
+        "name": "Advertisement"
+    },
+    "model": "journals.genre",
+    "pk": 6
+},
+{
+    "fields": {
+        "name": "Table of Contents"
+    },
+    "model": "journals.genre",
+    "pk": 7
+},
+{
+    "fields": {
+        "name": "Manifesto"
+    },
+    "model": "journals.genre",
+    "pk": 8
+},
+{
+    "fields": {
+        "name": "Epigraph"
+    },
+    "model": "journals.genre",
+    "pk": 9
+},
+{
+    "fields": {
+        "name": "Letter"
+    },
+    "model": "journals.genre",
+    "pk": 10
+},
+{
+    "fields": {
+        "name": "Essay"
+    },
+    "model": "journals.genre",
+    "pk": 11
+},
+{
+    "fields": {
+        "start_page": 11,
+        "addresses": [],
+        "title": "[Maple Bridge Night Mooring]",
+        "notes": "",
+        "literary_advertisement": false,
+        "translator": [],
+        "anonymous": false,
+        "genre": [
+            1
+        ],
+        "abbreviated_text": false,
+        "no_creator": false,
+        "persons_mentioned": [],
+        "issue": 1,
+        "end_page": 11
+    },
+    "model": "journals.issueitem",
+    "pk": 1
+},
+{
+    "fields": {
+        "start_page": 16,
+        "addresses": [],
+        "title": "Poem for Intrepid",
+        "notes": "",
+        "literary_advertisement": false,
+        "translator": [],
+        "anonymous": false,
+        "genre": [
+            1
+        ],
+        "abbreviated_text": false,
+        "no_creator": false,
+        "persons_mentioned": [],
+        "issue": 3,
+        "end_page": 16
+    },
+    "model": "journals.issueitem",
+    "pk": 2
+},
+{
+    "fields": {
+        "start_page": 35,
+        "addresses": [],
+        "title": "from MEMOIRS",
+        "notes": "An excerpt reprinted from LIFE magazine 1964.",
+        "literary_advertisement": false,
+        "translator": [],
+        "anonymous": false,
+        "genre": [
+            11
+        ],
+        "abbreviated_text": false,
+        "no_creator": false,
+        "persons_mentioned": [
+            6
+        ],
+        "issue": 2,
+        "end_page": 35
+    },
+    "model": "journals.issueitem",
+    "pk": 3
+},
+{
+    "fields": {
+        "person": 4,
+        "name_used": "Chang Chih (T'ang)",
+        "issue_item": 1
+    },
+    "model": "journals.creatorname",
+    "pk": 1
+},
+{
+    "fields": {
+        "person": 5,
+        "name_used": "",
+        "issue_item": 2
+    },
+    "model": "journals.creatorname",
+    "pk": 2
+},
+{
+    "fields": {
+        "person": 7,
+        "name_used": "",
+        "issue_item": 3
+    },
+    "model": "journals.creatorname",
+    "pk": 3
+}
+]
