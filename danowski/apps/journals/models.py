@@ -71,10 +71,10 @@ class Journal(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        return {
-            'label': unicode(self),
-            'publisher': self.publisher,
-        }
+        attrs = {'label': unicode(self)}
+        if self.publisher:
+            attrs['publisher'] = self.publisher
+        return attrs
 
     @property
     def has_network_edges(self):
@@ -152,12 +152,14 @@ class Issue(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        return {
-            'label': unicode(self),
-            'volume': self.volume,
-            'issue': self.issue,
-            'publication_date': unicode(self.publication_date),
-        }
+        attrs = {'label': unicode(self)}
+        if self.volume:
+            attrs['volume'] = self.volume
+        if self.issue:
+            attrs['issue'] = self.issue
+        if self.publication_date:
+            attrs['publication date'] = unicode(self.publication_date)
+        return attrs
 
     @property
     def has_network_edges(self):

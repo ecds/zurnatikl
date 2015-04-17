@@ -130,13 +130,13 @@ class Location(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {
-            'label': unicode(self),
-            'street address': self.street_address,
-            'city': self.city,
-            'zipcode': self.zipcode,
-            'placenames': '; '.join(set(unicode(pn) for pn in self.placename_set.all()))
-        }
+        attrs = {'label': unicode(self), 'city': self.city}
+        if self.street_address:
+            attrs['street address'] = self.street_address
+        if self.zipcode:
+            attrs['zipcode'] = self.zipcode
+        if self.placename_set.count():
+            attrs['placenames'] = '; '.join(set(unicode(pn) for pn in self.placename_set.all()))
         if self.state:
             attrs.update({
                 'state': self.state.name,

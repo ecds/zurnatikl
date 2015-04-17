@@ -57,7 +57,9 @@ class School(models.Model):
         #: list of tuples for edges in the network
         # tuple format:
         # source node id, target node id, optional dict of attributes (i.e. edge label)
-        return [(self.network_id, self.location.network_id)]
+        if self.location:
+            return [(self.network_id, self.location.network_id)]
+        return []
 
 
 
@@ -129,17 +131,18 @@ class Person(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        return {
-            'label': unicode(self),
-            'first name': self.first_name,
-            'last name': self.last_name,
-            'race': self.race,
-            'gender': self.gender,
-        }
+        attrs = {'label': unicode(self), 'last name': self.last_name}
+        if self.first_name:
+            attrs['first name'] = self.first_name
+        if self.race:
+            attrs['race'] = self.race
+        if self.gender:
+            attrs['gender'] = self.gender
+        return attrs
 
     @property
     def has_network_edges(self):
-        return self.schools.exists()
+        return self.schools.exists() or self.dwelling.exists()
 
     @property
     def network_edges(self):
