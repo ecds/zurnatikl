@@ -93,3 +93,4 @@ class GenerateNetworkTest(TestCase):
             msg_prefix='output should be in graphml xml format')
         self.assertNotContains(response, 'Yugen',
             msg_prefix='graphml should not convert unicode to ascii')
+        # NOTE: could also test labels getting copied to names

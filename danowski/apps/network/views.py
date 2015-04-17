@@ -105,6 +105,9 @@ def export_network(request, fmt):
         gexf.write_gexf(graph, buf)
         mimetype = 'application/gexf+xml'
     elif fmt == 'graphml':
+        # cytoscape seems to look for name instead of label, so copy it in
+        for n in graph.nodes():
+            graph.node[n]['name'] = graph.node[n]['label']
         graphml.write_graphml(graph, buf)
         mimetype = 'application/graphml+xml'   # maybe? not sure authoritative mimetype
     response = HttpResponse(buf.getvalue(), content_type=mimetype)
