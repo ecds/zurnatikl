@@ -23,7 +23,8 @@ class LocationAdmin(admin.ModelAdmin):
 
     list_display = ['street_address', 'city', 'state', 'zipcode', 'country']
     list_display_links = ['street_address', 'city', 'state', 'zipcode', 'country']
-    search_fields = ['street_address', 'city', 'state', 'zipcode', 'country']
+    search_fields = ['street_address', 'city', 'state__name', 'state__code',
+                     'zipcode', 'country__name', 'country__code']
     inlines = [
         IssueItemInline,
     ]
