@@ -106,7 +106,7 @@ def export_network(request, fmt):
         mimetype = 'application/gexf+xml'
     elif fmt == 'graphml':
         graphml.write_graphml(graph, buf)
-        mimetype = 'application/graphml+xml'   # maybe?
+        mimetype = 'application/graphml+xml'   # maybe? not sure authoritative mimetype
     response = HttpResponse(buf.getvalue(), content_type=mimetype)
     response['Content-Disposition'] = 'attachment; filename=danowski_data.%s' % fmt
     return response

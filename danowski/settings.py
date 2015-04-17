@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'danowski.apps.geo',
     'danowski.apps.people',
     'danowski.apps.journals',
+    'danowski.apps.network',
     # uncomment in your greatest time of need!
     # (migrating partial data from one DB to another, hopefully we never
     # need this again)
