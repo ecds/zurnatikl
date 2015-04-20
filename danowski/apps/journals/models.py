@@ -269,12 +269,14 @@ class IssueItem(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        return {
+        attrs = {
             'label': self.title,
             'anonymous': self.anonymous,
-            'no_creator': self.no_creator,
-            'genre': ', '.join([g.name for g in self.genre.all()]),
+            'no creator': self.no_creator
         }
+        if self.genre.exists():
+            attrs['genre'] = ', '.join([g.name for g in self.genre.all()])
+        return attrs
 
     @property
     def has_network_edges(self):

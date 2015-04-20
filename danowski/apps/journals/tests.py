@@ -83,4 +83,37 @@ class IssueItemTestCase(TestCase):
         self.assertEqual('issueitem:%d' % item.id, item.network_id)
 
         # network attributes
-        # TODO
+        attrs = item.network_attributes
+        self.assertEqual(item.title, attrs['label'])
+        self.assertEqual(item.anonymous, attrs['anonymous'])
+        self.assertEqual(item.no_creator, attrs['no creator'])
+        self.assertEqual(item.genre.first().name, attrs['genre'])
+
+        # network edges
+        self.assertTrue(item.has_network_edges,
+            'issue item should always have network edges (connected to issue, creator, etc)')
+        edges = item.network_edges
+        expected_edge_count = (1 if item.issue else 0) \
+            + item.creators.count() + item.translator.count() \
+            + item.persons_mentioned.count() + item.addresses.count()
+        self.assertEqual(expected_edge_count, len(edges))
+
+        # edge info: source, target, edge label (if any)
+        # create a dict of target network id and any edge properties
+        edge_targets = {edge_info[1]: edge_info[2] if len(edge_info) == 3 else None
+                        for edge_info in edges}
+        self.assert_(item.issue.network_id in edge_targets)
+        for c in item.creators.all():
+            self.assert_(c.network_id in edge_targets)
+            self.assertEqual({'label': 'creator'}, edge_targets[c.network_id],
+                'issue edge to creator should be labeled')
+        for t in item.translator.all():
+            self.assert_(t.network_id in edge_targets)
+            self.assertEqual({'label': 'translator'}, edge_targets[t.network_id],
+                'issue edge to translator should be labeled')
+        for p in item.persons_mentioned.all():
+            self.assert_(p.network_id in edge_targets)
+            self.assertEqual({'label': 'mentioned'}, edge_targets[t.network_id],
+                'issue edge to person mentioned should be labeled')
+        for a in item.addresses.all():
+            self.assert_(a.network_id in edge_targets)
