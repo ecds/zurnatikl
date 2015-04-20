@@ -120,7 +120,6 @@ try:
     # so this must be done after importing localsettings
     import django_nose
 except ImportError:
-    print 'django nose import error'
     pass
 
 # - only if django_nose is installed, so it is only required for development
