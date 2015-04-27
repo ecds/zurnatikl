@@ -30,16 +30,6 @@ class PlaceName(models.Model):
     def __unicode__(self):
         return self.name
 
-    @property
-    def edit_issue_item(self):
-        # place name is edited on the issue item
-        # build an edit link for display on the location placename inline
-        url = reverse('admin:%s_%s_change' % (self.issueItem._meta.app_label,
-                                              self.issueItem._meta.module_name),
-                       args=(self.issueItem.id,))
-        return format_html(u'<a href="{}">{}</a>', url, self.issueItem.title)
-
-
 
 # for parsing natural key
 class JournalManager(models.Manager):
@@ -272,6 +262,14 @@ class IssueItem(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def edit_url(self):
+        # generate a link to admin edit form for current issue item;
+        # for use in various inlines, to link back to item
+        return reverse('admin:%s_%s_change' % (self._meta.app_label,
+                                              self._meta.module_name),
+                       args=(self.id,))
 
     @property
     def network_id(self):

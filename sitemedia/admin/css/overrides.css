@@ -214,9 +214,8 @@ select[multiple]{
 }
 
 /* suppress id column in Location placenames inline */
-.dynamic-placename_set td.original p {
+.dynamic-placename_set td.original p,
+.dynamic-creatorname_set td.original p,
+.dynamic-IssueItem_persons_mentioned td.original p  {
     display: none;
-}
-.dynamic-placename_set td.original {
-    width: 1px;
 }

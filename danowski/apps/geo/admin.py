@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.contrib.admin.views import main
-from django.core.urlresolvers import reverse
 from django.utils.html import format_html
+
 from danowski.apps.geo.models import Location
-from danowski.apps.journals.models import Journal, IssueItem, PlaceName
-from danowski.apps.admin.models import LinkedInline
+from danowski.apps.journals.models import PlaceName
 
 
 # override django default display value for null values in change list
@@ -21,6 +20,13 @@ class IssueItemInline(admin.TabularInline):
     def has_add_permission(self, args):
         # disallow adding placenames from the Location edit form
         return False
+
+    def edit_issue_item(self, obj):
+        # creator name is edited on issue item
+        return format_html(u'<a href="{}">{}</a>',
+            obj.issueItem.edit_url, obj.issueItem.title)
+
+    edit_issue_item.short_description = "Issue Item"
 
 
 class LocationAdmin(admin.ModelAdmin):
