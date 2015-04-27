@@ -2,6 +2,8 @@ from django.db import models
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
+from django.core.urlresolvers import reverse
+from django.utils.html import format_html
 
 # for parsing natural key
 class PlaceNameManager(models.Manager):
@@ -27,6 +29,16 @@ class PlaceName(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def edit_issue_item(self):
+        # place name is edited on the issue item
+        # build an edit link for display on the location placename inline
+        url = reverse('admin:%s_%s_change' % (self.issueItem._meta.app_label,
+                                              self.issueItem._meta.module_name),
+                       args=(self.issueItem.id,))
+        return format_html(u'<a href="{}">{}</a>', url, self.issueItem.title)
+
 
 
 # for parsing natural key

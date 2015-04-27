@@ -212,3 +212,11 @@ select[multiple]{
 .pagination .this-page {
     background-color: #1abc9c;
 }
+
+/* suppress id column in Location placenames inline */
+.dynamic-placename_set td.original p {
+    display: none;
+}
+.dynamic-placename_set td.original {
+    width: 1px;
+}

@@ -68,7 +68,7 @@
             {% endfor %}
           {% endfor %}
         {% endfor %}
-        
+
         <td>
           {% for fieldset in inline_admin_form %}
             {% for line in fieldset %}
@@ -77,6 +77,9 @@
                 <a href="{{field.contents}}">
                 {% else %}
                 <a href="/admin/{{ inline_admin_formset.opts.admin_model_parent }}/{{ inline_admin_formset.opts.admin_model_path }}/{{ inline_admin_form.original.pk }}/">
+
+                  {# NOTE: the link here is being generated with the wrong id  #}
+                  {# Recommended to use normal tabular inline with an edit link property instead #}
                 {% endifequal %}
               {% endfor %}
             {% endfor %}
@@ -85,7 +88,7 @@
             Go to Entry
             </a>
         </td>
-        
+
         {% if inline_admin_formset.formset.can_delete %}
           <td class="delete">{% if inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</td>
         {% endif %}
