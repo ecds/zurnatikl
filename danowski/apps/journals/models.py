@@ -141,7 +141,15 @@ class Issue(models.Model):
         return (self.volume, self.issue, self.season, self.journal.title)
 
     def __unicode__(self):
-        return '%s vol. %s issue %s' % (self.journal.title, self.volume, self.issue)
+        parts = [
+            self.journal.title,
+            'Vol. %s' % self.volume if self.volume else None,
+            'Issue %s' % self.issue if self.issue else 'Issue',
+            self.season
+            # NOTE: could possibly include publication date here also,
+            # in some form
+        ]
+        return ' '.join(p for p in parts if p)
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
@@ -282,7 +290,8 @@ class IssueItem(models.Model):
         attrs = {
             'label': self.title,
             'anonymous': self.anonymous,
-            'no creator': self.no_creator
+            'no creator': self.no_creator,
+            'issue': unicode(self.issue)
         }
         if self.genre.exists():
             attrs['genre'] = ', '.join([g.name for g in self.genre.all()])

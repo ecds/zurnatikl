@@ -43,6 +43,17 @@ class JournalTestCase(TestCase):
 class IssueTestCase(TestCase):
     fixtures = ['test_network.json']
 
+    def test_unicode(self):
+        issue = Issue.objects.all().first()
+        # no volume number
+        self.assertEqual('%s Issue %s' % (issue.journal.title, issue.issue),
+            unicode(issue))
+        issue = Issue.objects.all()[1]
+        # volume and issue
+        self.assertEqual('%s Vol. %s Issue %s' % \
+            (issue.journal.title, issue.volume, issue.issue),
+            unicode(issue))
+
     def test_network_properties(self):
         issue = Issue.objects.all().first()
 
@@ -97,6 +108,7 @@ class IssueItemTestCase(TestCase):
         self.assertEqual(item.anonymous, attrs['anonymous'])
         self.assertEqual(item.no_creator, attrs['no creator'])
         self.assertEqual(item.genre.first().name, attrs['genre'])
+        self.assertEqual(unicode(item.issue), attrs['issue'])
 
         # network edges
         self.assertTrue(item.has_network_edges,
