@@ -42,6 +42,10 @@ class PeopleTestCase(TestCase):
         self.assertEqual(unicode(berrigan), net_attrs['label'])
         self.assertEqual(berrigan.first_name, net_attrs['first name'])
         self.assertEqual(berrigan.last_name, net_attrs['last name'])
+        self.assertTrue(net_attrs['editor'])
+        self.assertFalse(net_attrs['creator'])
+        self.assertFalse(net_attrs['translator'])
+        self.assertFalse(net_attrs['mentioned'])
 
         # network edges - no location
         self.assertFalse(berrigan.has_network_edges,
@@ -61,6 +65,9 @@ class PeopleTestCase(TestCase):
         included = ['label', 'first name', 'last name', 'race', 'gender']
         for f in included:
             self.assert_(f in net_attrs)
+        # all editor/creator/etc flags should be false for this person
+        for flag in ['editor', 'creator', 'translator', 'mentioned']:
+            self.assertFalse(net_attrs[flag])
         # network edges
         self.assertTrue(person.has_network_edges)
         edges = person.network_edges

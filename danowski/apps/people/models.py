@@ -131,7 +131,16 @@ class Person(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self), 'last name': self.last_name}
+        attrs = {
+            'label': unicode(self),
+            'last name': self.last_name,
+            # yes/no flags for kinds of relations, to enable easily
+            # filtering in tools like Gephi
+            'editor': self.issue_set.exists() or self.contributing_editors.exists(),
+            'creator': self.creatorname_set.exists(),
+            'translator': self.translator_name.exists(),
+            'mentioned': self.persons_mentioned.exists()
+        }
         if self.first_name:
             attrs['first name'] = self.first_name
         if self.race:
