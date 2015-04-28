@@ -276,7 +276,7 @@ class IssueItem(models.Model):
         # generate a link to admin edit form for current issue item;
         # for use in various inlines, to link back to item
         return reverse('admin:%s_%s_change' % (self._meta.app_label,
-                                              self._meta.module_name),
+                                              self._meta.model_name),
                        args=(self.id,))
 
     @property

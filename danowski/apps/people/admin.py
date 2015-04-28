@@ -10,6 +10,7 @@ class SchoolAdmin(admin.ModelAdmin):
     form = SchoolForm
     list_display = ['name', 'categorizer', 'location_names']
     search_fields = ['name', 'categorizer', 'notes']
+    filter_horizontal = ('locations', )
 admin.site.register(School, SchoolAdmin)
 
 
@@ -73,6 +74,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']
+    filter_horizontal = ('schools', 'dwelling', )
     inlines = [
         AltNamesInline,
         PenNamesInline,

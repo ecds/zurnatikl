@@ -38,7 +38,7 @@ class School(models.Model):
 
     def location_names(self):
         return '; '.join([unicode(loc) for loc in self.locations.all()])
-    location_names.short_description = "Locations"
+    location_names.short_description = u'Locations'
 
     @property
     def network_id(self):
@@ -120,7 +120,7 @@ class Person(models.Model):
             return '%s, %s' % (self.last_name, self.first_name)
 
     class Meta:
-        verbose_name_plural = 'People'
+        verbose_name_plural = u'People'
         unique_together = ('first_name', 'last_name')
         ordering = ['last_name', 'first_name']
 
