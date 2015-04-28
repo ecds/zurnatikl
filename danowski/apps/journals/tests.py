@@ -98,6 +98,10 @@ class IssueItemTestCase(TestCase):
         pn2 = PlaceName(name='the world\'s end')
         pn2.location = Location.objects.all()[1]
         item.placename_set.add(pn2)
+        # placenames can apparently have an empty location?
+        # placename without location can't contribute a network edge
+        pn3 = PlaceName(name='Xanadu')
+        item.placename_set.add(pn3)
 
         # network id
         self.assertEqual('issueitem:%d' % item.id, item.network_id)
@@ -117,7 +121,7 @@ class IssueItemTestCase(TestCase):
         expected_edge_count = (1 if item.issue else 0) \
             + item.creators.count() + item.translator.count() \
             + item.persons_mentioned.count() + item.addresses.count() \
-            + item.placename_set.count()
+            + item.placename_set.filter(location__isnull=False).count()
         self.assertEqual(expected_edge_count, len(edges))
 
         # edge info: source, target, edge label (if any)
@@ -139,7 +143,7 @@ class IssueItemTestCase(TestCase):
                 'issue edge to person mentioned should be labeled')
         for a in item.addresses.all():
             self.assert_(a.network_id in edge_targets)
-        for pn in item.placename_set.all():
+        for pn in item.placename_set.filter(location__isnull=False).all():
             self.assert_(pn.location.network_id in edge_targets)
             self.assertEqual({'label': 'mentioned'}, edge_targets[pn.location.network_id],
                 'issue edge to placename should be labeled')

@@ -317,8 +317,11 @@ class IssueItem(models.Model):
              for person in self.persons_mentioned.all()])
         edges.extend([(self.network_id, loc.network_id)
              for loc in self.addresses.all()])
+        # location is not required in placenames, but only placenames with a location
+        # can contribute a network edge
         edges.extend([(self.network_id, placename.location.network_id, {'label': 'mentioned'})
-             for placename in self.placename_set.all()])
+             for placename in self.placename_set.filter(location__isnull=False).all()
+             if placename.location is not None])
 
         return edges
 
