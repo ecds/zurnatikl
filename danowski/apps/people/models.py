@@ -21,7 +21,8 @@ class School(models.Model):
     ''' Name of school of poetry'''
     categorizer = models.CharField(max_length=100, blank=True, choices=CATEGORIZER_CHOICES)
     '''Name of categorizer'''
-    location = models.ForeignKey(Location, blank=True, null=True)
+    locations = models.ManyToManyField(Location, blank=True, null=True,
+        related_name='schools')
     ''':class:`Location` of school of poetry'''
     notes = models.TextField(blank=True)
 
@@ -32,8 +33,12 @@ class School(models.Model):
         return self.name
 
     class Meta:
-        unique_together = ('name', 'categorizer', 'location')
+        unique_together = ('name', 'categorizer')
         ordering = ['name']
+
+    def location_names(self):
+        return '; '.join([unicode(loc) for loc in self.locations.all()])
+    location_names.short_description = "Locations"
 
     @property
     def network_id(self):
@@ -50,18 +55,14 @@ class School(models.Model):
 
     @property
     def has_network_edges(self):
-        return self.location is not None
+        return self.locations.exists()
 
     @property
     def network_edges(self):
         #: list of tuples for edges in the network
         # tuple format:
         # source node id, target node id, optional dict of attributes (i.e. edge label)
-        if self.location:
-            return [(self.network_id, self.location.network_id)]
-        return []
-
-
+        return [(self.network_id, loc.network_id) for loc in self.locations.all()]
 
 
 # Person and person parts

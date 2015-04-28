@@ -70,7 +70,7 @@
         "categorizer": "Donald Allen",
         "notes": "This encompasses poets that Allen places in his fifth, unnamed section of *The New American Poetry*.",
         "name": "5th group",
-        "location": null
+        "locations": []
     },
     "model": "people.school",
     "pk": 1
@@ -80,7 +80,7 @@
         "categorizer": "Donald Allen",
         "notes": "",
         "name": "The Beat Generation",
-        "location": null
+        "locations": []
     },
     "model": "people.school",
     "pk": 2
@@ -90,7 +90,7 @@
         "categorizer": "Donald Allen",
         "notes": "",
         "name": "Black Mountain",
-        "location": 3
+        "locations": [3]
     },
     "model": "people.school",
     "pk": 3
@@ -100,7 +100,7 @@
         "categorizer": "Donald Allen",
         "notes": "Not sure if we should assign a location to this group or not.",
         "name": "The San Francisco Renaissance",
-        "location": 2
+        "locations": [2]
     },
     "model": "people.school",
     "pk": 4
@@ -110,7 +110,7 @@
         "categorizer": "Donald Allen",
         "notes": "",
         "name": "The New York Poets",
-        "location": 1
+        "locations": [1]
     },
     "model": "people.school",
     "pk": 5

@@ -8,7 +8,7 @@ from danowski.apps.people.models import School, Person, Name, PenName
 
 class SchoolAdmin(admin.ModelAdmin):
     form = SchoolForm
-    list_display = ['name', 'categorizer', 'location']
+    list_display = ['name', 'categorizer', 'location_names']
     search_fields = ['name', 'categorizer', 'notes']
 admin.site.register(School, SchoolAdmin)
 
