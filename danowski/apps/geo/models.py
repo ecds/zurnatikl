@@ -130,7 +130,12 @@ class Location(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self), 'city': self.city}
+        attrs = {
+            'label': unicode(self),
+            'city': self.city,
+            # boolean flag to allow filtering out mentioned places in output
+            'mentioned': self.placename_set.exists()
+        }
         if self.street_address:
             attrs['street address'] = self.street_address
         if self.zipcode:

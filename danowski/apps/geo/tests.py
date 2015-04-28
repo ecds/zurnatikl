@@ -1,8 +1,10 @@
 from django.test import TestCase
 
 from danowski.apps.geo.models import Location, GeonamesCountry, StateCode
+from danowski.apps.journals.models import PlaceName, IssueItem
 
 class LocationTestCase(TestCase):
+    fixtures = ['test_network.json']
 
     def setUp(self):
         # test location with only a few fields
@@ -46,6 +48,7 @@ class LocationTestCase(TestCase):
         for f in not_included:
             self.assert_(f not in net_attrs,
                 '%s should not be included in network attributes' % f)
+        self.assertFalse(net_attrs['mentioned'])
 
         # bannam location should include everything except a placename
         included = ['label', 'city', 'country', 'country code',
@@ -59,7 +62,13 @@ class LocationTestCase(TestCase):
             self.assert_(f not in net_attrs,
                 '%s should not be included in network attributes' % f)
 
-        # TODO: test placenames inclusion
+        # test placename inclusion
+        pn = PlaceName(name='somewhere out there')
+        pn.issueItem = IssueItem.objects.first()
+        self.maz.placename_set.add(pn)
+        net_attrs = self.maz.network_attributes
+        self.assertEqual(pn.name, net_attrs['placenames'])
+        self.assertTrue(net_attrs['mentioned'])
 
         # has network edges - always false for locations
         self.assertFalse(self.maz.has_network_edges)
