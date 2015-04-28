@@ -3,7 +3,7 @@ from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
 from django.core.urlresolvers import reverse
-from django.utils.html import format_html
+
 
 # for parsing natural key
 class PlaceNameManager(models.Manager):
@@ -291,7 +291,8 @@ class IssueItem(models.Model):
     @property
     def has_network_edges(self):
         return any([self.issue, self.creators.exists(), self.translator.exists(),
-                    self.persons_mentioned.exists(), self.addresses.exists()])
+                    self.persons_mentioned.exists(), self.addresses.exists(),
+                    self.placename_set.exists()])
 
     @property
     def network_edges(self):
@@ -307,6 +308,8 @@ class IssueItem(models.Model):
              for person in self.persons_mentioned.all()])
         edges.extend([(self.network_id, loc.network_id)
              for loc in self.addresses.all()])
+        edges.extend([(self.network_id, placename.location.network_id, {'label': 'mentioned'})
+             for placename in self.placename_set.all()])
 
         return edges
 

@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from danowski.apps.journals.models import Journal, Issue, IssueItem
+from danowski.apps.geo.models import Location
+from danowski.apps.journals.models import Journal, Issue, IssueItem, \
+    PlaceName
 from danowski.apps.people.models import School
 
 class JournalTestCase(TestCase):
@@ -78,6 +80,13 @@ class IssueItemTestCase(TestCase):
 
     def test_network_properties(self):
         item = IssueItem.objects.all().first()
+        # add places mentioned for testing purposes
+        pn = PlaceName(name='somewhere over the rainbow')
+        pn.location = Location.objects.first()
+        item.placename_set.add(pn)
+        pn2 = PlaceName(name='the world\'s end')
+        pn2.location = Location.objects.all()[1]
+        item.placename_set.add(pn2)
 
         # network id
         self.assertEqual('issueitem:%d' % item.id, item.network_id)
@@ -95,7 +104,8 @@ class IssueItemTestCase(TestCase):
         edges = item.network_edges
         expected_edge_count = (1 if item.issue else 0) \
             + item.creators.count() + item.translator.count() \
-            + item.persons_mentioned.count() + item.addresses.count()
+            + item.persons_mentioned.count() + item.addresses.count() \
+            + item.placename_set.count()
         self.assertEqual(expected_edge_count, len(edges))
 
         # edge info: source, target, edge label (if any)
@@ -117,3 +127,7 @@ class IssueItemTestCase(TestCase):
                 'issue edge to person mentioned should be labeled')
         for a in item.addresses.all():
             self.assert_(a.network_id in edge_targets)
+        for pn in item.placename_set.all():
+            self.assert_(pn.location.network_id in edge_targets)
+            self.assertEqual({'label': 'mentioned'}, edge_targets[pn.location.network_id],
+                'issue edge to placename should be labeled')
