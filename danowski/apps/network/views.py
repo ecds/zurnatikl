@@ -1,10 +1,13 @@
 import logging
+from lxml import etree
 import networkx as nx
 from networkx.readwrite import gexf, graphml
+import os
 from StringIO import StringIO
 import time
 import unicodedata
 
+from django.conf import settings
 from django.http import HttpResponse
 
 from danowski.apps.geo.models import Location
@@ -103,14 +106,28 @@ def export_network(request, fmt):
     buf = StringIO()
     if fmt == 'gexf':
         gexf.write_gexf(graph, buf)
+        # networkx gexf output does not include edge labels in a format
+        # that Gephi can import them.
+        # Use a simple XSLT to adjust the xml to allow the Gephi import
+        # to get the edge labels.
+
+        # NOTE: should be possible for lxml to read directly from the buffer,
+        # e.g. etree.parse(buf), but that errors
+        doc = etree.XML(buf.getvalue())
+        gexf_labels_xslt = os.path.join(settings.BASE_DIR, 'danowski',
+            'apps', 'network', 'gexf_labels.xslt')
+        # with open(gexf_labels_xslt) as f:
+        gexf_labels_transform = etree.XSLT(etree.parse(gexf_labels_xslt))
+        content = gexf_labels_transform(doc)
         mimetype = 'application/gexf+xml'
     elif fmt == 'graphml':
         # cytoscape seems to look for name instead of label, so copy it in
         for n in graph.nodes():
             graph.node[n]['name'] = graph.node[n]['label']
         graphml.write_graphml(graph, buf)
+        content = buf.getvalue()
         mimetype = 'application/graphml+xml'   # maybe? not sure authoritative mimetype
-    response = HttpResponse(buf.getvalue(), content_type=mimetype)
+    response = HttpResponse(content, content_type=mimetype)
     response['Content-Disposition'] = 'attachment; filename=danowski_data.%s' % fmt
     return response
 

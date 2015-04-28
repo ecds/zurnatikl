@@ -8,3 +8,4 @@ git+git://github.com/dracos/django-date-extensions.git
 six
 
 networkx
+lxml

@@ -80,6 +80,8 @@ class GenerateNetworkTest(TestCase):
             msg_prefix='output should be in gexf xml format')
         self.assertContains(response, 'Yugen',
             msg_prefix='gexf output should convert unicode to ascii')
+        self.assertContains(response, ' label="mentioned">',
+            msg_prefix='gexf output should include edge labels')
 
 
     def test_export_network_graphml(self):
