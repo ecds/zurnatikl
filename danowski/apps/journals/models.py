@@ -120,11 +120,11 @@ class Issue(models.Model):
     editors = models.ManyToManyField(Person)
     #: contributing editors, many-to-many to :class:`~danowski.apps.people.models.Person`
     contributing_editors = models.ManyToManyField(Person, related_name='contributing_editors', blank=True, null=True)
-    #: publication address :class:`~danowski.apps.geo.models.Location'
+    #: publication address :class:`~danowski.apps.geo.models.Location`
     publication_address = models.ForeignKey(Location, help_text="address of publication", related_name='publication_address', blank=True, null=True)
-    #: print address :class:`~danowski.apps.geo.models.Location'
+    #: print address :class:`~danowski.apps.geo.models.Location`
     print_address = models.ForeignKey(Location, blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
-    #: mailing addresses, many-to-many relation to :class:`~danowski.apps.geo.models.Location'
+    #: mailing addresses, many-to-many relation to :class:`~danowski.apps.geo.models.Location`
     mailing_addresses  = models.ManyToManyField(Location, blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
     #: physical description
     physical_description = models.CharField(max_length=255, blank=True)
