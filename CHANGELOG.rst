@@ -1,8 +1,25 @@
 CHANGELOG
 =========
 
-Release 1.0.2
--------------
+Release 1.2 - Initial data export
+---------------------------------
+
+* As a user, I want to export the data in a format that can be used in
+  network analysis tools like Gephi or Cytoscape so that I can conduct
+  independent analysis.
+* As an admin, I want to be able to filter the issues and issue items by
+  journal so I can more quickly see the items I'm interested in.
+* As a user I want to be able to add multiple locations to a school so
+  I can properly represent the information in our data.
+* As a user, I want to use a horizontal filter for data fields where
+  multiple entities can be selected so it's easier to see which entities
+  have been selected.
+* Upgraded to Django 1.7
+* bugfix: admin searching on locations
+* bugfix: links from location and person to items where they are mentioned
+
+Release 1.1
+-----------
 
 * As a user of the database, I want to see more entries in the "Persons
   Mentioned" table so it's easier to see and select names of people

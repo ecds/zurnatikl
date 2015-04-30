@@ -101,7 +101,7 @@ class Person(models.Model):
     racial_self_description = models.CharField(max_length=100, blank=True)
     #: gender
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
-    #: schools associated with; many to many relation to :model:`School`
+    #: schools associated with; many to many relation to :class:`School`
     schools = models.ManyToManyField('School', blank=True)
     #: uri
     uri = models.URLField(blank=True)
