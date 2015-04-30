@@ -2,8 +2,7 @@
 
 **digital_danowski** is a Django_ web application created to investigate
 and analyze the networks among authors connected to some of the
-"little magazines" and mimeozines included in the
- `The Raymond Danowski Poetry Library`_.
+"little magazines" and mimeozines included in the `The Raymond Danowski Poetry Library`_.
 Read the `project description`_ on the `Danowski Poetry Library site`_.
 
 
