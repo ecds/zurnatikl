@@ -14,28 +14,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Application definition
 
-INSTALLED_APPS = (
-    'django_admin_bootstrapped.bootstrap3',
+INSTALLED_APPS = [
     'django_admin_bootstrapped',
-    #default apps#####################
+    #### default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    ##################################
+    #### local dependencies
+    # -
+    #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
     'danowski.apps.people',
     'danowski.apps.journals',
-    'south',
+    'danowski.apps.network',
     # uncomment in your greatest time of need!
-    #NOTE: as of 8/12/2014 the pypi version does not support Natural Keys
-    # This version does: https://github.com/athom09/django-fixture-magic
-    # Hopefully one day the guy will pull my PullRequest
+    # (migrating partial data from one DB to another, hopefully we never
+    # need this again)
     #'fixture_magic',
-)
+]
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # Default processors##############################
@@ -84,21 +84,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-# STATICFILES_DIRS = ( os.path.join('static'), )
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Additional locations of static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'sitemedia'),
+]
 
-
-TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
-TEST_OUTPUT_DIR = 'test-results'
-
-
-# disable south tests and migrations when running tests
-# - without these settings, test fail on loading initial fixtured data
-SKIP_SOUTH_TESTS = True
-SOUTH_TESTS_MIGRATE = False
 
 # used with admin_reorder template tag
 ADMIN_REORDER = (
@@ -108,13 +101,31 @@ ADMIN_REORDER = (
     ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
 )
 
-import sys
 
 # import localsettings
 # This will override any previously set value
 try:
     from localsettings import *
 except ImportError:
-    print >>sys.stderr, '''Settings not defined. Please configure a version
+    import sys
+    print >> sys.stderr, '''Settings not defined. Please configure a version
         of localsettings.py for this site. See localsettings.py.dist for
         setup details.'''
+
+# load & configure django_nose if available
+
+django_nose = None
+try:
+    # NOTE: errors if DATABASES is not configured (in some cases),
+    # so this must be done after importing localsettings
+    import django_nose
+except ImportError:
+    pass
+
+# - only if django_nose is installed, so it is only required for development
+if django_nose is not None:
+    INSTALLED_APPS.append('django_nose')
+    TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+    # currently no plugins or extra command line options needed
+
+

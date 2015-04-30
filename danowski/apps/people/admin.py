@@ -1,14 +1,16 @@
-from danowski.apps.admin.models import LinkedInline, get_admin_url
-from danowski.apps.journals.models import Journal, Issue, IssueItem
+from django.contrib import admin
+from django.utils.html import format_html
+
+from danowski.apps.journals.models import IssueItem
 from danowski.apps.people.forms import PersonForm, SchoolForm
 from danowski.apps.people.models import School, Person, Name, PenName
-from django.conf import settings
-from django.contrib import admin
+
 
 class SchoolAdmin(admin.ModelAdmin):
     form = SchoolForm
-    list_display = ['name', 'categorizer', 'location']
+    list_display = ['name', 'categorizer', 'location_names']
     search_fields = ['name', 'categorizer', 'notes']
+    filter_horizontal = ('locations', )
 admin.site.register(School, SchoolAdmin)
 
 
@@ -22,37 +24,57 @@ class PenNamesInline(admin.TabularInline):
     verbose_name_plural = 'Pen Names'
     extra = 1
 
-class IssueItemInline(LinkedInline):
+class IssueItemInline(admin.TabularInline):
     model = IssueItem.persons_mentioned.through
     extra = 0
     verbose_name = 'Mentioned In Issue Items'
     verbose_name_plural = verbose_name
-    admin_model_parent = "journals"
-    admin_model_path = "issueitem"
-    readonly_fields = ['link']
-    
-    def link(self, obj):
-        return get_admin_url(obj)
+    exclude = ('issueitem', )
+    readonly_fields = ('edit_issue_item', )
 
-    # the following is necessary if 'link' method is also used in list_display
-    link.allow_tags = True
-    
-class IssueItemCreatorsInline(LinkedInline):
+    can_delete = False
+
+    def edit_issue_item(self, obj):
+        # creator name is edited on issue item
+        return format_html(u'<a href="{}">{}</a>',
+            obj.issueitem.edit_url, obj.issueitem.title)
+
+    edit_issue_item.short_description = "Issue Item"
+
+    def has_add_permission(self, args):
+        # disallow adding mentions from the Person edit form
+        return False
+
+
+class IssueItemCreatorsInline(admin.TabularInline):
     model = IssueItem.creators.through
     extra = 0
     verbose_name = 'Assigned Creator for Issue Items'
     verbose_name_plural = verbose_name
-    admin_model_parent = "journals"
-    admin_model_path = "issueitem"
+    exclude = ('issue_item', )
+    readonly_fields = ('edit_issue_item', 'name_used')
+    can_delete = False
+
+    def edit_issue_item(self, obj):
+        # creator name is edited on issue item
+        return format_html(u'<a href="{}">{}</a>',
+            obj.issue_item.edit_url, obj.issue_item.title)
+
+    edit_issue_item.short_description = "Issue Item"
+
+    def has_add_permission(self, args):
+        # disallow adding creator names from the Person edit form
+        return False
 
 
 class PersonAdmin(admin.ModelAdmin):
     class Media:
-      js = (settings.STATIC_URL + 'js/admin/collapseTabularInlines.js',)
-      css = { "all" : (settings.STATIC_URL +"css/admin/admin_styles.css",) }
+        js = ('js/admin/collapseTabularInlines.js',)
+        css = { 'all' : ('css/admin/admin_styles.css',) }
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']
+    filter_horizontal = ('schools', 'dwelling', )
     inlines = [
         AltNamesInline,
         PenNamesInline,

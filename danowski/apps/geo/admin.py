@@ -1,31 +1,46 @@
 from django.contrib import admin
-from django.conf import settings
-from django.utils.safestring import mark_safe 
-from danowski.apps.geo.models import GeonamesCountry, GeonamesContinent, StateCode, Location
-from danowski.apps.people.models import School, Person
-from danowski.apps.journals.models import Journal, IssueItem, PlaceName
-from danowski.apps.admin.models import LinkedInline, get_admin_url
+from django.contrib.admin.views import main
+from django.utils.html import format_html
 
-# admin.site.register(GeonamesContinent)
-# admin.site.register(GeonamesCountry)
-# admin.site.register(StateCode)
+from danowski.apps.geo.models import Location
+from danowski.apps.journals.models import PlaceName
 
 
-class IssueItemInline(LinkedInline):
+# override django default display value for null values in change list
+main.EMPTY_CHANGELIST_VALUE = '-'
+
+
+class IssueItemInline(admin.TabularInline):
     model = PlaceName
     extra = 0
-    admin_model_parent = "journals"
-    admin_model_path = "issueitem"
+    exclude = ('issueItem', )  # hide since title is repeated in edit_issue_item
+    readonly_fields = ('name', 'edit_issue_item',)
+    can_delete = False
+
+    def has_add_permission(self, args):
+        # disallow adding placenames from the Location edit form
+        return False
+
+    def edit_issue_item(self, obj):
+        # creator name is edited on issue item
+        return format_html(u'<a href="{}">{}</a>',
+            obj.issueItem.edit_url, obj.issueItem.title)
+
+    edit_issue_item.short_description = "Issue Item"
+
 
 class LocationAdmin(admin.ModelAdmin):
     class Media:
-      js = (settings.STATIC_URL + 'js/admin/collapseTabularInlines.js',)
-      css = { "all" : (settings.STATIC_URL +"css/admin/admin_styles.css",) }
-     
+        js = ('js/admin/collapseTabularInlines.js',)
+        css = { 'all' : ('css/admin/admin_styles.css',) }
+
     list_display = ['street_address', 'city', 'state', 'zipcode', 'country']
-    search_fields = ['street_address', 'city', 'state', 'zipcode', 'country']
+    list_display_links = ['street_address', 'city', 'state', 'zipcode', 'country']
+    search_fields = ['street_address', 'city', 'state__name', 'state__code',
+                     'zipcode', 'country__name', 'country__code',
+                     'placename__name', 'placename__issueItem__title']
     inlines = [
         IssueItemInline,
-        ]
+    ]
 
 admin.site.register(Location, LocationAdmin)
