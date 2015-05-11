@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 
 from danowski.apps.geo.models import Location
 from danowski.apps.journals.models import Journal, Issue, IssueItem, \
@@ -147,3 +148,15 @@ class IssueItemTestCase(TestCase):
             self.assert_(pn.location.network_id in edge_targets)
             self.assertEqual({'label': 'mentioned'}, edge_targets[pn.location.network_id],
                 'issue edge to placename should be labeled')
+
+
+class JournalViewsCase(TestCase):
+    fixtures = ['test_network.json']
+
+    def test_list_journals(self):
+        response = self.client.get(reverse('journals:list'))
+        journals = Journal.objects.all()
+        for j in journals:
+            self.assertContains(response, j.title)
+            if j.publisher:
+                self.assertContains(response, j.publisher)
