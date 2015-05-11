@@ -52,8 +52,12 @@ class Journal(models.Model):
     #: associated schools;
     #: many-to-many to :class:`danowski.apps.people.models.School`
     schools = models.ManyToManyField(School, blank=True)
+    #: any additional notes
     notes = models.TextField(blank=True)
-
+    #: slug for use in urls
+    slug = models.SlugField(unique=True,
+        help_text='Short name for use in URLs. ' +
+        'Change carefully, since editing this field this changes the site URL.')
 
     # generate natural key
     def natural_key(self):
@@ -64,6 +68,9 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+
+    def get_absolute_url(self):
+        return reverse('journals:journal', kwargs={'slug': self.slug})
 
     @property
     def network_id(self):
