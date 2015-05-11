@@ -22,8 +22,10 @@ admin.site.register(Journal, JournalAdmin)
 class IssueAdmin(admin.ModelAdmin):
     list_display = ['journal', 'volume', 'issue', 'publication_date',
         'season', 'physical_description', 'numbered_pages']
-    search_fields = list_display = ['journal', 'volume', 'issue',
+    list_display = ['journal', 'volume', 'issue',
         'physical_description', 'notes']
+    search_fields = ['journal__title', 'journal__publisher',
+        'volume', 'issue', 'physical_description', 'notes']
     list_filter = ['journal']
     filter_horizontal = ('editors', 'contributing_editors',
         'mailing_addresses')
