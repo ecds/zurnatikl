@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #### local dependencies
     'ajax_select',
+    'eultheme',
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -48,6 +49,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     ##################################################
     "django.core.context_processors.request",
+    ### local context processors
+    "danowski.version_context",
 )
 
 
