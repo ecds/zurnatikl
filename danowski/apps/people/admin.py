@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from ajax_select.admin import AjaxSelectAdmin
+
 from danowski.apps.journals.models import IssueItem
 from danowski.apps.people.forms import PersonForm, SchoolForm
 from danowski.apps.people.models import School, Person, Name, PenName
 
 
-class SchoolAdmin(admin.ModelAdmin):
+class SchoolAdmin(AjaxSelectAdmin):
     form = SchoolForm
     list_display = ['name', 'categorizer', 'location_names']
     search_fields = ['name', 'categorizer', 'notes']
@@ -67,14 +69,14 @@ class IssueItemCreatorsInline(admin.TabularInline):
         return False
 
 
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(AjaxSelectAdmin):
     class Media:
         js = ('js/admin/collapseTabularInlines.js',)
         css = { 'all' : ('css/admin/admin_styles.css',) }
     list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']
-    filter_horizontal = ('schools', 'dwelling', )
+    filter_horizontal = ('schools', )
     inlines = [
         AltNamesInline,
         PenNamesInline,
