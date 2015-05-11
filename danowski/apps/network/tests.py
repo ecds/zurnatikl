@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from danowski.apps.network.views import generate_network_graph
 from danowski.apps.geo.models import Location
-from danowski.apps.journals.models import Journal, Issue, IssueItem
+from danowski.apps.journals.models import Journal, Issue, Item
 from danowski.apps.people.models import Person, School
 
 class GenerateNetworkTest(TestCase):
@@ -17,7 +17,7 @@ class GenerateNetworkTest(TestCase):
         schools = School.objects.all()
         journals = Journal.objects.all()
         issues = Issue.objects.all()
-        items = IssueItem.objects.all()
+        items = Item.objects.all()
         expected_node_count = locations.count() + people.count() + schools.count() \
             + journals.count() + issues.count() + items.count()
         self.assertEqual(expected_node_count, graph.number_of_nodes(),
@@ -40,7 +40,7 @@ class GenerateNetworkTest(TestCase):
 
         item = items[0]
         itemnode = graph.node[item.network_id]
-        self.assertEqual('Issue Item', itemnode['type'])
+        self.assertEqual('Item', itemnode['type'])
         self.assertEqual(unicode(item), itemnode['label'])
         for k, v in item.network_attributes.iteritems():
             self.assertEqual(v, itemnode[k])

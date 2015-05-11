@@ -1,9 +1,9 @@
 from django.contrib import admin
 from ajax_select.admin import AjaxSelectAdmin
 
-from danowski.apps.journals.models import Journal, Issue, IssueItem, \
+from danowski.apps.journals.models import Journal, Issue, Item, \
   CreatorName, Genre, PlaceName
-from danowski.apps.journals.forms import JournalForm, IssueForm, IssueItemForm
+from danowski.apps.journals.forms import JournalForm, IssueForm, ItemForm
 
 
 class PlaceNamesInline(admin.TabularInline):
@@ -41,18 +41,18 @@ class CreatorNameInline(admin.TabularInline):
 admin.site.register(Genre)
 
 
-class IssueItemAdmin(AjaxSelectAdmin):
+class ItemAdmin(AjaxSelectAdmin):
     class Media:
         js = ('js/admin/collapseTabularInlines.js',)
         css = { 'all' : ('css/admin/admin_styles.css',) }
-    form = IssueItemForm
+    form = ItemForm
     list_display = ['title', 'issue', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
     list_filter = ['issue__journal']
-    filter_horizontal = ('creators', 'translator', 'genre',
+    filter_horizontal = ('creators', 'translators', 'genre',
         'persons_mentioned', 'addresses',)
     inlines = [
         CreatorNameInline,
         PlaceNamesInline
     ]
-admin.site.register(IssueItem, IssueItemAdmin)
+admin.site.register(Item, ItemAdmin)
