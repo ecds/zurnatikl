@@ -1,4 +1,6 @@
 from django.contrib import admin
+from ajax_select.admin import AjaxSelectAdmin
+
 from danowski.apps.journals.models import Journal, Issue, IssueItem, \
   CreatorName, Genre, PlaceName
 from danowski.apps.journals.forms import JournalForm, IssueForm, IssueItemForm
@@ -19,7 +21,7 @@ class JournalAdmin(admin.ModelAdmin):
 admin.site.register(Journal, JournalAdmin)
 
 
-class IssueAdmin(admin.ModelAdmin):
+class IssueAdmin(AjaxSelectAdmin):
     list_display = ['journal', 'volume', 'issue', 'publication_date',
         'season', 'physical_description', 'numbered_pages']
     list_display = ['journal', 'volume', 'issue',
@@ -39,7 +41,7 @@ class CreatorNameInline(admin.TabularInline):
 admin.site.register(Genre)
 
 
-class IssueItemAdmin(admin.ModelAdmin):
+class IssueItemAdmin(AjaxSelectAdmin):
     class Media:
         js = ('js/admin/collapseTabularInlines.js',)
         css = { 'all' : ('css/admin/admin_styles.css',) }

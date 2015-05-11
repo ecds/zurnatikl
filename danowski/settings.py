@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #### local dependencies
-    # -
+    'ajax_select',
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -100,6 +100,13 @@ ADMIN_REORDER = (
     ("people", ('Person', 'School')),
     ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
 )
+
+# lookup channels for ajax autocompletes on the site
+AJAX_LOOKUP_CHANNELS = {
+    #  simple: search Person.objects.filter(name__icontains=q)
+    # custom lookup channel to allow searching on multiple fields
+    'location' : ('danowski.apps.geo.lookups', 'LocationLookup')
+}
 
 
 # import localsettings
