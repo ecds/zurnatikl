@@ -12,7 +12,7 @@ class PersonForm(forms.ModelForm):
         # NOTE: schools configured to use horizontal filter in admin
 
     # ajax autocomplete for locations
-    dwelling  = make_ajax_field(Person, 'dwelling', 'location',
+    dwellings  = make_ajax_field(Person, 'dwellings', 'location',
         help_text=LocationLookup.help_text)
 
 class SchoolForm(forms.ModelForm):

@@ -10,23 +10,23 @@ from danowski.apps.journals.models import PlaceName
 main.EMPTY_CHANGELIST_VALUE = '-'
 
 
-class IssueItemInline(admin.TabularInline):
+class ItemInline(admin.TabularInline):
     model = PlaceName
     extra = 0
-    exclude = ('issueItem', )  # hide since title is repeated in edit_issue_item
-    readonly_fields = ('name', 'edit_issue_item',)
+    exclude = ('item', )  # hide since title is repeated in edit_issue_item
+    readonly_fields = ('name', 'edit_item',)
     can_delete = False
 
     def has_add_permission(self, args):
         # disallow adding placenames from the Location edit form
         return False
 
-    def edit_issue_item(self, obj):
+    def edit_item(self, obj):
         # creator name is edited on issue item
         return format_html(u'<a href="{}">{}</a>',
-            obj.issueItem.edit_url, obj.issueItem.title)
+            obj.item.edit_url, obj.item.title)
 
-    edit_issue_item.short_description = "Issue Item"
+    edit_item.short_description = "Item"
 
 
 class LocationAdmin(admin.ModelAdmin):
@@ -38,9 +38,9 @@ class LocationAdmin(admin.ModelAdmin):
     list_display_links = ['street_address', 'city', 'state', 'zipcode', 'country']
     search_fields = ['street_address', 'city', 'state__name', 'state__code',
                      'zipcode', 'country__name', 'country__code',
-                     'placename__name', 'placename__issueItem__title']
+                     'placename__name', 'placename__item__title']
     inlines = [
-        IssueItemInline,
+        ItemInline,
     ]
     change_form_template = 'geo/admin/location_change_form.html'
 

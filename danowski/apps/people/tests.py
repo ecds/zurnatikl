@@ -60,7 +60,7 @@ class PeopleTestCase(TestCase):
         person.save()
         # add connections to a school and a location
         person.schools.add(fifthschool)
-        person.dwelling.add(sf)
+        person.dwellings.add(sf)
         net_attrs = person.network_attributes
         included = ['label', 'first name', 'last name', 'race', 'gender']
         for f in included:

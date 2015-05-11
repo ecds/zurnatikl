@@ -17,12 +17,12 @@ locations.
 </ul>
 {% endif %}
 
-{% if original.dwelling_info.exists %}
+{% if original.people.exists %}
 <h3>People</h3>
 <ul>
     <li><b>Dwelling address for:</b>
         <ul>
-            {% for person in original.dwelling_info.all %}
+            {% for person in original.people.all %}
             <li><a href="{% url 'admin:people_person_change' person.pk %}">{{ person }}</a></li>
             {% endfor %}
         </ul>
@@ -30,31 +30,31 @@ locations.
     </ul>
 {% endif %}
 
-{% if original.publication_address.exists or original.print_address.exists or original.mailing_addresses.exists %}
+{% if original.issues_published_at.exists or original.issues_printed_at.exists or original.issues_mailed_to.exists %}
 <h3>Issues</h3>
 <ul>
-    {% if original.publication_address.exists %}
+    {% if original.issues_published_at.exists %}
     <li><b>Publication address for:</b>
         <ul>
-            {% for issue in original.publication_address.all %}
+            {% for issue in original.issues_published_at.all %}
             <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
             {% endfor %}
         </ul>
     </li>
     {% endif %}
-    {% if original.print_address.exists %}
+    {% if original.issues_printed_at.exists %}
     <li><b>Print address for:</b>
         <ul>
-            {% for issue in original.print_address.all %}
+            {% for issue in original.issues_printed_at.all %}
             <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
             {% endfor %}
         </ul>
     </li>
     {% endif %}
-    {% if original.mailing_addresses.exists %}
+    {% if original.issues_mailed_to.exists %}
     <li><b>Mailing address for:</b></li>
         <ul>
-            {% for issue in original.mailing_addresses.all %}
+            {% for issue in original.issues_mailed_to.all %}
             <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
             {% endfor %}
         </ul>
@@ -63,11 +63,11 @@ locations.
 </ul>
 {% endif %}
 
-{% if original.issueitem_set %}
-<h3>Issue Items</h3>
+{% if original.item_set.exists %}
+<h3>Items</h3>
 <ul>
-{% for item in original.issueitem_set.all %}
-    <li><a href="{% url 'admin:journals_issueitem_change' item.pk %}">{{ item }}</a></li>
+{% for item in original.item_set.all %}
+    <li><a href="{% url 'admin:journals_item_change' item.pk %}">{{ item }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}

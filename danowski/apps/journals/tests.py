@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 from danowski.apps.geo.models import Location
-from danowski.apps.journals.models import Journal, Issue, IssueItem, \
+from danowski.apps.journals.models import Journal, Issue, Item, \
     PlaceName
 from danowski.apps.people.models import School
 
@@ -87,11 +87,11 @@ class IssueTestCase(TestCase):
         self.assert_(issue.editors.first().network_id in edge_targets)
 
 
-class IssueItemTestCase(TestCase):
+class ItemTestCase(TestCase):
     fixtures = ['test_network.json']
 
     def test_network_properties(self):
-        item = IssueItem.objects.all().first()
+        item = Item.objects.all().first()
         # add places mentioned for testing purposes
         pn = PlaceName(name='somewhere over the rainbow')
         pn.location = Location.objects.first()
@@ -105,7 +105,7 @@ class IssueItemTestCase(TestCase):
         item.placename_set.add(pn3)
 
         # network id
-        self.assertEqual('issueitem:%d' % item.id, item.network_id)
+        self.assertEqual('item:%d' % item.id, item.network_id)
 
         # network attributes
         attrs = item.network_attributes
@@ -120,7 +120,7 @@ class IssueItemTestCase(TestCase):
             'issue item should always have network edges (connected to issue, creator, etc)')
         edges = item.network_edges
         expected_edge_count = (1 if item.issue else 0) \
-            + item.creators.count() + item.translator.count() \
+            + item.creators.count() + item.translators.count() \
             + item.persons_mentioned.count() + item.addresses.count() \
             + item.placename_set.filter(location__isnull=False).count()
         self.assertEqual(expected_edge_count, len(edges))
@@ -134,7 +134,7 @@ class IssueItemTestCase(TestCase):
             self.assert_(c.network_id in edge_targets)
             self.assertEqual({'label': 'creator'}, edge_targets[c.network_id],
                 'issue edge to creator should be labeled')
-        for t in item.translator.all():
+        for t in item.translators.all():
             self.assert_(t.network_id in edge_targets)
             self.assertEqual({'label': 'translator'}, edge_targets[t.network_id],
                 'issue edge to translator should be labeled')

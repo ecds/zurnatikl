@@ -11,7 +11,7 @@ from django.conf import settings
 from django.http import HttpResponse
 
 from danowski.apps.geo.models import Location
-from danowski.apps.journals.models import Journal, Issue, IssueItem
+from danowski.apps.journals.models import Journal, Issue, Item
 from danowski.apps.people.models import Person, School
 
 
@@ -67,7 +67,7 @@ def generate_network_graph(use_ascii=False):
     # add all the high-level objects to the network as nodes
     schools = School.objects.all()
     add_nodes_to_graph(schools, graph, 'School', use_ascii)
-    people = Person.objects.all().prefetch_related('schools', 'dwelling')
+    people = Person.objects.all().prefetch_related('schools', 'dwellings')
     add_nodes_to_graph(people, graph, 'Person', use_ascii)
     locations = Location.objects.all().prefetch_related('placename_set')
     add_nodes_to_graph(locations, graph, 'Location', use_ascii)
@@ -77,9 +77,9 @@ def generate_network_graph(use_ascii=False):
         'contributing_editors', 'publication_address', 'print_address',
         'mailing_addresses')
     add_nodes_to_graph(issues, graph, 'Issue', use_ascii)
-    items = IssueItem.objects.all().prefetch_related('issue', 'creators',
-        'translator', 'persons_mentioned', 'addresses', 'genre')
-    add_nodes_to_graph(items, graph, 'Issue Item', use_ascii)
+    items = Item.objects.all().prefetch_related('issue', 'creators',
+        'translators', 'persons_mentioned', 'addresses', 'genre')
+    add_nodes_to_graph(items, graph, 'Item', use_ascii)
 
     # then add edges to connect everything
 
@@ -88,7 +88,7 @@ def generate_network_graph(use_ascii=False):
     # locations do not have any outbound edges
     add_edges_to_graph(journals, graph, 'Journal')
     add_edges_to_graph(issues, graph, 'Issue')
-    add_edges_to_graph(items, graph, 'Issue Item')
+    add_edges_to_graph(items, graph, 'Item')
 
     logger.debug('Generated full graph in %.2f sec' % (time.time() - start))
 

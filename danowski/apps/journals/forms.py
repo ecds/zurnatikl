@@ -2,7 +2,7 @@ from django import forms
 from ajax_select import make_ajax_field
 
 from danowski.apps.geo.lookups import LocationLookup
-from danowski.apps.journals.models import Journal, Issue, IssueItem
+from danowski.apps.journals.models import Journal, Issue, Item
 
 
 class JournalForm(forms.ModelForm):
@@ -26,10 +26,10 @@ class IssueForm(forms.ModelForm):
         help_text=LocationLookup.help_text)
 
 
-class IssueItemForm(forms.ModelForm):
+class ItemForm(forms.ModelForm):
     class Meta:
-        model = IssueItem
+        model = Item
         fields = '__all__'
 
-    addresses = make_ajax_field(IssueItem, 'addresses', 'location',
+    addresses = make_ajax_field(Item, 'addresses', 'location',
         help_text=LocationLookup.help_text)

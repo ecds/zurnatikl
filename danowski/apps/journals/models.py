@@ -7,12 +7,12 @@ from django.core.urlresolvers import reverse
 
 # for parsing natural key
 class PlaceNameManager(models.Manager):
-    def get_by_natural_key(self, name, location, issueItem):
+    def get_by_natural_key(self, name, location, item):
         return self.get(name=name)
 
 class PlaceName(models.Model):
     '''Place name maps a specific :class:`~danowski.apps.geo.models.Location`
-    to a place as mentioned in an :class:`IssueItem`.'''
+    to a place as mentioned in an :class:`Item`.'''
 
     objects = PlaceNameManager()
 
@@ -20,8 +20,8 @@ class PlaceName(models.Model):
     name = models.CharField(max_length=200)
     #: :class:`danowski.apps.geo.models.Location`
     location = models.ForeignKey(Location, blank=True, null=True)
-    #: :class:`IssueItem`
-    issueItem = models.ForeignKey('IssueItem')
+    #: :class:`Item`
+    item = models.ForeignKey('Item')
 
     # generate natural key
     def natural_key(self):
@@ -117,15 +117,22 @@ class Issue(models.Model):
     #: season of publication
     season = models.CharField(max_length=10, blank=True, choices=SEASON_CHOICES)
     #: editors, many-to-many to :class:`~danowski.apps.people.models.Person`
-    editors = models.ManyToManyField(Person)
+    editors = models.ManyToManyField(Person, related_name='issues_edited')
     #: contributing editors, many-to-many to :class:`~danowski.apps.people.models.Person`
-    contributing_editors = models.ManyToManyField(Person, related_name='contributing_editors', blank=True, null=True)
+    contributing_editors = models.ManyToManyField(Person,
+        related_name='issues_contrib_edited', blank=True, null=True)
     #: publication address :class:`~danowski.apps.geo.models.Location`
-    publication_address = models.ForeignKey(Location, help_text="address of publication", related_name='publication_address', blank=True, null=True)
+    publication_address = models.ForeignKey(Location,
+        help_text="address of publication",
+        related_name='issues_published_at', blank=True, null=True)
     #: print address :class:`~danowski.apps.geo.models.Location`
-    print_address = models.ForeignKey(Location, blank=True, help_text="address where issue was printed", related_name='print_address', null=True)
+    print_address = models.ForeignKey(Location, blank=True,
+        help_text="address where issue was printed",
+        related_name='issues_printed_at', null=True)
     #: mailing addresses, many-to-many relation to :class:`~danowski.apps.geo.models.Location`
-    mailing_addresses  = models.ManyToManyField(Location, blank=True, help_text="addresses where issue was mailed", related_name='mailing_addresses', null=True)
+    mailing_addresses  = models.ManyToManyField(Location, blank=True,
+        help_text="addresses where issue was mailed",
+        related_name='issues_mailed_to', null=True)
     #: physical description
     physical_description = models.CharField(max_length=255, blank=True)
     #: boolean indicating if pages are numbered
@@ -221,14 +228,14 @@ class Genre(models.Model):
         ordering = ['name']
 
 
-class IssueItemManager(models.Manager):
+class ItemManager(models.Manager):
     def get_by_natural_key(self, title):
         return self.get(title=title)
 
-class IssueItem(models.Model):
+class Item(models.Model):
     'Item in a :class:`Issue`'
 
-    objects = IssueItemManager()
+    objects = ItemManager()
 
     #: :class:`Issue` the item is included in
     issue = models.ForeignKey('Issue')
@@ -236,15 +243,17 @@ class IssueItem(models.Model):
     title = models.CharField(max_length=255)
     #: creators, many-to-many to :class:`~danowski.apps.people.models.Person`,
     #: related via :class:`~danowski.apps.people.models.CreatorName`,
-    creators = models.ManyToManyField(Person, through='CreatorName', related_name='creators_name', null=True, blank=True)
+    creators = models.ManyToManyField(Person, through='CreatorName',
+        related_name='items_created', null=True, blank=True)
     #: anonymous
     anonymous = models.BooleanField(help_text='check if labeled as by Anonymous',
         default=False)
     #: no creator listed
     no_creator = models.BooleanField(help_text='check if no author is listed [including Anonymous]',
         default=False)
-    #: translator, :class:`~danowski.apps.people.models.Person`,
-    translator = models.ManyToManyField(Person, related_name='translator_name', blank=True, null=True)
+    #: translators, :class:`~danowski.apps.people.models.Person`,
+    translators = models.ManyToManyField(Person,
+        related_name='items_translated', blank=True, null=True)
     #: start page
     start_page = models.IntegerField(max_length=6)
     #: end page
@@ -255,8 +264,9 @@ class IssueItem(models.Model):
     abbreviated_text = models.BooleanField(help_text='check if the text contains abbreviations such as wd, yr, etc',
         default=False)
     #: mentioned people, many-to-many to :class:`~danowski.apps.people.models.Person`
-    persons_mentioned= models.ManyToManyField(Person, related_name='persons_mentioned', blank=True, null=True)
-    #: addressse, many-to-many to :class:`danowski.apps.geo.models.Location`
+    persons_mentioned = models.ManyToManyField(Person,
+        related_name='items_mentioned_in', blank=True, null=True)
+    #: addressses, many-to-many to :class:`danowski.apps.geo.models.Location`
     addresses = models.ManyToManyField(Location, blank=True, null=True)
     #: indicates if it is a literary advertisement
     literary_advertisement = models.BooleanField(default=False)
@@ -282,7 +292,7 @@ class IssueItem(models.Model):
     @property
     def network_id(self):
         #: node identifier when generating a network
-        return 'issueitem:%s' % self.id
+        return 'item:%s' % self.id
 
     @property
     def network_attributes(self):
@@ -299,7 +309,7 @@ class IssueItem(models.Model):
 
     @property
     def has_network_edges(self):
-        return any([self.issue, self.creators.exists(), self.translator.exists(),
+        return any([self.issue, self.creators.exists(), self.translators.exists(),
                     self.persons_mentioned.exists(), self.addresses.exists(),
                     self.placename_set.exists()])
 
@@ -312,7 +322,7 @@ class IssueItem(models.Model):
         edges.extend([(self.network_id, c.network_id, {'label': 'creator'})
             for c in self.creators.all()])
         edges.extend([(self.network_id, trans.network_id, {'label': 'translator'})
-             for trans in self.translator.all()])
+             for trans in self.translators.all()])
         edges.extend([(self.network_id, person.network_id, {'label': 'mentioned'})
              for person in self.persons_mentioned.all()])
         edges.extend([(self.network_id, loc.network_id)
@@ -334,7 +344,7 @@ class CreatorName(models.Model):
 
     objects = CreatorNameManager()
 
-    issue_item = models.ForeignKey("IssueItem")
+    item = models.ForeignKey(Item)
     person = models.ForeignKey(Person)
     name_used = models.CharField(max_length=200, blank=True)
 

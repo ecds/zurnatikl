@@ -97,7 +97,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=100)
     #: race
     race = models.CharField(max_length=50, blank=True, choices=RACE_CHOICES)
-    #: raceself-description
+    #: race self-description
     racial_self_description = models.CharField(max_length=100, blank=True)
     #: gender
     gender = models.CharField(max_length=1, blank=True, choices=GENDER_CHOICES)
@@ -106,9 +106,14 @@ class Person(models.Model):
     #: uri
     uri = models.URLField(blank=True)
     #: dwelling locations
-    dwelling = models.ManyToManyField(Location, blank=True, related_name = 'dwelling_info')
+    dwellings = models.ManyToManyField(Location, blank=True,
+        related_name='people')
     #: notes
     notes = models.TextField(blank=True)
+
+    # available reverse relationship names:
+    # - issues_edited, issues_contrib_edited
+    # - items_created, items_translated, items_mentioned_in
 
     def natural_key(self):
         return (self.first_name, self.last_name)
@@ -137,10 +142,10 @@ class Person(models.Model):
             'last name': self.last_name,
             # yes/no flags for kinds of relations, to enable easily
             # filtering in tools like Gephi
-            'editor': self.issue_set.exists() or self.contributing_editors.exists(),
-            'creator': self.creatorname_set.exists(),
-            'translator': self.translator_name.exists(),
-            'mentioned': self.persons_mentioned.exists()
+            'editor': self.issues_edited.exists() or self.issues_contrib_edited.exists(),
+            'creator': self.items_created.exists(),
+            'translator': self.items_translated.exists(),
+            'mentioned': self.items_mentioned_in.exists()
         }
         if self.first_name:
             attrs['first name'] = self.first_name
@@ -152,7 +157,7 @@ class Person(models.Model):
 
     @property
     def has_network_edges(self):
-        return self.schools.exists() or self.dwelling.exists()
+        return self.schools.exists() or self.dwellings.exists()
 
     @property
     def network_edges(self):
@@ -162,7 +167,7 @@ class Person(models.Model):
         # schools
         edges = [(self.network_id, school.network_id) for school in self.schools.all()]
         # dwelling locations
-        edges.extend([(self.network_id, loc.network_id) for loc in self.dwelling.all()])
+        edges.extend([(self.network_id, loc.network_id) for loc in self.dwellings.all()])
         return edges
 
 
