@@ -42,5 +42,6 @@ class LocationAdmin(admin.ModelAdmin):
     inlines = [
         IssueItemInline,
     ]
+    change_form_template = 'geo/admin/location_change_form.html'
 
 admin.site.register(Location, LocationAdmin)

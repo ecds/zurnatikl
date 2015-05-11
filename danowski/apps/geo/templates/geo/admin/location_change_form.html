@@ -1,0 +1,75 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls %}
+
+{% comment %}
+Extend admin edit form for locations to provide information about and links
+to related items, to make it easier to see connections and remove unconnected
+locations.
+{% endcomment %}
+
+{% block after_related_objects %}
+{% if original.schools.exists %}
+<h3>Schools</h3>
+<ul>
+{% for school in original.schools.all %}
+    <li><a href="{% url 'admin:people_school_change' school.pk %}">{{ school }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if original.dwelling_info.exists %}
+<h3>People</h3>
+<ul>
+    <li><b>Dwelling address for:</b>
+        <ul>
+            {% for person in original.dwelling_info.all %}
+            <li><a href="{% url 'admin:people_person_change' person.pk %}">{{ person }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    </ul>
+{% endif %}
+
+{% if original.publication_address.exists or original.print_address.exists or original.mailing_addresses.exists %}
+<h3>Issues</h3>
+<ul>
+    {% if original.publication_address.exists %}
+    <li><b>Publication address for:</b>
+        <ul>
+            {% for issue in original.publication_address.all %}
+            <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+    {% if original.print_address.exists %}
+    <li><b>Print address for:</b>
+        <ul>
+            {% for issue in original.print_address.all %}
+            <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+    {% if original.mailing_addresses.exists %}
+    <li><b>Mailing address for:</b></li>
+        <ul>
+            {% for issue in original.mailing_addresses.all %}
+            <li><a href="{% url 'admin:journals_issue_change' issue.pk %}">{{ issue }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+
+{% if original.issueitem_set %}
+<h3>Issue Items</h3>
+<ul>
+{% for item in original.issueitem_set.all %}
+    <li><a href="{% url 'admin:journals_issueitem_change' item.pk %}">{{ item }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}
