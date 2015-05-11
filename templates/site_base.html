@@ -1,0 +1,44 @@
+{% extends "eultheme/site_base.html" %}
+{% load static %}
+{% block nav-title %}
+{# <span class="glyphicon glyphicon-tower"></span> #}
+<span class="site-title">Digital Danowski</span>
+  {% endblock %}
+{% block page-title %}Digital Danowski{% block page-subtitle %}{% endblock %}{% endblock %}
+
+{% block navlinks %}
+    <li><a href="{% url 'journals:list' %}">Journals</a></li>
+{% endblock %}
+
+{% block nav_class %}navbar-inverse navbar-fixed-top{% endblock %}
+
+{% block navbar-extra %}
+{% comment %}
+  {% if user.is_authenticated %}
+    <ul class="nav navbar-nav navbar-right">
+      <li class="hidden-xs hidden-sm"><span class="nav-text">Welcome, {% firstof user.first_name user.username %}.</span></li>
+      <li>
+        <a href="{% url 'accounts:logout' %}">Logout
+         <span class="glyphicon glyphicon-log-out"></span></a>
+       </li>
+    </ul>
+  {% else %}
+     <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'accounts:login' %}">Login
+          <span class="glyphicon glyphicon-log-in"></span></a>
+        </li>
+    </ul>
+  {% endif %}
+  {% endcomment %}
+{% endblock %}
+
+{% block css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+{% endblock %}
+
+{% block footer-content %}
+{% endblock %}

@@ -11,3 +11,4 @@ django-ajax-selects
 networkx
 lxml
 
+-e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
