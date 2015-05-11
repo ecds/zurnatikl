@@ -1,0 +1,15 @@
+{% extends 'site_base.html' %}
+
+{% block content %}
+<div class="container">
+<h1>{{ object.title }}</h1>
+
+<ul>
+{% for issue in object.issue_set.all %}
+    <li>{{ issue }}</li>
+{% endfor %}
+</ul>
+
+</div>
+{% endblock %}
+
