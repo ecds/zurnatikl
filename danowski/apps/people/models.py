@@ -177,6 +177,10 @@ class NameManager(models.Manager):
 
 
 class Name(models.Model):
+    # alternate name
+    # For people like LeRoi Jones / Amiri Baraka where the person
+    # actually has different names during their life.
+    # It would also cover maiden / married names.
 
     objects = NameManager()
 
@@ -197,6 +201,8 @@ class PenNameManager(models.Manager):
 
 
 class PenName(models.Model):
+    # Pen names are for someone like Mark Twain, who used a pen name
+    # for publication his whole life but didn't go by it in person.
 
     objects = PenNameManager()
 
