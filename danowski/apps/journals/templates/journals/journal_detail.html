@@ -1,15 +1,32 @@
 {% extends 'site_base.html' %}
+{# display details for a single journal #}
 
 {% block content %}
 <div class="container">
-<h1>{{ object.title }}</h1>
+{% with object as journal %}
+<h1>{{ journal.title }}</h1>
+
+{% if journal.publisher %}
+<p class="byline">Published by {{ journal.publisher }}{% endif %}</p>
+{# NOTE: URI and ISSN available for some journals #}
 
 <ul>
-{% for issue in object.issue_set.all %}
-    <li>{{ issue }}</li>
+{% for issue in journal.issue_set.all.order_by_publication %}
+    <li>
+        <p><a href="#">{{ issue.label}}, {{ issue.publication_date }}</a></p>
+
+        {% with editors=issue.editors.all %}
+           {% if editors %}
+           <p>Edited by {{ editors|join:'; ' }}</p>
+           {# NOTE: displays lastname, first which may not be what we want here #}
+           {% endif %}
+        {% endwith %}
+
+    </li>
 {% endfor %}
 </ul>
 
+{% endwith %}
 </div>
 {% endblock %}
 

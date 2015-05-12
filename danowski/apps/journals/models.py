@@ -95,10 +95,19 @@ class Journal(models.Model):
         return [(self.network_id, school.network_id) for school in self.schools.all()]
 
 
+class IssueQuerySet(models.QuerySet):
+
+    def order_by_publication(self):
+        'Issues ordered by publication date'
+        return self.order_by('publication_date')
+
 class IssueManager(models.Manager):
     def get_by_natural_key(self, volume, issue, season, journal):
         j = Journal.objects.get(title=journal)
         return self.get(volume=volume, issue=issue, season=season, journal=j)
+
+    def get_queryset(self):
+        return IssueQuerySet(self.model, using=self._db)
 
 class Issue(models.Model):
     'Single issue in a :class:`Journal`'
@@ -155,8 +164,12 @@ class Issue(models.Model):
         return (self.volume, self.issue, self.season, self.journal.title)
 
     def __unicode__(self):
+        return '%s %s' % (self.journal.title, self.label)
+
+    @property
+    def label(self):
+        'Issue display label without journal title'
         parts = [
-            self.journal.title,
             'Vol. %s' % self.volume if self.volume else None,
             'Issue %s' % self.issue if self.issue else 'Issue',
             self.season
@@ -164,6 +177,7 @@ class Issue(models.Model):
             # in some form
         ]
         return ' '.join(p for p in parts if p)
+
 
     class Meta:
         ordering = ['journal', 'volume', 'issue']
@@ -348,6 +362,8 @@ class CreatorNameManager(models.Manager):
         return self.get(name_used=name_used)
 
 class CreatorName(models.Model):
+    # join model for item creator,
+    # with a field for capturing name as displayed on the publication
 
     objects = CreatorNameManager()
 
