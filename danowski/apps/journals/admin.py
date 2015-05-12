@@ -1,5 +1,6 @@
 from django.contrib import admin
 from ajax_select.admin import AjaxSelectAdmin
+from ajax_select import make_ajax_form
 
 from danowski.apps.journals.models import Journal, Issue, Item, \
   CreatorName, Genre, PlaceName
@@ -10,6 +11,7 @@ class PlaceNamesInline(admin.TabularInline):
     model = PlaceName
     verbose_name_plural = 'Places Mentioned'
     extra = 1
+    form = make_ajax_form(PlaceName, {'location': 'location'})
 
 
 class JournalAdmin(admin.ModelAdmin):
