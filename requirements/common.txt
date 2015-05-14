@@ -7,8 +7,10 @@ django-admin-bootstrapped<=2.4
 git+git://github.com/dracos/django-date-extensions.git
 six
 django-ajax-selects
+django-multiselectfield
 
 networkx
 lxml
 
 -e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
+

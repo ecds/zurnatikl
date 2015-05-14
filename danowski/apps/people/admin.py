@@ -73,7 +73,7 @@ class PersonAdmin(AjaxSelectAdmin):
     class Media:
         js = ('js/admin/collapseTabularInlines.js',)
         css = { 'all' : ('css/admin/admin_styles.css',) }
-    list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
+    list_display = ['first_name', 'last_name', 'race_label', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']
     filter_horizontal = ('schools', )
