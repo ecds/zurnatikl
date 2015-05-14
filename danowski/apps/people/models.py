@@ -1,4 +1,5 @@
 from django.db import models
+from multiselectfield import MultiSelectField
 from danowski.apps.geo.models import Location
 
 
@@ -96,7 +97,7 @@ class Person(models.Model):
     #: last name
     last_name = models.CharField(max_length=100)
     #: race
-    race = models.CharField(max_length=50, blank=True, choices=RACE_CHOICES)
+    race = MultiSelectField(max_length=200, blank=True, choices=RACE_CHOICES)
     #: race self-description
     racial_self_description = models.CharField(max_length=100, blank=True)
     #: gender
@@ -123,6 +124,12 @@ class Person(models.Model):
             return self.last_name
         else:
             return '%s, %s' % (self.last_name, self.first_name)
+
+    def race_label(self):
+        # format list of race terms for display in admin
+        if self.race:
+            return ', '.join(self.race)
+    race_label.short_description = "Race"
 
     class Meta:
         verbose_name_plural = u'People'
