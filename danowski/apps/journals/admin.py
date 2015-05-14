@@ -11,7 +11,8 @@ class PlaceNamesInline(admin.TabularInline):
     model = PlaceName
     verbose_name_plural = 'Places Mentioned'
     extra = 1
-    form = make_ajax_form(PlaceName, {'location': 'location'})
+    form = make_ajax_form(PlaceName, {'location': 'location'},
+        show_help_text=True)
 
 
 class JournalAdmin(admin.ModelAdmin):
