@@ -109,7 +109,8 @@ ADMIN_REORDER = (
 AJAX_LOOKUP_CHANNELS = {
     #  simple: search Person.objects.filter(name__icontains=q)
     # custom lookup channel to allow searching on multiple fields
-    'location' : ('danowski.apps.geo.lookups', 'LocationLookup')
+    'location' : ('danowski.apps.geo.lookups', 'LocationLookup'),
+    'person' : ('danowski.apps.people.lookups', 'PersonLookup')
 }
 
 

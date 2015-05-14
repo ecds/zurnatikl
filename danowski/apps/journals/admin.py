@@ -40,6 +40,8 @@ admin.site.register(Issue, IssueAdmin)
 class CreatorNameInline(admin.TabularInline):
     model = CreatorName
     extra = 1
+    form = make_ajax_form(CreatorName, {'person': 'person'},
+        show_help_text=True)
 
 admin.site.register(Genre)
 
@@ -52,8 +54,7 @@ class ItemAdmin(AjaxSelectAdmin):
     list_display = ['title', 'issue', 'start_page', 'end_page']
     search_fields = ['title', 'notes']
     list_filter = ['issue__journal']
-    filter_horizontal = ('creators', 'translators', 'genre',
-        'persons_mentioned', 'addresses',)
+    filter_horizontal = ('creators', 'translators', 'genre')
     inlines = [
         CreatorNameInline,
         PlaceNamesInline
