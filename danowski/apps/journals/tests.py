@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from danowski.apps.geo.models import Location
 from danowski.apps.journals.models import Journal, Issue, Item, \
     PlaceName
-from danowski.apps.people.models import School
+from danowski.apps.people.models import School, Person
 
 class JournalTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -176,3 +176,94 @@ class JournalViewsCase(TestCase):
             for ed in issue.editors.all():
                 self.assertContains(response, '%s %s' % (ed.first_name, ed.last_name),
                     msg_prefix='Journal detail page should list editor')
+
+        # check 404
+        response = self.client.get(reverse('journals:journal', kwargs={'slug': 'bogus'}))
+        self.assertEqual(404, response.status_code)
+
+    def test_issue_detail(self):
+        intrepid = Journal.objects.get(title='Intrepid')
+        issue = intrepid.issue_set.all().first()
+
+        response = self.client.get(reverse('journals:issue',
+            kwargs={'journal_slug': intrepid.slug, 'id': issue.id}))
+
+        self.assertContains(response, issue.journal.title,
+            msg_prefix='issue detail should include journal title')
+        self.assertContains(response,
+            reverse('journals:journal', kwargs={'slug': issue.journal.slug}),
+            msg_prefix='issue detail should link to journal')
+        self.assertContains(response, 'Issue %s' % issue.issue,
+            msg_prefix='issue detail should include issue number')
+        self.assertContains(response, '(%s)' % issue.publication_date,
+            msg_prefix='issue detail should include issue publication date')
+        ed = issue.editors.all().first()
+        self.assertContains(response, '<h3>%s %s, editor</h3>' % (ed.first_name, ed.last_name),
+            html=True, msg_prefix='issue detail should list editor')
+        self.assertContains(response, 'Published at %s' % issue.publication_address,
+            msg_prefix='issue detail should include publication address')
+        self.assertNotContains(response, 'Printed at',
+            msg_prefix='issue detail should not include printed address if not set')
+        self.assertNotContains(response, 'Price per issue',
+            msg_prefix='issue detail should not include price if not set')
+
+        # item display
+        for item in issue.item_set.all():
+            self.assertContains(response, item.start_page,
+                msg_prefix='issue item listing should display start page')
+            self.assertContains(response, item.end_page,
+                msg_prefix='issue item listing should display end page')
+            self.assertContains(response, item.title,
+                msg_prefix='issue item listing should display title')
+            auth = item.creators.all().first()
+            self.assertContains(response, '%s %s' % (auth.first_name, auth.last_name),
+                msg_prefix='issue item listing should display creator name')
+
+        # add test issue with full details to check display
+        new_issue = Issue(volume='2', issue='5', season='Summer',
+            publication_date='1968-06-01', journal=intrepid, price=0.50)
+        new_issue.save()
+        people = Person.objects.all()
+        new_issue.editors.add(people[0], people[1], people[2])
+        print new_issue.editors.all()
+        new_issue.contributing_editors.add(people[3], people[4])
+        locations = Location.objects.all()
+        new_issue.publication_address = locations[0]
+        new_issue.print_address = locations[1]
+        new_issue.save()
+
+        response = self.client.get(reverse('journals:issue',
+            kwargs={'journal_slug': intrepid.slug, 'id': new_issue.id}))
+
+        self.assertContains(response, 'Volume %s' % new_issue.volume,
+            msg_prefix='issue detail should include volume # when present')
+        self.assertContains(response, 'Published at %s' % new_issue.publication_address,
+            msg_prefix='issue detail should include publication address')
+        self.assertContains(response, 'Printed at %s' % new_issue.print_address,
+            msg_prefix='issue detail should include print address')
+        self.assertContains(response, 'Price per issue: $%s' % new_issue.price,
+            msg_prefix='issue detail should include price if set')
+
+        # list of names display
+        eds = new_issue.editors.all()
+        self.assertContains(response,
+            '<h3>%s %s, %s %s and %s %s, editors</h3>' % \
+             (eds[0].first_name, eds[0].last_name,
+             eds[1].first_name, eds[1].last_name,
+             eds[2].first_name, eds[2].last_name),
+             html=True,
+             msg_prefix='multiple editor names should be listed')
+        # NOTE: using html test so whitespace differences will be ignored
+
+        c_eds = new_issue.contributing_editors.all()
+        self.assertContains(response,
+            '<h3>%s %s and %s %s, contributing editors</h3>' % \
+             (c_eds[0].first_name, c_eds[0].last_name,
+             c_eds[1].first_name, c_eds[1].last_name),
+             html=True,
+             msg_prefix='multiple contributing editor names should be listed')
+
+        # check 404 - valid issue id with wrong journal slug should 404
+        response = self.client.get(reverse('journals:issue',
+            kwargs={'journal_slug': 'beatitude', 'id': issue.id}))
+        self.assertEqual(404, response.status_code)
