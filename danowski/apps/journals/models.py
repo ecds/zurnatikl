@@ -154,6 +154,9 @@ class Issue(models.Model):
         blank=True, null=True,
         help_text='Sort order for display within a journal')
 
+    class Meta:
+        ordering = ['journal', 'sort_order', 'volume', 'issue']
+
     # generate natural key
     def natural_key(self):
         return (self.volume, self.issue, self.season, self.journal.title)
@@ -173,9 +176,9 @@ class Issue(models.Model):
         ]
         return ' '.join(p for p in parts if p)
 
-
-    class Meta:
-        ordering = ['journal', 'sort_order', 'volume', 'issue']
+    def get_absolute_url(self):
+        return reverse('journals:issue',
+            kwargs={'journal_slug': self.journal.slug, 'id': self.id})
 
     @property
     def network_id(self):
