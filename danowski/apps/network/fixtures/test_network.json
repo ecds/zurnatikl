@@ -227,7 +227,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "yugen"
     },
     "model": "journals.journal",
     "pk": 4
@@ -239,7 +240,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "floating-bear"
     },
     "model": "journals.journal",
     "pk": 5
@@ -253,7 +255,8 @@
         "uri": "",
         "schools": [
             2
-        ]
+        ],
+        "slug": "beatitude"
     },
     "model": "journals.journal",
     "pk": 6
@@ -265,7 +268,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "origin"
     },
     "model": "journals.journal",
     "pk": 7
@@ -277,7 +281,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "intrepid"
     },
     "model": "journals.journal",
     "pk": 8
@@ -289,7 +294,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "big-table"
     },
     "model": "journals.journal",
     "pk": 9
@@ -301,7 +307,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "j-a-magazine-of-poetry"
     },
     "model": "journals.journal",
     "pk": 10
@@ -313,7 +320,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "fuck-you"
     },
     "model": "journals.journal",
     "pk": 11
@@ -327,7 +335,8 @@
         "uri": "",
         "schools": [
             3
-        ]
+        ],
+        "slug": "black-mountain-review"
     },
     "model": "journals.journal",
     "pk": 12
@@ -339,7 +348,8 @@
         "notes": "",
         "issn": "",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "measure"
     },
     "model": "journals.journal",
     "pk": 13
@@ -353,7 +363,8 @@
         "uri": "",
         "schools": [
             5
-        ]
+        ],
+        "slug": "c-a-journal-of-poetry"
     },
     "model": "journals.journal",
     "pk": 14
@@ -365,7 +376,8 @@
         "notes": "",
         "issn": "0014-3758",
         "uri": "",
-        "schools": []
+        "schools": [],
+        "slug": "evergreen-review"
     },
     "model": "journals.journal",
     "pk": 15

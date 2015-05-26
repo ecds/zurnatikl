@@ -160,3 +160,19 @@ class JournalViewsCase(TestCase):
             self.assertContains(response, j.title)
             if j.publisher:
                 self.assertContains(response, j.publisher)
+
+    def test_journal_detail(self):
+        intrepid = Journal.objects.get(title='Intrepid')
+
+        response = self.client.get(reverse('journals:journal', kwargs={'slug': intrepid.slug}))
+
+        self.assertContains(response, intrepid.title,
+            msg_prefix='Journal detail page should include journal title')
+        for issue in intrepid.issue_set.all():
+            self.assertContains(response, issue.label,
+                msg_prefix='Journal detail page should include issue label')
+            self.assertContains(response, issue.publication_date,
+                msg_prefix='Journal detail page should include issue publication date')
+            for ed in issue.editors.all():
+                self.assertContains(response, '%s %s' % (ed.first_name, ed.last_name),
+                    msg_prefix='Journal detail page should list editor')
