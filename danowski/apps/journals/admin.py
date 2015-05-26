@@ -1,6 +1,8 @@
 from django.contrib import admin
 from ajax_select.admin import AjaxSelectAdmin
 from ajax_select import make_ajax_form
+from django_admin_bootstrapped.admin.models import SortableInline
+
 
 from danowski.apps.journals.models import Journal, Issue, Item, \
   CreatorName, Genre, PlaceName
@@ -14,12 +16,29 @@ class PlaceNamesInline(admin.TabularInline):
     form = make_ajax_form(PlaceName, {'location': 'location'},
         show_help_text=True)
 
+class IssueInline(admin.StackedInline, SortableInline):
+    model = Issue
+    extra = 0
+    fields = ['sort_order']
+    # sortable options
+    start_collapsed = True
+    sortable_field_name = 'sort_order'
+
+    # disallow delete from Journal form
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    # disallow adding issues from Journal form
+    def has_add_permission(self, request):
+        return False
+
 
 class JournalAdmin(admin.ModelAdmin):
     list_display = ['title', 'uri', 'publisher', 'issn']
     search_fields = list_display = ['title', 'uri', 'publisher', 'issn',
        'notes']
     filter_horizontal = ('schools', )
+    inlines = [IssueInline, ]
     form = JournalForm
 admin.site.register(Journal, JournalAdmin)
 
@@ -34,6 +53,8 @@ class IssueAdmin(AjaxSelectAdmin):
     list_filter = ['journal']
     filter_horizontal = ('editors', 'contributing_editors',
         'mailing_addresses')
+    # don't allow editing sort order on single issue page
+    exclude = ['sort_order']
     form = IssueForm
 admin.site.register(Issue, IssueAdmin)
 

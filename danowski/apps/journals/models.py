@@ -157,7 +157,10 @@ class Issue(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
     #: text notes
     notes = models.TextField(blank=True)
-
+    #: issue sort order, since volume/issue/date are unreliable
+    sort_order = models.PositiveSmallIntegerField("Sort order",
+        blank=True, null=True,
+        help_text='Sort order for display within a journal')
 
     # generate natural key
     def natural_key(self):
@@ -180,7 +183,7 @@ class Issue(models.Model):
 
 
     class Meta:
-        ordering = ['journal', 'volume', 'issue']
+        ordering = ['journal', 'sort_order', 'volume', 'issue']
 
     @property
     def network_id(self):
