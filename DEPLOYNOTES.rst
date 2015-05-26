@@ -90,6 +90,12 @@ tables and initial data using::
 Upgrade Notes
 =============
 
+1.3
+---
+
+* Run migrations for changes and updates to the database structure::
+
+      python manage.py migrate
 
 1.2
 ---
