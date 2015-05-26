@@ -95,19 +95,11 @@ class Journal(models.Model):
         return [(self.network_id, school.network_id) for school in self.schools.all()]
 
 
-class IssueQuerySet(models.QuerySet):
-
-    def order_by_publication(self):
-        'Issues ordered by publication date'
-        return self.order_by('publication_date')
-
 class IssueManager(models.Manager):
     def get_by_natural_key(self, volume, issue, season, journal):
         j = Journal.objects.get(title=journal)
         return self.get(volume=volume, issue=issue, season=season, journal=j)
 
-    def get_queryset(self):
-        return IssueQuerySet(self.model, using=self._db)
 
 class Issue(models.Model):
     'Single issue in a :class:`Journal`'
