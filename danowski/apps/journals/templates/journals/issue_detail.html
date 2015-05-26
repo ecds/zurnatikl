@@ -1,0 +1,81 @@
+{% extends 'site_base.html' %}
+{# display details for a single issue in a journal #}
+
+{% block content %}
+<div class="container">
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></li>
+  <li class="active">{{ issue.label }}</li>
+</ol>
+
+<h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
+<h2>{% if issue.volume %}Volume {{ issue.volume }}, {% endif %}
+  {% if issue.issue %}Issue {{ issue.issue }}{% endif %}
+  ({% if issue.season %}{{ issue.season }} {% endif %}{{ issue.publication_date }})
+</h2>
+
+{# editors #}
+{% with editors=issue.editors.all %}
+{% if editors %}
+<h3>{% for ed in editors %}
+  {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
+  {% endfor %}
+  editor{{ editors|pluralize }}
+</h3>
+{% endif %}
+{% endwith %}
+
+{# contributing editors #}
+{% with editors=issue.contributing_editors.all %}
+{% if editors %}
+<h3>{% for ed in editors %}
+  {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
+  {% endfor %}
+  contributing editor{{ editors|pluralize }}
+</h3>
+{% endif %}
+{% endwith %}
+
+{# publication address #}
+{% if issue.publication_address %}
+<h4>Published at {{ issue.publication_address }}</h4>
+{% endif %}
+
+{# print address #}
+{% if issue.print_address %}
+<h4>Printed at {{ issue.print_address }}</h4>
+{% endif %}
+
+{# price #}
+{% if issue.price %}
+<h4>Price per issue: ${{ issue.price }}</h4>
+{% endif %}
+
+<table>
+  <tr>
+    <th>Start Page </th>
+    <th>End Page </th>
+    <th>Contents</th>
+  </tr>
+{% for item in issue.item_set.all %}
+  <tr>
+    <td>{{ item.start_page }}</td>
+    <td>{{ item.end_page }}</td>
+    <td>{{ item.title }}{% if item.creators.all or item.translators.all %},{% endif %}
+      {% for p in item.creators.all %}
+        {{ p.first_name }} {{ p.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% elif not forloop.last or item.translators.all %}, {% endif %}
+      {% endfor %}
+      {% for p in item.translators.all %}
+      {% if forloop.first %}trans. {% endif %}
+        {{ p.first_name }} {{ p.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
+      {% endfor %}
+    </td>
+  </tr>
+
+{% endfor %}
+</table>
+
+</div>
+{% endblock %}
+
