@@ -12,6 +12,10 @@ def set_slug_from_title(apps, schema_editor):
         j.slug = slugify(j.title)
         j.save()
 
+# NOTE: in django 1.8 use RunPython.noop
+def noop(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -25,12 +29,12 @@ class Migration(migrations.Migration):
             field=models.SlugField(blank=True),
             preserve_default=False,
         ),
-        migrations.RunPython(set_slug_from_title),
+        migrations.RunPython(set_slug_from_title, noop),
         # then set slug to be unique
         migrations.AlterField(
             model_name='journal',
             name='slug',
-            field=models.SlugField(unique=True),
+            field=models.SlugField(help_text=b'Short name for use in URLs. Change carefully, since editing this field this changes the site URL.', unique=True),
             preserve_default=False,
         ),
     ]
