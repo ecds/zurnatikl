@@ -6,19 +6,19 @@
 {% with object as journal %}
 <h1>{{ journal.title }}</h1>
 
-{% if journal.publisher %}
-<p class="byline">Published by {{ journal.publisher }}{% endif %}</p>
-{# NOTE: URI and ISSN available for some journals #}
+{# Not currently displayed, but publisher, URI and ISSN available for some journals #}
 
 <ul>
-{% for issue in journal.issue_set.all.order_by_publication %}
+{% for issue in journal.issue_set.all %}
     <li>
-        <p><a href="#">{{ issue.label}}, {{ issue.publication_date }}</a></p>
+        <a href="#">{{ issue.label}}</a>
+            ({{ issue.publication_date }}),
 
         {% with editors=issue.editors.all %}
            {% if editors %}
-           <p>Edited by {{ editors|join:'; ' }}</p>
-           {# NOTE: displays lastname, first which may not be what we want here #}
+           ed. {% for ed in editors %}
+               {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% elif not forloop.last %}, {% endif %}
+           {% endfor %}
            {% endif %}
         {% endwith %}
 
