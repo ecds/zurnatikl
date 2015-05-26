@@ -287,8 +287,10 @@ class Item(models.Model):
     #: indicates if it is a literary advertisement
     literary_advertisement = models.BooleanField(default=False)
     #: notes
-
     notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['start_page', 'end_page', 'title']
 
     # generate natural key
     def natural_key(self):
