@@ -22,7 +22,7 @@ class IssueDetail(DetailView):
             queryset = self.get_queryset()
 
         try:
-            return queryset.get(journal__slug=self.kwargs['slug'],
+            return queryset.get(journal__slug=self.kwargs['journal_slug'],
                                 pk=self.kwargs['id'])
         except Issue.DoesNotExist:
             raise Http404
