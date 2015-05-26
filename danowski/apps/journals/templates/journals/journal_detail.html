@@ -3,7 +3,12 @@
 
 {% block content %}
 <div class="container">
-{% with object as journal %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li class="active">{{ journal.title }}</li>
+</ol>
+
+
 <h1>{{ journal.title }}</h1>
 
 {# Not currently displayed, but publisher, URI and ISSN available for some journals #}
@@ -11,7 +16,7 @@
 <ul>
 {% for issue in journal.issue_set.all %}
     <li>
-        <a href="#">{{ issue.label}}</a>
+        <a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label}}</a>
             ({{ issue.publication_date }}),
 
         {% with editors=issue.editors.all %}
@@ -26,7 +31,6 @@
 {% endfor %}
 </ul>
 
-{% endwith %}
 </div>
 {% endblock %}
 
