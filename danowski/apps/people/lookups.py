@@ -76,7 +76,6 @@ class PersonLookup(LookupChannel):
                           if names['alt_names'] else '',
             'pennames': '<i>Pen names:</i> %(pennames)s' % names
                          if names['pennames'] else '',
-            'url': reverse('admin:people_person_change', args=[obj.pk])
         }
         formatted_names['break'] = formatted_names['btw'] = ''
         if formatted_names['alt_names'] or formatted_names['pennames']:
@@ -86,6 +85,5 @@ class PersonLookup(LookupChannel):
 
         return u'''<div>
            <b>%(name)s</b>
-           <a href="%(url)s"><span class="glyphicon glyphicon-edit"></span></a>
            %(break)s<span class="small">%(alt_names)s%(btw)s%(pennames)s</span>
            </div>''' % formatted_names
