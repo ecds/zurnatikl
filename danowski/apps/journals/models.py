@@ -167,14 +167,17 @@ class Issue(models.Model):
     @property
     def label(self):
         'Issue display label without journal title'
+        # format should be Volume #, Issue # (season date)
         parts = [
-            'Vol. %s' % self.volume if self.volume else None,
-            'Issue %s' % self.issue if self.issue else 'Issue',
-            self.season
-            # NOTE: could possibly include publication date here also,
-            # in some form
+            'Volume %s' % self.volume if self.volume else None,
+            'Issue %s' % self.issue if self.issue else 'Issue'
         ]
-        return ' '.join(p for p in parts if p)
+        return ', '.join(p for p in parts if p)
+
+    @property
+    def date(self):
+        'Date for display: including publication date and season, if any'
+        return ' '.join(d for d in [self.season, unicode(self.publication_date)] if d)
 
     def get_absolute_url(self):
         return reverse('journals:issue',

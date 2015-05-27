@@ -55,6 +55,17 @@ class IssueTestCase(TestCase):
             (issue.journal.title, issue.volume, issue.issue),
             unicode(issue))
 
+    def test_label(self):
+        issue = Issue.objects.all().first()
+        # no volume number
+        self.assertEqual('Issue %s' % (issue.issue),
+            issue.label)
+        issue = Issue.objects.all()[1]
+        # volume and issue
+        self.assertEqual('Volume %s, Issue %s' % \
+            (issue.volume, issue.issue),
+            issue.label)
+
     def test_network_properties(self):
         issue = Issue.objects.all().first()
 
@@ -158,8 +169,9 @@ class JournalViewsCase(TestCase):
         journals = Journal.objects.all()
         for j in journals:
             self.assertContains(response, j.title)
-            if j.publisher:
-                self.assertContains(response, j.publisher)
+            # publishers removed from journal list display
+            # if j.publisher:
+            #     self.assertContains(response, j.publisher)
 
     def test_journal_detail(self):
         intrepid = Journal.objects.get(title='Intrepid')
