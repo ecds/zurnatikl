@@ -16,8 +16,8 @@
 <ul>
 {% for issue in journal.issue_set.all %}
     <li>
-        <a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label}}</a>
-            ({{ issue.publication_date }}),
+        <a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label }}</a>
+            ({{ issue.date }}),
 
         {% with editors=issue.editors.all %}
            {% if editors %}

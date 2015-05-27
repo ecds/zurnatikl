@@ -10,10 +10,7 @@
 </ol>
 
 <h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
-<h2>{% if issue.volume %}Volume {{ issue.volume }}, {% endif %}
-  {% if issue.issue %}Issue {{ issue.issue }}{% endif %}
-  ({% if issue.season %}{{ issue.season }} {% endif %}{{ issue.publication_date }})
-</h2>
+<h2>{{ issue.label }} ({{ issue.date }})</h2>
 
 {# editors #}
 {% with editors=issue.editors.all %}
