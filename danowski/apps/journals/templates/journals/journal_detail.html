@@ -2,12 +2,12 @@
 {# display details for a single journal #}
 
 {% block content %}
-<div class="container">
 <ol class="breadcrumb">
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">{{ journal.title }}</li>
 </ol>
 
+<div class="container">
 
 <h1>{{ journal.title }}</h1>
 
