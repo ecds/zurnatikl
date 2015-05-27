@@ -35,6 +35,17 @@ class LocationTestCase(TestCase):
         self.assertEqual(expected_value, unicode(self.bannam),
             'unicode for location with all fields should include them in order')
 
+    def test_display_label(self):
+        self.assertEqual("Mazatlan, Mexico", self.maz.display_label,
+            'location display label should not include country code')
+
+        # location with all values should work too
+        expected_value = '%(st)s, %(city)s, %(state)s, %(country)s' % \
+            {'st': self.bannam.street_address, 'city': self.bannam.city,
+             'state': self.ca.name.title(), 'country': self.us.name}
+        self.assertEqual(expected_value, self.bannam.display_label,
+            'display label for location with all fields should include them in order')
+
     def test_network_properties(self):
         # network id
         for loc in [self.maz, self.bannam]:

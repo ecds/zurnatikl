@@ -2,12 +2,13 @@
 {# display details for a single issue in a journal #}
 
 {% block content %}
-<div class="container">
 <ol class="breadcrumb">
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></li>
   <li class="active">{{ issue.label }}</li>
 </ol>
+
+<div class="container">
 
 <h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
 <h2>{{ issue.label }} ({{ issue.date }})</h2>
@@ -36,12 +37,12 @@
 
 {# publication address #}
 {% if issue.publication_address %}
-<h4>Published at {{ issue.publication_address }}</h4>
+<h4>Published at {{ issue.publication_address.display_label }}</h4>
 {% endif %}
 
 {# print address #}
 {% if issue.print_address %}
-<h4>Printed at {{ issue.print_address }}</h4>
+<h4>Printed at {{ issue.print_address.display_label }}</h4>
 {% endif %}
 
 {# price #}

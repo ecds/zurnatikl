@@ -51,7 +51,7 @@ class IssueTestCase(TestCase):
             unicode(issue))
         issue = Issue.objects.all()[1]
         # volume and issue
-        self.assertEqual('%s Vol. %s Issue %s' % \
+        self.assertEqual('%s Volume %s, Issue %s' % \
             (issue.journal.title, issue.volume, issue.issue),
             unicode(issue))
 
@@ -212,7 +212,7 @@ class JournalViewsCase(TestCase):
         ed = issue.editors.all().first()
         self.assertContains(response, '<h3>%s %s, editor</h3>' % (ed.first_name, ed.last_name),
             html=True, msg_prefix='issue detail should list editor')
-        self.assertContains(response, 'Published at %s' % issue.publication_address,
+        self.assertContains(response, 'Published at %s' % issue.publication_address.display_label,
             msg_prefix='issue detail should include publication address')
         self.assertNotContains(response, 'Printed at',
             msg_prefix='issue detail should not include printed address if not set')
@@ -249,9 +249,9 @@ class JournalViewsCase(TestCase):
 
         self.assertContains(response, 'Volume %s' % new_issue.volume,
             msg_prefix='issue detail should include volume # when present')
-        self.assertContains(response, 'Published at %s' % new_issue.publication_address,
+        self.assertContains(response, 'Published at %s' % new_issue.publication_address.display_label,
             msg_prefix='issue detail should include publication address')
-        self.assertContains(response, 'Printed at %s' % new_issue.print_address,
+        self.assertContains(response, 'Printed at %s' % new_issue.print_address.display_label,
             msg_prefix='issue detail should include print address')
         self.assertContains(response, 'Price per issue: $%s' % new_issue.price,
             msg_prefix='issue detail should include price if set')
