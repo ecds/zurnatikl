@@ -22,7 +22,7 @@ class School(models.Model):
     ''' Name of school of poetry'''
     categorizer = models.CharField(max_length=100, blank=True, choices=CATEGORIZER_CHOICES)
     '''Name of categorizer'''
-    locations = models.ManyToManyField(Location, blank=True, null=True,
+    locations = models.ManyToManyField(Location, blank=True,
         related_name='schools')
     ''':class:`Location` of school of poetry'''
     notes = models.TextField(blank=True)

@@ -97,6 +97,8 @@ Upgrade Notes
 
       python manage.py migrate
 
+
+
 1.2
 ---
 
@@ -105,3 +107,7 @@ Upgrade Notes
   data should fake the new initial migrations::
 
       python manage.py migrate --fake
+
+* Remove :mod:`south` from your python virtualenv:
+
+      pip uninstall south
