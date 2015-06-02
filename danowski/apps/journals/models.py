@@ -128,7 +128,7 @@ class Issue(models.Model):
     editors = models.ManyToManyField(Person, related_name='issues_edited')
     #: contributing editors, many-to-many to :class:`~danowski.apps.people.models.Person`
     contributing_editors = models.ManyToManyField(Person,
-        related_name='issues_contrib_edited', blank=True, null=True)
+        related_name='issues_contrib_edited', blank=True)
     #: publication address :class:`~danowski.apps.geo.models.Location`
     publication_address = models.ForeignKey(Location,
         help_text="address of publication",
@@ -140,7 +140,7 @@ class Issue(models.Model):
     #: mailing addresses, many-to-many relation to :class:`~danowski.apps.geo.models.Location`
     mailing_addresses  = models.ManyToManyField(Location, blank=True,
         help_text="addresses where issue was mailed",
-        related_name='issues_mailed_to', null=True)
+        related_name='issues_mailed_to')
     #: physical description
     physical_description = models.CharField(max_length=255, blank=True)
     #: boolean indicating if pages are numbered
@@ -282,7 +282,7 @@ class Item(models.Model):
     #: creators, many-to-many to :class:`~danowski.apps.people.models.Person`,
     #: related via :class:`~danowski.apps.people.models.CreatorName`,
     creators = models.ManyToManyField(Person, through='CreatorName',
-        related_name='items_created', null=True, blank=True)
+        related_name='items_created', blank=True)
     #: anonymous
     anonymous = models.BooleanField(help_text='check if labeled as by Anonymous',
         default=False)
@@ -291,11 +291,11 @@ class Item(models.Model):
         default=False)
     #: translators, :class:`~danowski.apps.people.models.Person`,
     translators = models.ManyToManyField(Person,
-        related_name='items_translated', blank=True, null=True)
+        related_name='items_translated', blank=True)
     #: start page
-    start_page = models.IntegerField(max_length=6)
+    start_page = models.IntegerField()
     #: end page
-    end_page = models.IntegerField(max_length=6)
+    end_page = models.IntegerField()
     #: :class:`Genre`
     genre = models.ManyToManyField('Genre')
     #: includes abbreviated text
@@ -303,9 +303,9 @@ class Item(models.Model):
         default=False)
     #: mentioned people, many-to-many to :class:`~danowski.apps.people.models.Person`
     persons_mentioned = models.ManyToManyField(Person,
-        related_name='items_mentioned_in', blank=True, null=True)
+        related_name='items_mentioned_in', blank=True)
     #: addressses, many-to-many to :class:`danowski.apps.geo.models.Location`
-    addresses = models.ManyToManyField(Location, blank=True, null=True)
+    addresses = models.ManyToManyField(Location, blank=True)
     #: indicates if it is a literary advertisement
     literary_advertisement = models.BooleanField(default=False)
     #: notes
