@@ -45,3 +45,13 @@ class ItemForm(forms.ModelForm):
         help_text=PersonLookup.help_text)
     persons_mentioned = make_ajax_field(Item, 'persons_mentioned', 'person',
         help_text=PersonLookup.help_text)
+
+
+class SearchForm(forms.Form):
+    keyword = forms.CharField(label='Search terms',
+        help_text='Search by keyword in author name or title',
+        required=True,
+        error_messages={'required': 'Please enter one or more search terms'})
+
+
+
