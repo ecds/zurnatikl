@@ -161,7 +161,7 @@ class ItemTestCase(TestCase):
                 'issue edge to placename should be labeled')
 
 
-class JournalViewsCase(TestCase):
+class JournalViewsTestCase(TestCase):
     fixtures = ['test_network.json']
 
     def test_list_journals(self):
@@ -279,3 +279,34 @@ class JournalViewsCase(TestCase):
         response = self.client.get(reverse('journals:issue',
             kwargs={'journal_slug': 'beatitude', 'id': issue.id}))
         self.assertEqual(404, response.status_code)
+
+    def test_search(self):
+        search_url = reverse('journals:search')
+
+        # no search term
+        response = self.client.get(search_url)
+        self.assertContains(response, 'Please enter one or more search terms')
+        self.assertNotContains(response, 'No items found')
+
+        # search term with no matches
+        response = self.client.get(search_url, {'keyword': 'not in the data'})
+        self.assertNotContains(response, 'Please enter one or more search terms')
+        self.assertContains(response, 'No items found')
+
+        # search with one match - search on both title and author
+        item = Item.objects.get(title='[Maple Bridge Night Mooring]')
+        response = self.client.get(search_url, {'keyword': 'maple bridge zhang'})
+
+        # should display item title, author (if any), journal, issue,
+        # with link to issue detail view
+        self.assertContains(response, item.title,
+            msg_prefix='search results should display item title')
+        self.assertContains(response, item.issue.journal.title,
+            msg_prefix='search results should display journal item belongs to')
+        self.assertContains(response, item.issue.label,
+            msg_prefix='search results should display issue the item belongs to')
+        self.assertContains(response,
+            reverse('journals:issue',
+                kwargs={'journal_slug': item.issue.journal.slug,
+                        'id': item.issue.id}),
+            msg_prefix='search results should link to issue the item belongs to')

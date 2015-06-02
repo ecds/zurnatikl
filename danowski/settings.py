@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     #### local dependencies
     'ajax_select',
     'eultheme',
+    'widget_tweaks',
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -52,6 +53,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "eultheme.context_processors.template_settings",
     ### local context processors
     "danowski.version_context",
+    "danowski.apps.journals.context_processors.search",
 )
 
 

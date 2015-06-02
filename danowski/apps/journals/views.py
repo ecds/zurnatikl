@@ -1,6 +1,13 @@
+import re
+
+from django.db.models import Q
 from django.http import Http404
-from django.views.generic import ListView, DetailView
-from danowski.apps.journals.models import Journal, Issue
+from django.views.generic import View, ListView, DetailView
+from django.shortcuts import render
+
+from .models import Journal, Issue, Item
+from .forms import SearchForm
+
 
 class JournalList(ListView):
     'List all Journals'
@@ -26,3 +33,33 @@ class IssueDetail(DetailView):
                                 pk=self.kwargs['id'])
         except Issue.DoesNotExist:
             raise Http404
+
+class SearchView(View):
+    'Search items by title or creator name'
+    form_class = SearchForm
+    template_name = 'journals/search_results.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(request.GET)
+        ctx = {'form': form}
+        # currently keyword is the only field and is required
+        if form.is_valid():
+            # search for items by author or title
+            kw = form.cleaned_data.get('keyword')
+            # split the query into words on spaces or comma space
+            # and match any field on any word
+            words = re.split(',? +', kw)
+            items = Item.objects.all().distinct()
+            # distinct required in case a term matches multiple fields
+            for w in words:
+                items = items.filter(
+                    Q(title__icontains=w) |
+                    Q(creators__last_name__icontains=w) |
+                    Q(creators__first_name__icontains=w) |
+                    Q(creators__name__first_name__icontains=w) |
+                    Q(creators__name__last_name__icontains=w) |
+                    Q(creators__penname__name__icontains=w))
+
+            ctx['items'] = items
+
+        return render(request, self.template_name, ctx)
