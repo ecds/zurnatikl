@@ -66,6 +66,24 @@ class IssueTestCase(TestCase):
             (issue.volume, issue.issue),
             issue.label)
 
+    def test_next_previous(self):
+        # create journal + issues to test next/previous issue
+        journal = Journal(title='A Journal')
+        journal.save()
+        issue1 = Issue(issue=1, sort_order=1, journal=journal)
+        issue1.save()
+        issue2 = Issue(issue=2, sort_order=2, journal=journal)
+        issue2.save()
+        issue3 = Issue(issue=3, sort_order=3, journal=journal)
+        issue3.save()
+
+        self.assertEqual(None, issue1.previous_issue)
+        self.assertEqual(issue2, issue1.next_issue)
+        self.assertEqual(issue1, issue2.previous_issue)
+        self.assertEqual(issue3, issue2.next_issue)
+        self.assertEqual(issue2, issue3.previous_issue)
+        self.assertEqual(None, issue3.next_issue)
+
     def test_network_properties(self):
         issue = Issue.objects.all().first()
 
@@ -237,7 +255,6 @@ class JournalViewsTestCase(TestCase):
         new_issue.save()
         people = Person.objects.all()
         new_issue.editors.add(people[0], people[1], people[2])
-        print new_issue.editors.all()
         new_issue.contributing_editors.add(people[3], people[4])
         locations = Location.objects.all()
         new_issue.publication_address = locations[0]

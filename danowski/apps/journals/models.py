@@ -184,6 +184,22 @@ class Issue(models.Model):
             kwargs={'journal_slug': self.journal.slug, 'id': self.id})
 
     @property
+    def next_issue(self):
+        'Next issue in order, if there is one (requires sort_order to be set)'
+        if self.sort_order:
+            next_issues = self.journal.issue_set.all().filter(sort_order__gt=self.sort_order)
+            if next_issues.exists():
+                return next_issues.first()
+
+    @property
+    def previous_issue(self):
+        'Previous issue in order, if there is one (requires sort_order to be set)'
+        if self.sort_order:
+            prev_issues = self.journal.issue_set.all().filter(sort_order__lt=self.sort_order)
+            if prev_issues.exists():
+                return prev_issues.last()
+
+    @property
     def network_id(self):
         #: node identifier when generating a network
         return 'issue:%s' % self.id
