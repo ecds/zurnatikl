@@ -3,5 +3,5 @@
 fabric
 sphinx
 coverage
-django-nose
+django-nose>=1.4
 #django-fixture-magic # advanced fixture dumping
