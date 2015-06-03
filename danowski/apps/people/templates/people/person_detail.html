@@ -1,0 +1,80 @@
+{% extends 'site_base.html' %}
+{# display details for a single person #}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'people:list' %}">People</a></li>
+  <li class="active">{{ person.firstname_lastname }}</li>
+</ol>
+
+<div class="container">
+
+<h1>{{ person.firstname_lastname }}</h1>
+
+{% if person.issues_edited.all.exists %}
+<h2>Editor</h2>
+{# group issues by journal to generate nested list #}
+{% regroup person.issues_edited.all by journal as issues_by_journal %}
+<ul>
+{% for issue_group in issues_by_journal %}
+    {% with journal=issue_group.grouper %}
+    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <ul>
+        {% for issue in issue_group.list %}
+          <p><a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a></p>
+        {% endfor %}
+    </ul>
+    </li>
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if person.issues_contrib_edited.all.exists %}
+<h2>Contributing Editor</h2>
+{# group issues by journal to generate nested list #}
+{% regroup person.issues_contrib_edited.all by journal as issues_by_journal %}
+<ul>  {# NOTE: duplicates above, consider a snippet? #}
+{% for issue_group in issues_by_journal %}
+    {% with journal=issue_group.grouper %}
+    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <ul>
+        {% for issue in issue_group.list %}
+          <p><a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a></p>
+        {% endfor %}
+    </ul>
+    </li>
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if person.items_created.all.exists %}
+<h2>Author</h2> {# or creator ? #}
+{# group by journal then by issue for nested list of items by journal/issue #}
+{% regroup person.items_created.all by issue.journal as items_by_journal %}
+<ul>
+{% for item_group in items_by_journal %}
+    {% with journal=item_group.grouper %}
+    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+        <ul>
+        {% regroup item_group.list by issue as items_by_issue %}
+        {% for issue_items in items_by_issue %}
+            {% with issue=issue_items.grouper %}
+            <li><h4><a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label }}</a></h4>
+                <ul>
+                    {% for item in issue_items.list %}
+                    <p>{{ item }}</p>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endwith %} {# end issue group #}
+        {% endfor %}
+    </ul></li>{# end journal group #}
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+</div>
+{% endblock %}

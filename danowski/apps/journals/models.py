@@ -312,7 +312,7 @@ class Item(models.Model):
     notes = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['start_page', 'end_page', 'title']
+        ordering = ['issue', 'start_page', 'end_page', 'title']
 
     # generate natural key
     def natural_key(self):

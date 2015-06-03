@@ -1,4 +1,6 @@
+from django.core.urlresolvers import reverse
 from django.db import models
+
 from multiselectfield import MultiSelectField
 from danowski.apps.geo.models import Location
 
@@ -112,6 +114,16 @@ class Person(models.Model):
     #: notes
     notes = models.TextField(blank=True)
 
+    #: slug for use in urls
+    slug = models.SlugField(unique=True,
+        help_text='Short name for use in URLs. ' +
+        'Change carefully, since editing this field this changes the URL on the site.')
+
+    class Meta:
+        verbose_name_plural = u'People'
+        unique_together = ('first_name', 'last_name')
+        ordering = ['last_name', 'first_name']
+
     # available reverse relationship names:
     # - issues_edited, issues_contrib_edited
     # - items_created, items_translated, items_mentioned_in
@@ -125,16 +137,18 @@ class Person(models.Model):
         else:
             return '%s, %s' % (self.last_name, self.first_name)
 
+    def get_absolute_url(self):
+        return reverse('people:person', kwargs={'slug': self.slug})
+
     def race_label(self):
         # format list of race terms for display in admin
         if self.race:
             return ', '.join(self.race)
     race_label.short_description = "Race"
 
-    class Meta:
-        verbose_name_plural = u'People'
-        unique_together = ('first_name', 'last_name')
-        ordering = ['last_name', 'first_name']
+    @property
+    def firstname_lastname(self):
+        return ' '.join([n for n in [self.first_name, self.last_name] if n])
 
     @property
     def network_id(self):
