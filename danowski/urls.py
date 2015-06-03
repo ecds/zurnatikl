@@ -19,6 +19,8 @@ urlpatterns = patterns('',
         namespace='network')),
     url(r'^journals/', include('danowski.apps.journals.urls',
         namespace='journals')),
+    url(r'^people/', include('danowski.apps.people.urls',
+        namespace='people')),
     (r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls) ),
 

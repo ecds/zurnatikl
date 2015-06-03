@@ -1,3 +1,5 @@
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.test import TestCase
 
 from danowski.apps.geo.models import Location
@@ -76,4 +78,31 @@ class PeopleTestCase(TestCase):
         edge_targets = [t for s, t in edges]
         self.assert_(sf.network_id in edge_targets)
         self.assert_(fifthschool.network_id in edge_targets)
+
+
+class PeopleViewsTestCase(TestCase):
+    fixtures = ['test_network.json']
+
+    def test_list_people(self):
+        response = self.client.get(reverse('people:list'))
+        editors = Person.objects.filter(
+            Q(issues_edited__isnull=False) |
+            Q(issues_contrib_edited__isnull=False))
+        for ed in editors:
+            self.assertContains(response, unicode(ed),
+                msg_prefix='editors should be listed on person browse')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assertContains(response, unicode(auth),
+                msg_prefix='authors should be listed on person browse')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(issues_contrib_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for m in mentions:
+            self.assertNotContains(response, unicode(m),
+                msg_prefix='mentioned people should not be listed on person browse')
 
