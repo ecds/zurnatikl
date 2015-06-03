@@ -3,5 +3,8 @@ test-results/
 doc/_build/
 dist/
 build/
+.coverage
+*.db
+nosetests.xml
 
 danowski/localsettings.py
