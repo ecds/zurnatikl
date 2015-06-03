@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='person',
             name='slug',
-            field=models.SlugField(help_text=b'Short name for use in URLs. Change carefully, since editing this field this changes the URL on the site.'),
+            field=models.SlugField(help_text=b'Short name for use in URLs. Change carefully, since editing this field this changes the URL on the site.', blank=True),
             preserve_default=False,
         ),
         # pre-set slug values
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='person',
             name='slug',
-            field=models.SlugField(help_text=b'Short name for use in URLs. Change carefully, since editing this field this changes the URL on the site.', unique=True),
+            field=models.SlugField(help_text=b'Short name for use in URLs. Change carefully, since editing this field this changes the URL on the site.', unique=True, blank=False),
             preserve_default=False,
         ),
     ]
