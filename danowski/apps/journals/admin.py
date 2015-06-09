@@ -1,20 +1,29 @@
 from django.contrib import admin
 from ajax_select.admin import AjaxSelectAdmin
 from ajax_select import make_ajax_form
+from ajax_select.fields import autoselect_fields_check_can_add
 from django_admin_bootstrapped.admin.models import SortableInline
 
 
 from danowski.apps.journals.models import Journal, Issue, Item, \
-  CreatorName, Genre, PlaceName
-from danowski.apps.journals.forms import JournalForm, IssueForm, ItemForm
+   CreatorName, Genre, PlaceName
+from danowski.apps.journals.forms import JournalForm, IssueForm, \
+   ItemForm, PlaceNameForm, CreatorNameForm
 
 
 class PlaceNamesInline(admin.TabularInline):
     model = PlaceName
     verbose_name_plural = 'Places Mentioned'
     extra = 1
-    form = make_ajax_form(PlaceName, {'location': 'location'},
-        show_help_text=True)
+    form = PlaceNameForm
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(PlaceNamesInline, self).get_formset(request, obj, **kwargs)
+        # required to force ajax_select to check if user can add ajax
+        # fields and add the link to the autocomplete widget
+        autoselect_fields_check_can_add(formset.form, self.model, request.user)
+        return formset
+
 
 class IssueInline(admin.StackedInline, SortableInline):
     model = Issue
@@ -61,8 +70,15 @@ admin.site.register(Issue, IssueAdmin)
 class CreatorNameInline(admin.TabularInline):
     model = CreatorName
     extra = 1
-    form = make_ajax_form(CreatorName, {'person': 'person'},
-        show_help_text=True)
+    form = CreatorNameForm
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(CreatorNameInline, self).get_formset(request, obj, **kwargs)
+        # required to force ajax_select to check if user can add ajax
+        # fields and add the link to the autocomplete widget
+        autoselect_fields_check_can_add(formset.form, self.model, request.user)
+        return formset
+
 
 admin.site.register(Genre)
 
