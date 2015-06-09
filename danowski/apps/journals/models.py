@@ -30,11 +30,27 @@ class PlaceName(models.Model):
     def __unicode__(self):
         return self.name
 
+class JournalQuerySet(models.QuerySet):
+
+    def by_editor_or_author(self, person):
+        '''Find all journals that a person edited issues for or contributed
+        content to as an author.'''
+        return self.filter(
+            models.Q(issue__editors=person) |
+            models.Q(issue__contributing_editors=person) |
+            models.Q(issue__item__creators=person)
+            ).distinct()
 
 # for parsing natural key
 class JournalManager(models.Manager):
+    def get_queryset(self):
+        return JournalQuerySet(self.model, using=self._db)
+
     def get_by_natural_key(self, title):
         return self.get(title=title)
+
+    def by_editor_or_author(self, person):
+        return self.get_queryset().by_editor_or_author(person)
 
 class Journal(models.Model):
     'A Journal or Magazine'
