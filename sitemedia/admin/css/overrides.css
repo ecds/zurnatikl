@@ -219,3 +219,10 @@ select[multiple]{
 .dynamic-IssueItem_persons_mentioned td.original p  {
     display: none;
 }
+
+/* tweak spacing for django-ajax-selects add link */
+.add-another.addlink {
+  padding-left: 15px;
+  background-repeat: no-repeat;
+}
+
