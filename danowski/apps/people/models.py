@@ -1,9 +1,11 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-
+from django.utils.functional import cached_property
+import networkx as nx
 from multiselectfield import MultiSelectField
-from danowski.apps.geo.models import Location
 
+from danowski.apps.geo.models import Location
+from danowski.apps.network.utils import add_nodes_to_graph, add_edges_to_graph
 
 #Schools
 class SchoolManager(models.Manager):
@@ -190,6 +192,30 @@ class Person(models.Model):
         # dwelling locations
         edges.extend([(self.network_id, loc.network_id) for loc in self.dwellings.all()])
         return edges
+
+    @cached_property
+    def coeditors(self):
+        'co-editors on the same issue'
+        return Person.objects.all().filter(issues_edited__editors=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def coauthors(self):
+        'co-authors on the same item'
+        return Person.objects.all().filter(items_created__creators=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def edited_by(self):
+        'authors who contributed to an issue this person edited'
+        return Person.objects.all().filter(items_created__issue__editors=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def editors(self):
+        'people who edited works created by this person'
+        return Person.objects.all().filter(issues_edited__item__creators=self.id) \
+                                   .exclude(pk=self.id).distinct()
 
 
 class NameManager(models.Manager):
