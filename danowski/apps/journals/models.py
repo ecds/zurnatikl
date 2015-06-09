@@ -186,7 +186,7 @@ class Issue(models.Model):
     @property
     def next_issue(self):
         'Next issue in order, if there is one (requires sort_order to be set)'
-        if self.sort_order:
+        if self.sort_order is not None:
             next_issues = self.journal.issue_set.all().filter(sort_order__gt=self.sort_order)
             if next_issues.exists():
                 return next_issues.first()
@@ -194,7 +194,7 @@ class Issue(models.Model):
     @property
     def previous_issue(self):
         'Previous issue in order, if there is one (requires sort_order to be set)'
-        if self.sort_order:
+        if self.sort_order is not None:
             prev_issues = self.journal.issue_set.all().filter(sort_order__lt=self.sort_order)
             if prev_issues.exists():
                 return prev_issues.last()

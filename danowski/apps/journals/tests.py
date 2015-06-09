@@ -70,11 +70,11 @@ class IssueTestCase(TestCase):
         # create journal + issues to test next/previous issue
         journal = Journal(title='A Journal')
         journal.save()
-        issue1 = Issue(issue=1, sort_order=1, journal=journal)
+        issue1 = Issue(issue=1, sort_order=0, journal=journal)
         issue1.save()
-        issue2 = Issue(issue=2, sort_order=2, journal=journal)
+        issue2 = Issue(issue=2, sort_order=1, journal=journal)
         issue2.save()
-        issue3 = Issue(issue=3, sort_order=3, journal=journal)
+        issue3 = Issue(issue=3, sort_order=2, journal=journal)
         issue3.save()
 
         self.assertEqual(None, issue1.previous_issue)
