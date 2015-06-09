@@ -11,6 +11,8 @@
 
 <h1>{{ person.firstname_lastname }}</h1>
 
+<p><a href="{% url 'people:egograph' person.slug %}">view egograph</a></p>
+
 {% if person.issues_edited.all.exists %}
 <h2>Editor</h2>
 {# group issues by journal to generate nested list #}

@@ -32,6 +32,14 @@ class PlaceName(models.Model):
 
 class JournalQuerySet(models.QuerySet):
 
+    def by_editor(self, person):
+        '''Find all journals that a person edited issues for.'''
+        return self.filter(issue__editors=person).distinct()
+
+    def by_author(self, person):
+        '''Find all journals that a person contributed to as an author.'''
+        return self.filter(issue__item__creators=person).distinct()
+
     def by_editor_or_author(self, person):
         '''Find all journals that a person edited issues for or contributed
         content to as an author.'''
@@ -51,6 +59,12 @@ class JournalManager(models.Manager):
 
     def by_editor_or_author(self, person):
         return self.get_queryset().by_editor_or_author(person)
+
+    def by_editor(self, person):
+        return self.get_queryset().by_editor(person)
+
+    def by_author(self, person):
+        return self.get_queryset().by_author(person)
 
 class Journal(models.Model):
     'A Journal or Magazine'

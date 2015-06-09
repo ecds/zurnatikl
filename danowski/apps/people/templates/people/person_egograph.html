@@ -1,0 +1,78 @@
+{% extends 'site_base.html' %}
+{% load static %}
+{# display a person's egograph #}
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="{% static 'js/sigma/sigma.min.js' %}"></script>
+    <script src="{% static 'js/sigma/sigma.parsers.json.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2/worker.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2/supervisor.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'people:list' %}">People</a></li>
+  <li><a href="{% url 'people:person' person.slug %}">{{ person.firstname_lastname }}</a></li>
+  <li class="active">Egograph</li>
+</ol>
+
+<div id="container">
+ <style>
+  #sigma-container {
+      position: relative;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 90vh;
+      background: #efefef;
+    }
+   #graph-container {
+      top: 0;
+      bottom: 0;
+      left: 35px;
+      right: 35px;
+      position: absolute;
+      background: #fff;
+    }
+  </style>
+  <div id="sigma-container">
+    <div id="graph-container"></div>
+  </div>
+</div>
+<script>
+
+// initalize an empty sigma graph
+var s = new sigma({
+  container: 'graph-container',
+});
+
+// TODO: curved edges, basic node-size plugin ?
+
+// load graph data via json
+sigma.parsers.json("{% url 'people:egograph-json' person.slug %}",
+  s,
+  function() {
+    // init nodes with random placement
+    var nodes = s.graph.nodes();
+    var i;
+    for (i = 0; i < nodes.length; i++) {
+      nodes[i].x = Math.random();
+      nodes[i].y = Math.random();
+      nodes[i].size = 1;
+      nodes[i].color = '#666';
+    }
+
+    // update the graph with the added nodes + edges
+    s.refresh();
+    // run force atlas layout
+    s.startForceAtlas2({worker: true, barnesHutOptimize: false});
+    window.setTimeout(function() {
+      console.log('stopping force atlas');
+      s.stopForceAtlas2();
+    }, 500);
+  }
+);
+</script>
+
+{% endblock %}
