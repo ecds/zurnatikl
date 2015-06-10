@@ -1,6 +1,48 @@
 CHANGELOG
 =========
 
+Release 1.3 - Journal contents & admin improvements
+---------------------------------------------------
+
+Journal contents
+^^^^^^^^^^^^^^^^
+* As a user, I want to see a list of journals so I can find more information
+  about their contents.
+* As a user, I want to see a list of issues for a particular journal so
+  I can understand the dates of publication and the number of issues
+  published in order.
+* As a user, I want to see the list of contents for a journal issue so
+  I can know what was published in the issue.
+* As a user, I want to be able to search within journal issues by
+  author's name or a title keyword so I can find what I'm looking for.
+* As a user, I want to be able to navigate from one issue of a journal
+  to the previous or next issue so I can explore the contents of one journal.
+
+Admin functionality
+^^^^^^^^^^^^^^^^^^^
+* As an admin user, I want all location fields to use an autocomplete rather
+  than to display all the locations already in the database so the site
+  loads more quickly.
+* As an admin user, I want to be able to select multiple races for a
+  person in the database so I can more accurately describe the people
+  in our data.
+* As an admin user, I want all person fields to use an autocomplete
+  rather than to display all the person names already in the database so
+  the site loads more quickly.
+* As an admin, I want to be able to see what items/issue a location is
+  attached to when editing that location so I can more effectively
+  eliminate duplicates.
+* As an admin user, I want to be able to add new persons as authors and
+  new locations as places mentioned when creating a new item so I can
+  work more efficiently.
+
+Updates and bugfixes
+^^^^^^^^^^^^^^^^^^^^
+* Update to django 1.8
+* bugfix: Searching on the issue portion of the database results in an
+  error.
+
+
 Release 1.2 - Initial data export
 ---------------------------------
 
