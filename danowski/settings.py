@@ -22,9 +22,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     #### local dependencies
-    # -
+    'ajax_select',
+    'eultheme',
+    'widget_tweaks',
     #### local apps
     'danowski.apps.admin',
     'danowski.apps.geo',
@@ -48,6 +51,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     ##################################################
     "django.core.context_processors.request",
+    "eultheme.context_processors.template_settings",
+    ### local context processors
+    "danowski.version_context",
+    "danowski.apps.journals.context_processors.search",
 )
 
 
@@ -100,6 +107,14 @@ ADMIN_REORDER = (
     ("people", ('Person', 'School')),
     ("journals", ('Journal', 'Issue', 'IssueItem', 'Genre'))
 )
+
+# lookup channels for ajax autocompletes on the site
+AJAX_LOOKUP_CHANNELS = {
+    #  simple: search Person.objects.filter(name__icontains=q)
+    # custom lookup channel to allow searching on multiple fields
+    'location' : ('danowski.apps.geo.lookups', 'LocationLookup'),
+    'person' : ('danowski.apps.people.lookups', 'PersonLookup')
+}
 
 
 # import localsettings

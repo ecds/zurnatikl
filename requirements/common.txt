@@ -1,11 +1,16 @@
-Django>=1.7,<1.8
+Django>=1.8
 mysql-python
-south
-django-admin-bootstrapped<=2.4
+django-admin-bootstrapped<=2.5
 
 #partial dates
 git+git://github.com/dracos/django-date-extensions.git
 six
+django-ajax-selects
+django-multiselectfield
 
 networkx
 lxml
+
+-e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
+django-widget-tweaks
+

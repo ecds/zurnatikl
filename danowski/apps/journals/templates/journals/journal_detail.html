@@ -1,0 +1,36 @@
+{% extends 'site_base.html' %}
+{# display details for a single journal #}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li class="active">{{ journal.title }}</li>
+</ol>
+
+<div class="container">
+
+<h1>{{ journal.title }}</h1>
+
+{# Not currently displayed, but publisher, URI and ISSN available for some journals #}
+
+<ul>
+{% for issue in journal.issue_set.all %}
+    <li>
+        <a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label }}</a>
+            ({{ issue.date }}),
+
+        {% with editors=issue.editors.all %}
+           {% if editors %}
+           ed. {% for ed in editors %}
+               {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% elif not forloop.last %}, {% endif %}
+           {% endfor %}
+           {% endif %}
+        {% endwith %}
+
+    </li>
+{% endfor %}
+</ul>
+
+</div>
+{% endblock %}
+

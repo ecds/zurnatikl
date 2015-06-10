@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from danowski.apps.journals.models import IssueItem
+from ajax_select.admin import AjaxSelectAdmin
+
+from danowski.apps.journals.models import Item
 from danowski.apps.people.forms import PersonForm, SchoolForm
 from danowski.apps.people.models import School, Person, Name, PenName
 
 
-class SchoolAdmin(admin.ModelAdmin):
+class SchoolAdmin(AjaxSelectAdmin):
     form = SchoolForm
     list_display = ['name', 'categorizer', 'location_names']
     search_fields = ['name', 'categorizer', 'notes']
@@ -24,62 +26,62 @@ class PenNamesInline(admin.TabularInline):
     verbose_name_plural = 'Pen Names'
     extra = 1
 
-class IssueItemInline(admin.TabularInline):
-    model = IssueItem.persons_mentioned.through
+class ItemInline(admin.TabularInline):
+    model = Item.persons_mentioned.through
     extra = 0
-    verbose_name = 'Mentioned In Issue Items'
+    verbose_name = 'Mentioned In Items'
     verbose_name_plural = verbose_name
-    exclude = ('issueitem', )
-    readonly_fields = ('edit_issue_item', )
+    exclude = ('item', )
+    readonly_fields = ('edit_item', )
 
     can_delete = False
 
-    def edit_issue_item(self, obj):
+    def edit_item(self, obj):
         # creator name is edited on issue item
         return format_html(u'<a href="{}">{}</a>',
-            obj.issueitem.edit_url, obj.issueitem.title)
+            obj.item.edit_url, obj.item.title)
 
-    edit_issue_item.short_description = "Issue Item"
+    edit_item.short_description = "Item"
 
     def has_add_permission(self, args):
         # disallow adding mentions from the Person edit form
         return False
 
 
-class IssueItemCreatorsInline(admin.TabularInline):
-    model = IssueItem.creators.through
+class ItemCreatorsInline(admin.TabularInline):
+    model = Item.creators.through
     extra = 0
-    verbose_name = 'Assigned Creator for Issue Items'
+    verbose_name = 'Assigned Creator for Items'
     verbose_name_plural = verbose_name
     exclude = ('issue_item', )
-    readonly_fields = ('edit_issue_item', 'name_used')
+    readonly_fields = ('edit_item', 'name_used')
     can_delete = False
 
-    def edit_issue_item(self, obj):
+    def edit_item(self, obj):
         # creator name is edited on issue item
         return format_html(u'<a href="{}">{}</a>',
-            obj.issue_item.edit_url, obj.issue_item.title)
+            obj.item.edit_url, obj.item.title)
 
-    edit_issue_item.short_description = "Issue Item"
+    edit_item.short_description = "Item"
 
     def has_add_permission(self, args):
         # disallow adding creator names from the Person edit form
         return False
 
 
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(AjaxSelectAdmin):
     class Media:
         js = ('js/admin/collapseTabularInlines.js',)
         css = { 'all' : ('css/admin/admin_styles.css',) }
-    list_display = ['first_name', 'last_name', 'race', 'gender', 'uri']
+    list_display = ['first_name', 'last_name', 'race_label', 'gender', 'uri']
     search_fields = ['first_name', 'last_name', 'race', 'gender', 'notes', 'uri', 'racial_self_description']
     list_display_links = ['first_name', 'last_name']
-    filter_horizontal = ('schools', 'dwelling', )
+    filter_horizontal = ('schools', )
     inlines = [
         AltNamesInline,
         PenNamesInline,
-        IssueItemInline,
-        IssueItemCreatorsInline,
+        ItemInline,
+        ItemCreatorsInline,
     ]
     form = PersonForm
 

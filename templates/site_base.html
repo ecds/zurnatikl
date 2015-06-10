@@ -1,0 +1,69 @@
+{% extends "eultheme/site_base.html" %}
+{% load static %} {% load widget_tweaks %}
+{% block nav-title %}
+{# <span class="glyphicon glyphicon-tower"></span> #}
+<span class="site-title">Digital Danowski</span>
+  {% endblock %}
+{% block page-title %}Digital Danowski{% block page-subtitle %}{% endblock %}{% endblock %}
+
+{% block navlinks %}
+    <li><a href="{% url 'journals:list' %}">Journals</a></li>
+{% endblock %}
+
+{% block nav_class %}navbar-inverse navbar-fixed-top{% endblock %}
+
+{% block navbar-extra %}
+{% comment %}
+  {% if user.is_authenticated %}
+    <ul class="nav navbar-nav navbar-right">
+      <li class="hidden-xs hidden-sm"><span class="nav-text">Welcome, {% firstof user.first_name user.username %}.</span></li>
+      <li>
+        <a href="{% url 'accounts:logout' %}">Logout
+         <span class="glyphicon glyphicon-log-out"></span></a>
+       </li>
+    </ul>
+  {% else %}
+     <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'accounts:login' %}">Login
+          <span class="glyphicon glyphicon-log-in"></span></a>
+        </li>
+    </ul>
+  {% endif %}
+  {% endcomment %}
+
+{% if search_form %}
+<div class="navbar-right">
+<form class="form-inline navbar-form search-form" role="form" method="GET" action="{% url 'journals:search' %}">
+   <div class="form-group">
+      <div class="input-group">
+      <label class="sr-only" for="{{ search_form.keyword.name }}">{{ search_form.keyword.label }}</label>
+      {% render_field search_form.keyword class+="form-control" placeholder='Search' data-toggle="tooltip" data-placement="auto right" data-animation="true" title=search_form.keyword.help_text %}
+      <span class="input-group-btn">
+        <button type="submit" class="btn">
+            <span class="glyphicon glyphicon-search"></span>
+        </button>
+      </span>
+    </div>
+  </div>
+</form>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+  <script>
+$(document).ready(function(){
+    $('.search-form input').tooltip();
+});
+</script>
+
+{% endblock %}
+
+{% block footer-content %}
+{% endblock %}

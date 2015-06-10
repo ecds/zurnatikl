@@ -107,6 +107,11 @@ class Location(models.Model):
     country = models.ForeignKey(GeonamesCountry, help_text='Country name')
     ''' Country name'''
 
+    # available reverse relationship names:
+    # - people
+    # - issues_published_at, issues_printed_at, issues_mailed_to
+    # - item_set
+
     # generate natural key
     def natural_key(self):
         return (self.street_address, self.city, self.zipcode)
@@ -116,11 +121,23 @@ class Location(models.Model):
         fields = [self.street_address, self.city, self.state, self.zipcode, self.country]
         return ' '.join([unicode(f) for f in fields if f])
 
+    @property
+    def display_label(self):
+        # variant display - drop zipcode, only show state/country names and not codes
+        # state names are stored as all caps, so title-case them
+        fields = [
+            self.street_address,
+            self.city,
+            self.state.name.title() if self.state else None,
+            self.country.name
+        ]
+        # only include fields that are not empty
+        return ', '.join([f for f in fields if f])
+
 
     class Meta:
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
         ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
-
 
     @property
     def network_id(self):

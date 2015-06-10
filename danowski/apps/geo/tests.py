@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from danowski.apps.geo.models import Location, GeonamesCountry, StateCode
-from danowski.apps.journals.models import PlaceName, IssueItem
+from danowski.apps.journals.models import PlaceName, Issue, Item
+from danowski.apps.people.models import Person
 
 class LocationTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -31,6 +34,17 @@ class LocationTestCase(TestCase):
              'state': self.ca, 'zip': self.bannam.zipcode, 'country': self.us}
         self.assertEqual(expected_value, unicode(self.bannam),
             'unicode for location with all fields should include them in order')
+
+    def test_display_label(self):
+        self.assertEqual("Mazatlan, Mexico", self.maz.display_label,
+            'location display label should not include country code')
+
+        # location with all values should work too
+        expected_value = '%(st)s, %(city)s, %(state)s, %(country)s' % \
+            {'st': self.bannam.street_address, 'city': self.bannam.city,
+             'state': self.ca.name.title(), 'country': self.us.name}
+        self.assertEqual(expected_value, self.bannam.display_label,
+            'display label for location with all fields should include them in order')
 
     def test_network_properties(self):
         # network id
@@ -64,7 +78,7 @@ class LocationTestCase(TestCase):
 
         # test placename inclusion
         pn = PlaceName(name='somewhere out there')
-        pn.issueItem = IssueItem.objects.first()
+        pn.item = Item.objects.first()
         self.maz.placename_set.add(pn)
         net_attrs = self.maz.network_attributes
         self.assertEqual(pn.name, net_attrs['placenames'])
@@ -73,3 +87,68 @@ class LocationTestCase(TestCase):
         # has network edges - always false for locations
         self.assertFalse(self.maz.has_network_edges)
         self.assertFalse(self.bannam.has_network_edges)
+
+
+class LocationAdminViewsTestCase(TestCase):
+    fixtures = ['test_network.json']
+
+    def test_change_form(self):
+        # login as admin user for testing admin views
+        user_info = {'username': 'testsuper', 'password': 'sshd0ntt3ll'}
+        self.client.login(**user_info)
+
+        # location with a school (and only a school)
+        loc = Location.objects.filter(schools__isnull=False,
+            item__isnull=True).first()
+        url = reverse('admin:geo_location_change', args=[loc.pk])
+        resp = self.client.get(url)
+        self.assertTemplateUsed(resp, 'geo/admin/location_change_form.html')
+        self.assertContains(resp, 'Schools')
+        self.assertContains(resp, loc.schools.first().name)
+        self.assertContains(resp, reverse('admin:people_school_change', args=[loc.schools.first().pk]))
+        self.assertNotContains(resp, 'People')
+        self.assertNotContains(resp, 'Issues')
+        self.assertNotContains(resp, 'Items')
+
+        # for convenience, add other associations to this location
+        loc.schools.all().delete()
+        loc.people.add(Person.objects.first())
+        items = Item.objects.all()
+        loc.item_set.add(items[0])
+        loc.item_set.add(items[1])
+        # currently only three issues in the test fixture
+        issues = Issue.objects.all()
+        # - issues_published_at, issues_printed_at, issues_mailed_to
+        loc.issues_published_at.add(issues[0])
+        loc.issues_published_at.add(issues[1])
+        loc.issues_printed_at.add(issues[0])
+        loc.issues_mailed_to.add(issues[0])
+        loc.issues_mailed_to.add(issues[2])
+        loc.save()
+
+        resp = self.client.get(url)
+        self.assertNotContains(resp, 'Schools')
+        self.assertContains(resp, 'People')
+        for p in loc.people.all():
+            self.assertContains(resp, unicode(p))
+            self.assertContains(resp, reverse('admin:people_person_change', args=[p.pk]))
+        self.assertContains(resp, 'Issues')
+        self.assertContains(resp, 'Publication address for')
+        for i in loc.issues_published_at.all():
+            self.assertContains(resp, unicode(i))
+            self.assertContains(resp, reverse('admin:journals_issue_change', args=[i.pk]))
+        self.assertContains(resp, 'Print address for')
+        for i in loc.issues_printed_at.all():
+            self.assertContains(resp, unicode(i))
+            self.assertContains(resp, reverse('admin:journals_issue_change', args=[i.pk]))
+        self.assertContains(resp, 'Mailing address for')
+        for i in loc.issues_mailed_to.all():
+            self.assertContains(resp, unicode(i))
+            self.assertContains(resp, reverse('admin:journals_issue_change', args=[i.pk]))
+        # issues[0] should display 3 times; confirm repeated
+        self.assertContains(resp, issues[0], 3)
+        self.assertContains(resp, 'Items')
+        for i in loc.item_set.all():
+            self.assertContains(resp, unicode(i))
+            self.assertContains(resp, reverse('admin:journals_item_change', args=[i.pk]))
+

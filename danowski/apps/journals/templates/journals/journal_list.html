@@ -1,0 +1,19 @@
+{% extends 'site_base.html' %}
+{# list all journals #}
+
+{% block content %}
+<div class="container">
+<h1>Journals</h1>
+
+<ul>
+{% for journal in object_list %}
+    <li>
+        <a href="{% url 'journals:journal' journal.slug %}">{{ journal.title }}</a>
+        {# {% if journal.publisher %}<p class="small">{{ journal.publisher }}</p>{% endif %} #}
+    </li>
+{% endfor %}
+</ul>
+
+</div>
+{% endblock %}
+
