@@ -12,16 +12,19 @@ from danowski.apps.people.lookups import PersonLookup
 
 
 # common arguments for initializing select widgets, for consistency
+
 # NOTE: currently AutoCompleteSelectMultipleField does *NOT*
 # allow for overriding the widget, so these cannot be used on
 # many-to-many fields for the moment.
+# Disabling placeholder text for now, so that autocomplete
+# fields will be consistent.
 
 location_widget_attrs = {
     'channel': 'location',
     'help_text': LocationLookup.help_text,
     'show_help_text': True,
     'attrs': {
-        'placeholder': 'Search to add or change location',
+        # 'placeholder': 'Start typing to search...',
         'size': 50
     }
 }
@@ -31,7 +34,7 @@ person_widget_attrs = {
     'help_text': PersonLookup.help_text,
     'show_help_text': True,
     'attrs': {
-        'placeholder': 'Search to add or change person',
+        # 'placeholder': 'Start typing to search...',
         'size': 50
     }
 }
