@@ -1,0 +1,12 @@
+{# link to an issue, displaying label, date, and editors #}
+{% load journal_extras %}
+{% with editors=issue.editors.all %}
+<a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a>
+    ({{ issue.date }}){% if ed_with %}{% if editors|all_except:ed_with %},
+    edited with {{ editors|all_except:ed_with|readable_list:'firstname_lastname' }}
+  {% endif %}
+{% else %},
+   {% if editors %}
+   ed. {{ editors|readable_list:'firstname_lastname' }}
+   {% endif %}
+{% endif %}{% endwith %}

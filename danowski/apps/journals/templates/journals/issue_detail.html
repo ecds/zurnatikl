@@ -1,5 +1,6 @@
 {% extends 'site_base.html' %}
 {# display details for a single issue in a journal #}
+{% load journal_extras %}
 
 {% block content %}
 <ol class="breadcrumb">
@@ -16,21 +17,16 @@
 {# editors #}
 {% with editors=issue.editors.all %}
 {% if editors %}
-<h3>{% for ed in editors %}
-  {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
-  {% endfor %}
-  editor{{ editors|pluralize }}
-</h3>
+<h3>{{ editors|readable_list:'firstname_lastname' }},
+  editor{{ editors|pluralize }}</h3>
 {% endif %}
 {% endwith %}
 
 {# contributing editors #}
 {% with editors=issue.contributing_editors.all %}
 {% if editors %}
-<h3>{% for ed in editors %}
-  {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
-  {% endfor %}
-  contributing editor{{ editors|pluralize }}
+<h3>{{ editors|readable_list:'firstname_lastname' }},
+  contributing editor{{ editors|pluralize }}</h3>
 </h3>
 {% endif %}
 {% endwith %}
@@ -60,14 +56,13 @@
   <tr>
     <td>{{ item.start_page }}</td>
     <td>{{ item.end_page }}</td>
-    <td>{{ item.title }}{% if item.creators.all or item.translators.all %},{% endif %}
-      {% for p in item.creators.all %}
-        {{ p.first_name }} {{ p.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% elif not forloop.last or item.translators.all %}, {% endif %}
-      {% endfor %}
-      {% for p in item.translators.all %}
-      {% if forloop.first %}trans. {% endif %}
-        {{ p.first_name }} {{ p.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% else %}, {% endif %}
-      {% endfor %}
+    <td>{{ item.title }}{% if item.creators.count or item.translators.count %},{% endif %}
+      {% if item.creators.count %}
+       {{ item.creators.all|readable_list:'firstname_lastname' }}{% if item.translators.count %}, {% endif %}
+      {% endif %}
+      {% if item.translators.count %}
+       trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
+      {% endif %}
     </td>
   </tr>
 
