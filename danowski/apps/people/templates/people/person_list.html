@@ -7,9 +7,9 @@
 
 <p>{{ object_list.count }} people who are editors, contributing editors, or authors.</p>
 
-<div class="row">
+<div class="columns">
 {% for person in object_list %}
-    <div class="col-md-3 col-sm-4 col-xs-6">
+    <div>
         <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
     </div>
 {% endfor %}
