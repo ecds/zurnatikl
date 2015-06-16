@@ -5,7 +5,6 @@ from networkx.readwrite import gexf, graphml
 import os
 from StringIO import StringIO
 import time
-import unicodedata
 
 from django.conf import settings
 from django.http import HttpResponse

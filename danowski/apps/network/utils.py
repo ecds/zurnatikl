@@ -2,7 +2,7 @@
 
 import time
 import logging
-
+import unicodedata
 
 logger = logging.getLogger(__name__)
 
