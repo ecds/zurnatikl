@@ -1,8 +1,16 @@
 from django.db import models
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
+import logging
+import networkx as nx
+import time
+
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
-from django.core.urlresolvers import reverse
+
+
+logger = logging.getLogger(__name__)
 
 
 # for parsing natural key
@@ -123,6 +131,94 @@ class Journal(models.Model):
     def network_edges(self):
         #: list of tuples for edges in the network
         return [(self.network_id, school.network_id) for school in self.schools.all()]
+
+
+    @classmethod
+    def author_editor_network(self):
+        'Network of authors, editors, and journals'
+        graph = cache.get('journal_auth_ed_network')
+        if graph:
+            return graph
+        graph = nx.MultiGraph()
+
+        # FIXME: this is too slow to do live, but for now at least add
+        # caching
+
+        start = time.time()
+        journals = Journal.objects.all()
+        graph.add_nodes_from(
+            # node id, node attributes
+            [(j.network_id, {'label': unicode(j)}) for j in journals],
+            type='Journal')
+        for j in journals:
+            count = 0
+            # editors of the journal
+            editors = Person.objects.filter(issues_edited__journal=j).distinct()
+            # add people to the graph
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in editors],
+                type='Person')
+            # editors are connected to the journal they edited
+            graph.add_edges_from([(p.network_id, j.network_id) for p in editors],
+                label='editor')
+            count += editors.count()
+
+            # authors who contributed to the journal
+            authors = Person.objects.filter(items_created__issue__journal=j).distinct()
+            # this could be redundant if a person was added elsewhere
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in authors],
+                type='Person')
+            count += authors.count()
+            # authors are connected to the journal they contributed to
+            graph.add_edges_from([(p.network_id, j.network_id) for p in authors],
+                label='contributor')
+            # TODO: authors are connected to the editor of the issue they contributed to
+            logger.debug('Added %d journal edges for editors/authors for %s in %.2f sec' % \
+                (count, j, time.time() - start))
+
+        # co-editors
+        start = time.time()
+        co_editors = Person.objects.filter(issues_edited__isnull=False) \
+            .annotate(editor_count=models.Count('issues_edited__editors')) \
+            .filter(editor_count__gt=1).distinct()
+        # for each editor, find the people they edited with
+        for ed in co_editors:
+            co_eds = Person.objects.filter(issues_edited__editors=ed) \
+                                   .exclude(pk=ed.id).distinct()
+            graph.add_edges_from([(ed.network_id, co_ed.network_id) for co_ed in co_eds],
+                label='co-editor')
+            # NOTE: this is redundant since we will be setting relationships
+            # both directions
+        logger.debug('Added co-editor edges in %.2f sec' % (time.time() - start))
+
+        # co-authors
+        start = time.time()
+        co_authors = Person.objects.filter(items_created__isnull=False) \
+            .annotate(creator_count=models.Count('items_created__creators')) \
+            .filter(creator_count__gt=1).distinct()
+        # for each author, find the people they authored with
+        # FIMXE: this is slow, currently 11 seconds for our data
+        for auth in co_authors:
+            co_auths = Person.objects.filter(items_created__creators=auth) \
+                                   .exclude(pk=auth.id).distinct()
+            graph.add_edges_from([(auth.network_id, co_auth.network_id) for co_auth in co_auths],
+                label='co-author')
+            # NOTE: some of these are redundant because we are
+            # setting relationships in both directions
+        logger.debug('Added co-author edges in %.2f sec' % (time.time() - start))
+
+        # author/editor
+        start = time.time()
+        editors = Person.objects.filter(issues_edited__isnull=False).distinct()
+        for ed in editors:
+            authors = Person.objects.filter(items_created__issue__editors=ed.pk)
+            graph.add_edges_from([(ed.network_id, auth.network_id) for auth in authors],
+                label='edited')
+        logger.debug('Added author/editor edges in %.2f sec' % (time.time() - start))
+
+        cache.set('journal_auth_ed_network', graph)
+        return graph
 
 
 class IssueManager(models.Manager):
