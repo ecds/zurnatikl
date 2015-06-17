@@ -6,8 +6,9 @@
     {{ block.super }}
     <script src="{% static 'js/sigma/sigma.min.js' %}"></script>
     <script src="{% static 'js/sigma/sigma.parsers.json.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2/worker.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2/supervisor.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2.min.js' %}"></script>
+    {#<script src="{% static 'js/sigma/plugins/sigma.plugins.relativeSize.min.js' %}"></script> #}
+    {#<script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script> #}
 {% endblock %}
 
 {% block content %}
@@ -42,37 +43,47 @@
 </div>
 <script>
 
-// initalize an empty sigma graph
-var s = new sigma({
-  container: 'graph-container',
+// Instantiate sigma with an empty graph
+s = new sigma({
+  renderer: {
+    container: document.getElementById('graph-container'),
+    type: 'canvas'
+  }
 });
-
-// TODO: curved edges, basic node-size plugin ?
 
 // load graph data via json
 sigma.parsers.json("{% url 'people:egograph-json' person.slug %}",
   s,
   function() {
     // init nodes with random placement
-    var nodes = s.graph.nodes();
-    var i;
-    for (i = 0; i < nodes.length; i++) {
-      nodes[i].x = Math.random();
-      nodes[i].y = Math.random();
-      nodes[i].size = 1;
-      nodes[i].color = '#666';
-    }
+    $.each(s.graph.nodes(), function(i, node) {
+      node.x = Math.random();
+      node.y = Math.random();
+      node.size = 1;
+      node.color = '#666';
+    });
+    // set curved edges
+    $.each(s.graph.edges(), function(i, edge) {
+      edge.type = 'curve';
+    });
+    console.log(s.graph.edges());
+
+    // adjust node size by degree
+    // sigma.plugins.relativeSize(s, 1);
+    // NOTE: this works, but ends up with nearly all the nodes
+    // being unlabeled because they are so small
+    // leaving disabled for now
 
     // update the graph with the added nodes + edges
     s.refresh();
     // run force atlas layout
     s.startForceAtlas2({worker: true, barnesHutOptimize: false});
     window.setTimeout(function() {
-      console.log('stopping force atlas');
       s.stopForceAtlas2();
     }, 500);
   }
 );
+
 </script>
 
 {% endblock %}
