@@ -80,9 +80,6 @@ class NetworkGraphExportView(NetworkGraphExportMixin, View):
     Defaults to GEXF if format is not specified.  Set filename on
     extended class to customize default filename for download.
     '''
-    def get_context_data(self, fmt, **kwargs):
-        print 'get context data'
-        self.export_format = fmt
 
     def render_to_response(self, context, **response_kwargs):
         return self.render_to_network_export(context, **response_kwargs)

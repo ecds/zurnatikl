@@ -18,14 +18,18 @@
   <li class="active">Egograph</li>
 </ol>
 
-<div id="container">
+<p>Download this graph as
+  <a href="{% url 'people:egograph-export' person.slug 'gexf' %}">GEXF</a> or
+  <a href="{% url 'people:egograph-export' person.slug 'graphml' %}">GraphML</a>
+</p>
+
  <style>
   #sigma-container {
       position: relative;
       top: 0;
       left: 0;
       right: 0;
-      height: 90vh;
+      height: 85vh;
       background: #efefef;
     }
    #graph-container {
@@ -40,7 +44,6 @@
   <div id="sigma-container">
     <div id="graph-container"></div>
   </div>
-</div>
 <script>
 
 // Instantiate sigma with an empty graph

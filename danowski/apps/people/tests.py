@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
+import json
 
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
@@ -106,7 +107,6 @@ class PeopleViewsTestCase(TestCase):
             self.assertNotContains(response, unicode(m),
                 msg_prefix='mentioned people should not be listed on person browse')
 
-
     def test_person_detail(self):
         # berrigan - edited one issue in test data, no items created
         berrigan = Person.objects.get(last_name='Berrigan')
@@ -160,3 +160,52 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response,
             reverse('journals:journal', kwargs={'slug': item.issue.journal.slug}),
             msg_prefix='should link to journal for authored item')
+
+    def test_egograph(self):
+        # main egograph page just loads json & sigma js
+        # berrigan - edited one issue in test data, no items created
+        berrigan = Person.objects.get(last_name='Berrigan')
+        response = self.client.get(reverse('people:egograph',
+            kwargs={'slug': berrigan.slug}))
+        self.assertContains(response, berrigan.firstname_lastname,
+            msg_prefix='egograph page should diplay person\'s name')
+        self.assertContains(response,
+            reverse('people:person', kwargs={'slug': berrigan.slug}),
+            msg_prefix='egograph should link to main person page')
+        self.assertContains(response,
+            reverse('people:egograph-json', kwargs={'slug': berrigan.slug}),
+            msg_prefix='egograph page should load json for egograph')
+
+    def test_egograph_json(self):
+        berrigan = Person.objects.get(last_name='Berrigan')
+        response = self.client.get(reverse('people:egograph-json',
+            kwargs={'slug': berrigan.slug}))
+        # basic sanity checking that this is json & looks as expected
+        self.assertEqual(response['content-type'], 'application/json')
+        self.assert_('edges' in response.content)
+        self.assert_('nodes' in response.content)
+
+
+    def test_egograph_export(self):
+        berrigan = Person.objects.get(last_name='Berrigan')
+        # basic testing that the export formats are correct
+        # and include the requested person
+        # testing the generated network should happen elsewhere
+
+        # gexf format
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'gexf'}))
+        self.assertEqual(response['content-type'], 'application/gexf+xml')
+        self.assertContains(response, '<gexf')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
+
+        # graphml
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'graphml'}))
+        self.assertEqual(response['content-type'], 'application/graphml+xml')
+        self.assertContains(response, '<graphml')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
+
+

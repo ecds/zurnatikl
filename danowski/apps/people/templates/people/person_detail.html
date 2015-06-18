@@ -11,7 +11,13 @@
 
 <h1>{{ person.firstname_lastname }}</h1>
 
-<p><a href="{% url 'people:egograph' person.slug %}">view egograph</a></p>
+<ul class="list-inline">
+    <li><a href="{% url 'people:egograph' person.slug %}">view egograph</a></li>
+    <li>(download as
+        <a href="{% url 'people:egograph-export' person.slug 'gexf' %}">GEXF</a> or
+       <a href="{% url 'people:egograph-export' person.slug 'graphml' %}">GraphML</a>)
+   </li>
+</ul>
 
 {% if person.items_created.all.exists and person.issues_edited.all.exists %}
 <div>
@@ -61,25 +67,6 @@
     <ul>
         {% for issue in issue_group.list %}
           <p>{% include 'journals/snippets/issue_link.html' with ed_with=person %}</p>
-        {% endfor %}
-    </ul>
-    </li>
-    {% endwith %}
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if person.issues_contrib_edited.all.exists %}
-<h2>Contributing Editor</h2>
-{# group issues by journal to generate nested list #}
-{% regroup person.issues_contrib_edited.all by journal as issues_by_journal %}
-<ul>  {# NOTE: duplicates above, consider a snippet? #}
-{% for issue_group in issues_by_journal %}
-    {% with journal=issue_group.grouper %}
-    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
-    <ul>
-        {% for issue in issue_group.list %}
-          <p><a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a></p>
         {% endfor %}
     </ul>
     </li>
