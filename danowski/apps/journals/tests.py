@@ -278,10 +278,10 @@ class JournalViewsTestCase(TestCase):
         # list of names display
         eds = new_issue.editors.all()
         self.assertContains(response,
-            '<h3>%s %s, %s %s and %s %s, editors</h3>' % \
-             (eds[0].first_name, eds[0].last_name,
-             eds[1].first_name, eds[1].last_name,
-             eds[2].first_name, eds[2].last_name),
+            '<h3>%s, %s, and %s, editors</h3>' % \
+             (eds[0].firstname_lastname,
+             eds[1].firstname_lastname,
+             eds[2].firstname_lastname),
              html=True,
              msg_prefix='multiple editor names should be listed')
         # NOTE: using html test so whitespace differences will be ignored
