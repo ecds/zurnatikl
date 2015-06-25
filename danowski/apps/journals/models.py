@@ -135,14 +135,15 @@ class Journal(models.Model):
 
     @classmethod
     def author_editor_network(self):
-        'Network of authors, editors, and journals'
+        'Network of authors, editors, translators, and journals'
+
+        # NOTE: this is probably a bit slow to be generating on the fly.
+        # For now, cache the network after it's generated, but that
+        # will need to be refined
         graph = cache.get('journal_auth_ed_network')
         if graph:
             return graph
         graph = nx.MultiGraph()
-
-        # FIXME: this is too slow to do live, but for now at least add
-        # caching
 
         start = time.time()
         journals = Journal.objects.all()
@@ -173,8 +174,19 @@ class Journal(models.Model):
             # authors are connected to the journal they contributed to
             graph.add_edges_from([(p.network_id, j.network_id) for p in authors],
                 label='contributor')
-            # TODO: authors are connected to the editor of the issue they contributed to
-            logger.debug('Added %d journal edges for editors/authors for %s in %.2f sec' % \
+
+            # translators who contributed to the journal
+            translators = Person.objects.filter(items_translated__issue__journal=j).distinct()
+            # this could be redundant if a person was added elsewhere
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in translators],
+                type='Person')
+            count += translators.count()
+            # translators are connected to the journal they contributed to
+            graph.add_edges_from([(p.network_id, j.network_id) for p in translators],
+                label='contributor (translation)')
+
+            logger.debug('Added %d journal edges for editors/authors/translators for %s in %.2f sec' % \
                 (count, j, time.time() - start))
 
         # co-editors
@@ -208,14 +220,32 @@ class Journal(models.Model):
             # setting relationships in both directions
         logger.debug('Added co-author edges in %.2f sec' % (time.time() - start))
 
-        # author/editor
+        # author/editor and translator/editor
         start = time.time()
         editors = Person.objects.filter(issues_edited__isnull=False).distinct()
         for ed in editors:
+            # Note that we could do this in a single query,
+            # but it seems to be faster to do separately
             authors = Person.objects.filter(items_created__issue__editors=ed.pk)
-            graph.add_edges_from([(ed.network_id, auth.network_id) for auth in authors],
+            graph.add_edges_from([(ed.network_id, person.network_id) for person in authors],
                 label='edited')
-        logger.debug('Added author/editor edges in %.2f sec' % (time.time() - start))
+            translators = Person.objects.filter(items_translated__issue__editors=ed.pk)
+            graph.add_edges_from([(ed.network_id, person.network_id) for person in translators],
+                label='edited')
+        logger.debug('Added author/editor and translator/editor edges in %.2f sec' % (time.time() - start))
+
+
+        # author/translator
+        start = time.time()
+        translators = Person.objects.filter(items_translated__isnull=False) \
+            .distinct()
+        # for each translator, find the person whose work they translated
+        for translator in translators:
+            authors = Person.objects.filter(items_created__translators=translator) \
+                                   .exclude(pk=translator.id).distinct()
+            graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
+                label='translated')
+        logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
 
         cache.set('journal_auth_ed_network', graph)
         return graph
