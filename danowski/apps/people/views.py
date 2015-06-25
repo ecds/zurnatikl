@@ -17,12 +17,16 @@ logger = logging.getLogger(__name__)
 class PeopleList(ListView):
     '''List all
     :class:`~danowski.apps.people.models.Person` who have edited
-    at least one :class:`~danowski.apps.journals.models.Issue' or
-    authored one :class:`~danowski.apps.journals.models.Item`.'''
+    at least one :class:`~danowski.apps.journals.models.Issue',
+    authored one :class:`~danowski.apps.journals.models.Item`,
+    or translated one :class:`~danowski.apps.journals.models.Item`.
+    '''
     model = Person
+
     queryset = Person.objects.filter(
             Q(issues_edited__isnull=False) |
-            Q(items_created__isnull=False)
+            Q(items_created__isnull=False) |
+            Q(items_translated__isnull=False)
         ).distinct()
 
 
