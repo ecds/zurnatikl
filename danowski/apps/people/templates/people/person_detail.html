@@ -1,5 +1,6 @@
 {% extends 'site_base.html' %}
 {# display details for a single person #}
+{% load journal_extras %}
 
 {% block content %}
 <ol class="breadcrumb">
@@ -44,7 +45,7 @@
             <li><h4>{% include 'journals/snippets/issue_link.html' %}</h4>
                 <ul>
                     {% for item in issue_items.list %}
-                    <p>{{ item }}</p>
+                    <p>{{ item }}{% if item.translators.all %}, trans. {{ item.translators.all|readable_list:'firstname_lastname' }}{% endif %}</p>
                     {% endfor %}
                 </ul>
             </li>
