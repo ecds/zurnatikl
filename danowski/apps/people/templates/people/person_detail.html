@@ -20,15 +20,22 @@
    </li>
 </ul>
 
-{% if person.items_created.all.exists and person.issues_edited.all.exists %}
+{# only display nav if at least two sections are present #}
+{% if person.items_created.all.exists and person.issues_edited.all.exists or person.items_created.all.exists and person.items_translated.all.exists or person.items_translated.all.exists and person.issues_edited.all.exists %}
 <div>
     <ul>
+        {% if person.items_created.all.exists %}
         <li><a href="#author">Author</a></li>
+        {% endif %}
+        {% if person.issues_edited.all.exists %}
         <li><a href="#editor">Editor</a></li>
+        {% endif %}
+        {% if person.items_translated.all.exists %}
+        <li><a href="#translator">Translator</a></li>
+        {% endif %}
     <ul>
 </div>
 {% endif %}
-
 
 {% if person.items_created.all.exists %}
     <h2><a name="author">Author</a></h2>
@@ -75,6 +82,34 @@
 {% endfor %}
 </ul>
 {% endif %}
+
+{% if person.items_translated.all.exists %} {# NOTE: basically the same as author #}
+    <h2><a name="translator">Translator</a></h2>
+{# group by journal then by issue for nested list of items by journal/issue #}
+{% regroup person.items_translated.all by issue.journal as items_by_journal %}
+<ul>
+{% for item_group in items_by_journal %}
+    {% with journal=item_group.grouper %}
+    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+        <ul>
+        {% regroup item_group.list by issue as items_by_issue %}
+        {% for issue_items in items_by_issue %}
+            {% with issue=issue_items.grouper %}
+            <li><h4>{% include 'journals/snippets/issue_link.html' %}</h4>
+                <ul>
+                    {% for item in issue_items.list %}
+                    <p>{{ item }}{% if item.creators.all %}, by {{ item.creators.all|readable_list:'firstname_lastname' }}{% endif %}</p>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endwith %} {# end issue group #}
+        {% endfor %}
+    </ul></li>{# end journal group #}
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
 
 </div>
 {% endblock %}
