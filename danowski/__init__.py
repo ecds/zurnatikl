@@ -1,4 +1,5 @@
-__version_info__ = (1, 3, 0, None)
+
+__version_info__ = (1, 4, 0, None)
 
 # Dot-connect all but the last. Last is dash-connected if not None.
 __version__ = '.'.join([str(i) for i in __version_info__[:-1]])

@@ -1,5 +1,10 @@
+import itertools
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.functional import cached_property
+from django.utils.text import slugify
 from multiselectfield import MultiSelectField
+
 from danowski.apps.geo.models import Location
 
 
@@ -112,9 +117,36 @@ class Person(models.Model):
     #: notes
     notes = models.TextField(blank=True)
 
+    #: slug for use in urls
+    slug = models.SlugField(unique=True,
+        help_text='Short name for use in URLs. ' +
+        'Leave blank to have a slug automatically generated. ' +
+        'Change carefully, since editing this field this changes the URL on the site.',
+        blank=True)
+    # slug = AutoSlugField(max_length=255, unique=True,
+    #     populate_from=('first_name', 'last_name'))
+
+    class Meta:
+        verbose_name_plural = u'People'
+        unique_together = ('first_name', 'last_name')
+        ordering = ['last_name', 'first_name']
+
     # available reverse relationship names:
     # - issues_edited, issues_contrib_edited
     # - items_created, items_translated, items_mentioned_in
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        # generate a slug if we don't have one set
+        if self.slug is None or len(self.slug) == 0:
+            max_length = Person._meta.get_field('slug').max_length
+            self.slug = orig = slugify(self.firstname_lastname)[:max_length]
+            for x in itertools.count(1):
+                if not Person.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                # Truncate the original slug dynamically. Minus 1 for the hyphen.
+                self.slug = "%s-%d" % (orig[:max_length - len(str(x)) - 1], x)
+
+        super(Person, self).save(force_insert, force_update, *args, **kwargs)
 
     def natural_key(self):
         return (self.first_name, self.last_name)
@@ -125,16 +157,18 @@ class Person(models.Model):
         else:
             return '%s, %s' % (self.last_name, self.first_name)
 
+    def get_absolute_url(self):
+        return reverse('people:person', kwargs={'slug': self.slug})
+
     def race_label(self):
         # format list of race terms for display in admin
         if self.race:
             return ', '.join(self.race)
     race_label.short_description = "Race"
 
-    class Meta:
-        verbose_name_plural = u'People'
-        unique_together = ('first_name', 'last_name')
-        ordering = ['last_name', 'first_name']
+    @property
+    def firstname_lastname(self):
+        return ' '.join([n for n in [self.first_name, self.last_name] if n])
 
     @property
     def network_id(self):
@@ -176,6 +210,30 @@ class Person(models.Model):
         # dwelling locations
         edges.extend([(self.network_id, loc.network_id) for loc in self.dwellings.all()])
         return edges
+
+    @cached_property
+    def coeditors(self):
+        'co-editors on the same issue'
+        return Person.objects.all().filter(issues_edited__editors=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def coauthors(self):
+        'co-authors on the same item'
+        return Person.objects.all().filter(items_created__creators=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def edited_by(self):
+        'authors who contributed to an issue this person edited'
+        return Person.objects.all().filter(items_created__issue__editors=self.id) \
+                                   .exclude(pk=self.id).distinct()
+
+    @cached_property
+    def editors(self):
+        'people who edited works created by this person'
+        return Person.objects.all().filter(issues_edited__item__creators=self.id) \
+                                   .exclude(pk=self.id).distinct()
 
 
 class NameManager(models.Manager):

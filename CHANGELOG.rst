@@ -1,6 +1,27 @@
 CHANGELOG
 =========
 
+Release 1.4 - Initial biography release
+---------------------------------------
+
+* As a user, I want to be able to see a list of authors, editors, and
+  translators so I can know who published in or edited the journals
+  represented.
+* As a user, I want to see a list of titles published by a particular
+  author or translated by a particular translator or a list of issues
+  edited by a particular editor so I can know what they wrote and where
+  it was published.
+* As a user, I want to see a 1-degree ego visualization on an individual
+  author’s, editor’s, or translator's biography page so I can know what
+  people and journals they are connected to.
+* As a user, I want to export a version of a person's ego graph to
+  analyze in network analysis tools so I can better understand how they
+  are connected to each other.
+* As a user, when I add a journal or a person to the dataset I want the
+  slug field to auto-populate so the slugs have a consistent logic to
+  their creation.
+
+
 Release 1.3 - Journal contents & admin improvements
 ---------------------------------------------------
 

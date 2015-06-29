@@ -1,4 +1,7 @@
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.test import TestCase
+import json
 
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
@@ -30,6 +33,22 @@ class SchoolTestCase(TestCase):
 
 class PeopleTestCase(TestCase):
     fixtures = ['test_network.json']
+
+    def test_slug_generation(self):
+        p = Person(first_name='Joe', last_name='Schmoe')
+        p.save()
+        # autogenerate slug
+        self.assertEqual('joe-schmoe', p.slug)
+        # clear out, should reset to the same, even though
+        # this slug is already in the db
+        p.slug = None
+        p.save()
+        self.assertEqual('joe-schmoe', p.slug)
+
+        # single name
+        p = Person(last_name='Madonna')
+        p.save()
+        self.assertEqual('madonna', p.slug)
 
     def test_network_properties(self):
         berrigan = Person.objects.get(last_name='Berrigan')
@@ -76,4 +95,133 @@ class PeopleTestCase(TestCase):
         edge_targets = [t for s, t in edges]
         self.assert_(sf.network_id in edge_targets)
         self.assert_(fifthschool.network_id in edge_targets)
+
+
+class PeopleViewsTestCase(TestCase):
+    fixtures = ['test_network.json']
+
+    def test_list_people(self):
+        response = self.client.get(reverse('people:list'))
+        editors = Person.objects.filter(
+            Q(issues_edited__isnull=False) |
+            Q(issues_contrib_edited__isnull=False))
+        for ed in editors:
+            self.assertContains(response, unicode(ed),
+                msg_prefix='editors should be listed on person browse')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assertContains(response, unicode(auth),
+                msg_prefix='authors should be listed on person browse')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(issues_contrib_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for m in mentions:
+            self.assertNotContains(response, unicode(m),
+                msg_prefix='mentioned people should not be listed on person browse')
+
+    def test_person_detail(self):
+        # berrigan - edited one issue in test data, no items created
+        berrigan = Person.objects.get(last_name='Berrigan')
+        response = self.client.get(reverse('people:person',
+            kwargs={'slug': berrigan.slug}))
+        self.assertContains(response, berrigan.firstname_lastname,
+            msg_prefix='should include Person\'s name as first name + last name')
+        self.assertContains(response, 'Editor',
+            msg_prefix='editor of issues should include "Editor" heading')
+        ed_issue = berrigan.issues_edited.all().first()
+        self.assertContains(response, unicode(ed_issue.journal),
+            msg_prefix='should include journal name for edited issue')
+        self.assertContains(response,
+            reverse('journals:journal', kwargs={'slug': ed_issue.journal.slug}),
+            msg_prefix='should link to journal for edited issue')
+        self.assertContains(response, ed_issue.label,
+            msg_prefix='should include label of edited issue')
+        self.assertContains(response,
+            reverse('journals:issue',
+                kwargs={'journal_slug': ed_issue.journal.slug, 'id': ed_issue.id}),
+            msg_prefix='should link to edited issue')
+        self.assertNotContains(response, 'Contributing Editor',
+            msg_prefix='"Contributing Editor" heading should not be displayed if no issues contrib. edited')
+        self.assertNotContains(response, 'Author',
+            msg_prefix='"Author" heading should not be displayed if no items authored')
+
+        # macarthur - authored one item in test data, no issues edited
+        macarthur = Person.objects.get(last_name='MacArthur')
+        response = self.client.get(reverse('people:person',
+            kwargs={'slug': macarthur.slug}))
+        self.assertContains(response, macarthur.firstname_lastname,
+            msg_prefix='should include Person\'s name as first name + last name')
+        self.assertNotContains(response, '<h2>Editor</h2>', html=True,
+            msg_prefix='"Editor" heading should not be displayed if no issues edited')
+        self.assertNotContains(response, 'Contributing Editor',
+            msg_prefix='"Contributing Editor" heading should not be displayed if no issues contrib. edited')
+        self.assertContains(response, 'Author',
+            msg_prefix='"Author" heading should be displayed for items authored')
+        item = macarthur.items_created.all().first()
+        # item display information
+        self.assertContains(response, unicode(item),
+            msg_prefix='should include label for authored item')
+        self.assertContains(response, item.issue.label,
+            msg_prefix='should include label for issue of authored item')
+        self.assertContains(response,
+            reverse('journals:issue',
+                kwargs={'journal_slug': item.issue.journal.slug, 'id': item.issue.id}),
+            msg_prefix='should link to issue for authored item')
+        self.assertContains(response, unicode(item.issue.journal),
+            msg_prefix='should include journal name for authored item')
+        self.assertContains(response,
+            reverse('journals:journal', kwargs={'slug': item.issue.journal.slug}),
+            msg_prefix='should link to journal for authored item')
+
+    def test_egograph(self):
+        # main egograph page just loads json & sigma js
+        # berrigan - edited one issue in test data, no items created
+        berrigan = Person.objects.get(last_name='Berrigan')
+        response = self.client.get(reverse('people:egograph',
+            kwargs={'slug': berrigan.slug}))
+        self.assertContains(response, berrigan.firstname_lastname,
+            msg_prefix='egograph page should diplay person\'s name')
+        self.assertContains(response,
+            reverse('people:person', kwargs={'slug': berrigan.slug}),
+            msg_prefix='egograph should link to main person page')
+        self.assertContains(response,
+            reverse('people:egograph-json', kwargs={'slug': berrigan.slug}),
+            msg_prefix='egograph page should load json for egograph')
+
+    def test_egograph_json(self):
+        berrigan = Person.objects.get(last_name='Berrigan')
+        response = self.client.get(reverse('people:egograph-json',
+            kwargs={'slug': berrigan.slug}))
+        # basic sanity checking that this is json & looks as expected
+        self.assertEqual(response['content-type'], 'application/json')
+        self.assert_('edges' in response.content)
+        self.assert_('nodes' in response.content)
+
+
+    def test_egograph_export(self):
+        berrigan = Person.objects.get(last_name='Berrigan')
+        # basic testing that the export formats are correct
+        # and include the requested person
+        # testing the generated network should happen elsewhere
+
+        # gexf format
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'gexf'}))
+        self.assertEqual(response['content-type'], 'application/gexf+xml')
+        self.assertContains(response, '<gexf')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
+
+        # graphml
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'graphml'}))
+        self.assertEqual(response['content-type'], 'application/graphml+xml')
+        self.assertContains(response, '<graphml')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
+
 

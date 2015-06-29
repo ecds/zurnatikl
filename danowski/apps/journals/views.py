@@ -5,6 +5,7 @@ from django.http import Http404
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 
+from danowski.apps.network.base_views import NetworkGraphExportView
 from .models import Journal, Issue, Item
 from .forms import SearchForm
 
@@ -63,3 +64,15 @@ class SearchView(View):
             ctx['items'] = items
 
         return render(request, self.template_name, ctx)
+
+
+class AuthorEditorNetworkExport(NetworkGraphExportView):
+    '''Downloadable eggograph for journals, authors, and editors
+    :class:`~danowski.apps.people.models.Person` in GEXF or GraphML.'''
+    filename = 'journals-authors-editors'
+
+    def get_context_data(self, **kwargs):
+        # full journal-author-editor network
+        return Journal.author_editor_network()
+        # set person slug as base filename
+

@@ -1,8 +1,18 @@
 from django.db import models
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
+from django.utils.text import slugify
+import itertools
+import logging
+import networkx as nx
+import time
+
 from danowski.apps.geo.models import Location
 from danowski.apps.people.models import Person, School
 from django_date_extensions import fields as ddx
-from django.core.urlresolvers import reverse
+
+
+logger = logging.getLogger(__name__)
 
 
 # for parsing natural key
@@ -30,11 +40,41 @@ class PlaceName(models.Model):
     def __unicode__(self):
         return self.name
 
+class JournalQuerySet(models.QuerySet):
+
+    def by_editor(self, person):
+        '''Find all journals that a person edited issues for.'''
+        return self.filter(issue__editors=person).distinct()
+
+    def by_author(self, person):
+        '''Find all journals that a person contributed to as an author.'''
+        return self.filter(issue__item__creators=person).distinct()
+
+    def by_editor_or_author(self, person):
+        '''Find all journals that a person edited issues for or contributed
+        content to as an author.'''
+        return self.filter(
+            models.Q(issue__editors=person) |
+            models.Q(issue__contributing_editors=person) |
+            models.Q(issue__item__creators=person)
+            ).distinct()
 
 # for parsing natural key
 class JournalManager(models.Manager):
+    def get_queryset(self):
+        return JournalQuerySet(self.model, using=self._db)
+
     def get_by_natural_key(self, title):
         return self.get(title=title)
+
+    def by_editor_or_author(self, person):
+        return self.get_queryset().by_editor_or_author(person)
+
+    def by_editor(self, person):
+        return self.get_queryset().by_editor(person)
+
+    def by_author(self, person):
+        return self.get_queryset().by_author(person)
 
 class Journal(models.Model):
     'A Journal or Magazine'
@@ -55,8 +95,9 @@ class Journal(models.Model):
     #: any additional notes
     notes = models.TextField(blank=True)
     #: slug for use in urls
-    slug = models.SlugField(unique=True,
+    slug = models.SlugField(unique=True, blank=True,
         help_text='Short name for use in URLs. ' +
+        'Leave blank to have a slug automatically generated. ' +
         'Change carefully, since editing this field this changes the site URL.')
 
     # generate natural key
@@ -68,6 +109,20 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        # generate a slug if we don't have one set
+        if self.slug is None or len(self.slug) == 0:
+            max_length = Journal._meta.get_field('slug').max_length
+            self.slug = orig = slugify(self.title)[:max_length]
+            for x in itertools.count(1):
+                if not Journal.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                # Truncate the original slug dynamically. Minus 1 for the hyphen.
+                self.slug = "%s-%d" % (orig[:max_length - len(str(x)) - 1], x)
+
+        super(Journal, self).save(force_insert, force_update, *args, **kwargs)
+
 
     def get_absolute_url(self):
         return reverse('journals:journal', kwargs={'slug': self.slug})
@@ -93,6 +148,124 @@ class Journal(models.Model):
     def network_edges(self):
         #: list of tuples for edges in the network
         return [(self.network_id, school.network_id) for school in self.schools.all()]
+
+
+    @classmethod
+    def author_editor_network(self):
+        'Network of authors, editors, translators, and journals'
+
+        # NOTE: this is probably a bit slow to be generating on the fly.
+        # For now, cache the network after it's generated, but that
+        # will need to be refined
+        graph = cache.get('journal_auth_ed_network')
+        if graph:
+            return graph
+        graph = nx.MultiGraph()
+
+        start = time.time()
+        journals = Journal.objects.all()
+        graph.add_nodes_from(
+            # node id, node attributes
+            [(j.network_id, {'label': unicode(j)}) for j in journals],
+            type='Journal')
+        for j in journals:
+            count = 0
+            # editors of the journal
+            editors = Person.objects.filter(issues_edited__journal=j).distinct()
+            # add people to the graph
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in editors],
+                type='Person')
+            # editors are connected to the journal they edited
+            graph.add_edges_from([(p.network_id, j.network_id) for p in editors],
+                label='editor')
+            count += editors.count()
+
+            # authors who contributed to the journal
+            authors = Person.objects.filter(items_created__issue__journal=j).distinct()
+            # this could be redundant if a person was added elsewhere
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in authors],
+                type='Person')
+            count += authors.count()
+            # authors are connected to the journal they contributed to
+            graph.add_edges_from([(p.network_id, j.network_id) for p in authors],
+                label='contributor')
+
+            # translators who contributed to the journal
+            translators = Person.objects.filter(items_translated__issue__journal=j).distinct()
+            # this could be redundant if a person was added elsewhere
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname}) for p in translators],
+                type='Person')
+            count += translators.count()
+            # translators are connected to the journal they contributed to
+            graph.add_edges_from([(p.network_id, j.network_id) for p in translators],
+                label='contributor (translation)')
+
+            logger.debug('Added %d journal edges for editors/authors/translators for %s in %.2f sec' % \
+                (count, j, time.time() - start))
+
+        # co-editors
+        start = time.time()
+        co_editors = Person.objects.filter(issues_edited__isnull=False) \
+            .annotate(editor_count=models.Count('issues_edited__editors')) \
+            .filter(editor_count__gt=1).distinct()
+        # for each editor, find the people they edited with
+        for ed in co_editors:
+            co_eds = Person.objects.filter(issues_edited__editors=ed) \
+                                   .exclude(pk=ed.id).distinct()
+            graph.add_edges_from([(ed.network_id, co_ed.network_id) for co_ed in co_eds],
+                label='co-editor')
+            # NOTE: this is redundant since we will be setting relationships
+            # both directions
+        logger.debug('Added co-editor edges in %.2f sec' % (time.time() - start))
+
+        # co-authors
+        start = time.time()
+        co_authors = Person.objects.filter(items_created__isnull=False) \
+            .annotate(creator_count=models.Count('items_created__creators')) \
+            .filter(creator_count__gt=1).distinct()
+        # for each author, find the people they authored with
+        # FIMXE: this is slow, currently 11 seconds for our data
+        for auth in co_authors:
+            co_auths = Person.objects.filter(items_created__creators=auth) \
+                                   .exclude(pk=auth.id).distinct()
+            graph.add_edges_from([(auth.network_id, co_auth.network_id) for co_auth in co_auths],
+                label='co-author')
+            # NOTE: some of these are redundant because we are
+            # setting relationships in both directions
+        logger.debug('Added co-author edges in %.2f sec' % (time.time() - start))
+
+        # author/editor and translator/editor
+        start = time.time()
+        editors = Person.objects.filter(issues_edited__isnull=False).distinct()
+        for ed in editors:
+            # Note that we could do this in a single query,
+            # but it seems to be faster to do separately
+            authors = Person.objects.filter(items_created__issue__editors=ed.pk)
+            graph.add_edges_from([(ed.network_id, person.network_id) for person in authors],
+                label='edited')
+            translators = Person.objects.filter(items_translated__issue__editors=ed.pk)
+            graph.add_edges_from([(ed.network_id, person.network_id) for person in translators],
+                label='edited')
+        logger.debug('Added author/editor and translator/editor edges in %.2f sec' % (time.time() - start))
+
+
+        # author/translator
+        start = time.time()
+        translators = Person.objects.filter(items_translated__isnull=False) \
+            .distinct()
+        # for each translator, find the person whose work they translated
+        for translator in translators:
+            authors = Person.objects.filter(items_created__translators=translator) \
+                                   .exclude(pk=translator.id).distinct()
+            graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
+                label='translated')
+        logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
+
+        cache.set('journal_auth_ed_network', graph)
+        return graph
 
 
 class IssueManager(models.Manager):
@@ -312,7 +485,7 @@ class Item(models.Model):
     notes = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['start_page', 'end_page', 'title']
+        ordering = ['issue', 'start_page', 'end_page', 'title']
 
     # generate natural key
     def natural_key(self):
