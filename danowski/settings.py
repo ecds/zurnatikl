@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     #### local dependencies
     'ajax_select',
     'eultheme',
+    'downtime',      # required by eultheme even if we aren't using it
     'widget_tweaks',
     #### local apps
     'danowski.apps.admin',
