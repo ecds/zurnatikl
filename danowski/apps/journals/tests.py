@@ -11,6 +11,17 @@ from danowski.apps.people.models import School, Person
 class JournalTestCase(TestCase):
     fixtures = ['test_network.json']
 
+    def test_slug_generation(self):
+        j = Journal(title='The Best Journal Ever')
+        j.save()
+        # autogenerate slug on save
+        self.assertEqual('the-best-journal-ever', j.slug)
+        # clear out, should reset to the same, even though
+        # this slug is already in the db
+        j.slug = None
+        j.save()
+        self.assertEqual('the-best-journal-ever', j.slug)
+
     def test_network_properties(self):
         # journal with a publisher
         beat = Journal.objects.get(title='Beatitude')

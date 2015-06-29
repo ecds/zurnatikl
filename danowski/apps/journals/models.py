@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.utils.text import slugify
+import itertools
 import logging
 import networkx as nx
 import time
@@ -93,8 +95,9 @@ class Journal(models.Model):
     #: any additional notes
     notes = models.TextField(blank=True)
     #: slug for use in urls
-    slug = models.SlugField(unique=True,
+    slug = models.SlugField(unique=True, blank=True,
         help_text='Short name for use in URLs. ' +
+        'Leave blank to have a slug automatically generated. ' +
         'Change carefully, since editing this field this changes the site URL.')
 
     # generate natural key
@@ -106,6 +109,20 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        # generate a slug if we don't have one set
+        if self.slug is None or len(self.slug) == 0:
+            max_length = Journal._meta.get_field('slug').max_length
+            self.slug = orig = slugify(self.title)[:max_length]
+            for x in itertools.count(1):
+                if not Journal.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                # Truncate the original slug dynamically. Minus 1 for the hyphen.
+                self.slug = "%s-%d" % (orig[:max_length - len(str(x)) - 1], x)
+
+        super(Journal, self).save(force_insert, force_update, *args, **kwargs)
+
 
     def get_absolute_url(self):
         return reverse('journals:journal', kwargs={'slug': self.slug})

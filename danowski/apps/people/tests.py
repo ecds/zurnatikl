@@ -34,6 +34,22 @@ class SchoolTestCase(TestCase):
 class PeopleTestCase(TestCase):
     fixtures = ['test_network.json']
 
+    def test_slug_generation(self):
+        p = Person(first_name='Joe', last_name='Schmoe')
+        p.save()
+        # autogenerate slug
+        self.assertEqual('joe-schmoe', p.slug)
+        # clear out, should reset to the same, even though
+        # this slug is already in the db
+        p.slug = None
+        p.save()
+        self.assertEqual('joe-schmoe', p.slug)
+
+        # single name
+        p = Person(last_name='Madonna')
+        p.save()
+        self.assertEqual('madonna', p.slug)
+
     def test_network_properties(self):
         berrigan = Person.objects.get(last_name='Berrigan')
 

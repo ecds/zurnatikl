@@ -1,11 +1,11 @@
+import itertools
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
-import networkx as nx
+from django.utils.text import slugify
 from multiselectfield import MultiSelectField
 
 from danowski.apps.geo.models import Location
-from danowski.apps.network.utils import add_nodes_to_graph, add_edges_to_graph
 
 #Schools
 class SchoolManager(models.Manager):
@@ -119,7 +119,11 @@ class Person(models.Model):
     #: slug for use in urls
     slug = models.SlugField(unique=True,
         help_text='Short name for use in URLs. ' +
-        'Change carefully, since editing this field this changes the URL on the site.')
+        'Leave blank to have a slug automatically generated. ' +
+        'Change carefully, since editing this field this changes the URL on the site.',
+        blank=True)
+    # slug = AutoSlugField(max_length=255, unique=True,
+    #     populate_from=('first_name', 'last_name'))
 
     class Meta:
         verbose_name_plural = u'People'
@@ -129,6 +133,19 @@ class Person(models.Model):
     # available reverse relationship names:
     # - issues_edited, issues_contrib_edited
     # - items_created, items_translated, items_mentioned_in
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        # generate a slug if we don't have one set
+        if self.slug is None or len(self.slug) == 0:
+            max_length = Person._meta.get_field('slug').max_length
+            self.slug = orig = slugify(self.firstname_lastname)[:max_length]
+            for x in itertools.count(1):
+                if not Person.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                # Truncate the original slug dynamically. Minus 1 for the hyphen.
+                self.slug = "%s-%d" % (orig[:max_length - len(str(x)) - 1], x)
+
+        super(Person, self).save(force_insert, force_update, *args, **kwargs)
 
     def natural_key(self):
         return (self.first_name, self.last_name)
