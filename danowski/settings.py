@@ -87,7 +87,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+SITE_ID = 1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -127,20 +127,21 @@ except ImportError:
         of localsettings.py for this site. See localsettings.py.dist for
         setup details.'''
 
-# load & configure django_nose if available
+# enable django-debug-toolbar if installed
+try:
+    import debug_toolbar
+    INSTALLED_APPS.append('debug_toolbar')
+except ImportError:
+    pass
 
-django_nose = None
+# load & configure django_nose if available (only needed for development)
 try:
     # NOTE: errors if DATABASES is not configured (in some cases),
     # so this must be done after importing localsettings
     import django_nose
-except ImportError:
-    pass
-
-# - only if django_nose is installed, so it is only required for development
-if django_nose is not None:
     INSTALLED_APPS.append('django_nose')
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
     # currently no plugins or extra command line options needed
-
+except ImportError:
+    pass
 

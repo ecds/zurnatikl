@@ -125,7 +125,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "john-kelly"
     },
     "model": "people.person",
     "pk": 1
@@ -140,7 +141,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "ted-berrigan"
     },
     "model": "people.person",
     "pk": 2
@@ -155,7 +157,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "allen-de-loach"
     },
     "model": "people.person",
     "pk": 3
@@ -170,7 +173,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "ji-zhang"
     },
     "model": "people.person",
     "pk": 4
@@ -185,7 +189,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "carl-solomon"
     },
     "model": "people.person",
     "pk": 5
@@ -200,7 +205,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "dante-alighieri"
     },
     "model": "people.person",
     "pk": 6
@@ -215,7 +221,8 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": []
+        "schools": [],
+        "slug": "douglas-macarthur"
     },
     "model": "people.person",
     "pk": 7

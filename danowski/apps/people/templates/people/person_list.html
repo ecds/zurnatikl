@@ -1,0 +1,20 @@
+{% extends 'site_base.html' %}
+{# list authors and editors #}
+
+{% block content %}
+<div class="container">
+<h1>Authors, Editors, and Translators</h1>
+
+<p>{{ object_list.count }} people who are editors, authors, or translators.</p>
+
+<div class="columns">
+{% for person in object_list %}
+    <div>
+        <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
+    </div>
+{% endfor %}
+</div>
+
+</div>
+{% endblock %}
+

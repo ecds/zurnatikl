@@ -15,19 +15,7 @@
 
 <ul>
 {% for issue in journal.issue_set.all %}
-    <li>
-        <a href="{% url 'journals:issue' journal.slug issue.id %}">{{ issue.label }}</a>
-            ({{ issue.date }}),
-
-        {% with editors=issue.editors.all %}
-           {% if editors %}
-           ed. {% for ed in editors %}
-               {{ ed.first_name }} {{ ed.last_name }}{% if forloop.revcounter == 2 and forloop.counter >= 1 %} and {% elif not forloop.last %}, {% endif %}
-           {% endfor %}
-           {% endif %}
-        {% endwith %}
-
-    </li>
+    <li>{% include 'journals/snippets/issue_link.html' %}</li>
 {% endfor %}
 </ul>
 

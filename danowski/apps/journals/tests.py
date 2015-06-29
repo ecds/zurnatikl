@@ -4,10 +4,23 @@ from django.core.urlresolvers import reverse
 from danowski.apps.geo.models import Location
 from danowski.apps.journals.models import Journal, Issue, Item, \
     PlaceName
+from danowski.apps.journals.templatetags.journal_extras import \
+    readable_list, all_except
 from danowski.apps.people.models import School, Person
 
 class JournalTestCase(TestCase):
     fixtures = ['test_network.json']
+
+    def test_slug_generation(self):
+        j = Journal(title='The Best Journal Ever')
+        j.save()
+        # autogenerate slug on save
+        self.assertEqual('the-best-journal-ever', j.slug)
+        # clear out, should reset to the same, even though
+        # this slug is already in the db
+        j.slug = None
+        j.save()
+        self.assertEqual('the-best-journal-ever', j.slug)
 
     def test_network_properties(self):
         # journal with a publisher
@@ -276,10 +289,10 @@ class JournalViewsTestCase(TestCase):
         # list of names display
         eds = new_issue.editors.all()
         self.assertContains(response,
-            '<h3>%s %s, %s %s and %s %s, editors</h3>' % \
-             (eds[0].first_name, eds[0].last_name,
-             eds[1].first_name, eds[1].last_name,
-             eds[2].first_name, eds[2].last_name),
+            '<h3>%s, %s, and %s, editors</h3>' % \
+             (eds[0].firstname_lastname,
+             eds[1].firstname_lastname,
+             eds[2].firstname_lastname),
              html=True,
              msg_prefix='multiple editor names should be listed')
         # NOTE: using html test so whitespace differences will be ignored
@@ -327,3 +340,54 @@ class JournalViewsTestCase(TestCase):
                 kwargs={'journal_slug': item.issue.journal.slug,
                         'id': item.issue.id}),
             msg_prefix='search results should link to issue the item belongs to')
+
+
+## test custom template tags
+
+class ReadableListTestCase(TestCase):
+
+    def test_readable_list(self):
+        # empty
+        self.assertEqual('', readable_list([]))
+
+        # one item
+        self.assertEqual('one', readable_list(['one']))
+        # attribute specified
+        self.assertEqual('1', readable_list([Item(title='1')], 'title'))
+
+        # two items
+        self.assertEqual('one and two', readable_list(['one', 'two']))
+        # attribute specified
+        self.assertEqual('1 and 2', readable_list(
+            [Item(title='1'), Item(title='2')], 'title'))
+
+        # three or more items
+        self.assertEqual('one, two, and three',
+            readable_list(['one', 'two', 'three']))
+        # attribute specified
+        self.assertEqual('1, 2, and 3', readable_list(
+            [Item(title='1'), Item(title='2'), Item(title='3')], 'title'))
+
+        self.assertEqual('one, two, three, and four',
+            readable_list(['one', 'two', 'three', 'four']))
+        # attribute specified
+        self.assertEqual('1, 2, 3, and 4', readable_list(
+            [Item(title='1'), Item(title='2'), Item(title='3'),
+             Item(title='4')], 'title'))
+
+    def test_error_handling(self):
+        self.assertEqual(None, readable_list(1))
+
+
+class AllExceptTestCase(TestCase):
+
+    def test_all_except(self):
+        self.assertEqual([], all_except([], 'foo'))
+        self.assertEqual([], all_except(['foo'], 'foo'))
+        self.assertEqual(['bar', 'baz'], all_except(['foo', 'bar', 'baz'], 'foo'))
+        self.assertEqual(['foo', 'baz'], all_except(['foo', 'bar', 'baz'], 'bar'))
+        self.assertEqual(['foo', 'bar'], all_except(['foo', 'bar', 'baz'], 'baz'))
+        # technically, can be used on a string too
+        self.assertEqual(['o', 's', 'e', 's', 'e'], all_except('nonsense', 'n'))
+
+        self.assertEqual(None, all_except(1, 'one'))
