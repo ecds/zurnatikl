@@ -1,14 +1,13 @@
 import logging
-import time
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 import networkx as nx
-from networkx.readwrite import json_graph
 
 from .models import Person
 from zurnatikl.apps.journals.models import Journal
-from zurnatikl.apps.network.base_views import JSONView, NetworkGraphExportView
+from zurnatikl.apps.network.base_views import SigmajsJSONView, \
+   NetworkGraphExportView
 
 
 logger = logging.getLogger(__name__)
@@ -61,33 +60,10 @@ class EgographBaseView(SingleObjectMixin):
         return nx.generators.ego.ego_graph(graph, person.network_id, 1)
 
 
-class EgographJSON(JSONView, EgographBaseView):
+class EgographJSON(SigmajsJSONView, EgographBaseView):
     '''Egograph for a single :class:`~zurnatikl.apps.people.models.Person`
     in a JSON format appropriate for use with Sigma.js'''
-
-    def get_context_data(self, **kwargs):
-        graph = super(EgographJSON, self).get_context_data(**kwargs)
-        start = time.time()
-        data = json_graph.node_link_data(graph,
-            attrs=dict(id='id', source='source', target='target', key='id'))
-        logger.debug('Generated json in %.2f sec' % \
-            (time.time() - start))
-
-        start = time.time()
-        # networkx json format is not quite what sigma wants
-        # rename links -> edges
-        data['edges'] = data.pop('links')
-        i = 0
-        for edge in data['edges']:
-            # output doesn't include edge ids, but sigma wants them
-            edge['id'] = i
-            # output references source/target by index, not id
-            edge['source'] = data['nodes'][edge['source']]['id']
-            edge['target'] = data['nodes'][edge['target']]['id']
-            i += 1
-        logger.debug('Converted json for sigma.js in %.2f sec' % \
-            (time.time() - start))
-        return data
+    pass
 
 
 class EgographExport(NetworkGraphExportView, EgographBaseView):

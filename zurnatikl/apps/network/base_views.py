@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import TemplateView, View
+import logging
 from lxml import etree
-from networkx.readwrite import gexf, graphml
+from networkx.readwrite import gexf, graphml, json_graph
 import os
 from StringIO import StringIO
+import time
+
+
+logger = logging.getLogger(__name__)
+
 
 # JSON mixin and view borrowed from
 # https://docs.djangoproject.com/en/1.8/topics/class-based-views/mixins/#jsonresponsemixin-example
@@ -30,6 +36,36 @@ class JSONResponseMixin(object):
 class JSONView(JSONResponseMixin, TemplateView):
     def render_to_response(self, context, **response_kwargs):
         return self.render_to_json_response(context, **response_kwargs)
+
+
+class SigmajsJSONView(JSONView):
+    '''Convert an nx network graph into a JSON format appropriate for
+    use with Sigma.js and serve it out as a JSON response.  Expects
+    get_context_data to return the nx graph to be converted.'''
+
+    def get_context_data(self, **kwargs):
+        graph = super(SigmajsJSONView, self).get_context_data(**kwargs)
+        start = time.time()
+        data = json_graph.node_link_data(graph,
+            attrs=dict(id='id', source='source', target='target', key='id'))
+        logger.debug('Generated json in %.2f sec' % \
+            (time.time() - start))
+
+        start = time.time()
+        # networkx json format is not quite what sigma wants
+        # rename links -> edges
+        data['edges'] = data.pop('links')
+        i = 0
+        for edge in data['edges']:
+            # output doesn't include edge ids, but sigma wants them
+            edge['id'] = i
+            # output references source/target by index, not id
+            edge['source'] = data['nodes'][edge['source']]['id']
+            edge['target'] = data['nodes'][edge['target']]['id']
+            i += 1
+        logger.debug('Converted json for sigma.js in %.2f sec' % \
+            (time.time() - start))
+        return data
 
 
 class NetworkGraphExportMixin(object):

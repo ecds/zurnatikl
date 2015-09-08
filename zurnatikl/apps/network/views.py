@@ -1,6 +1,5 @@
 import logging
 import networkx as nx
-from networkx.readwrite import json_graph
 import time
 
 from django.views.generic import ListView
@@ -9,7 +8,8 @@ from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item
 from zurnatikl.apps.people.models import Person, School
 from .utils import add_nodes_to_graph, add_edges_to_graph
-from .base_views import NetworkGraphExportView, JSONView, NetworkGraphExportView
+from .base_views import NetworkGraphExportView, SigmajsJSONView, \
+    NetworkGraphExportView
 
 logger = logging.getLogger(__name__)
 
@@ -121,35 +121,10 @@ class SchoolsNetworkBaseView(SchoolsNetwork):
         return graph
 
 
-class SchoolsNetworkJSON(JSONView, SchoolsNetworkBaseView):
+class SchoolsNetworkJSON(SigmajsJSONView, SchoolsNetworkBaseView):
     '''Network graph based on a number of :class:`~zurnatikl.apps.people.models.School`
     objects in a JSON format appropriate for use with Sigma.js'''
-
-    def get_context_data(self, **kwargs):
-        graph = super(SchoolsNetworkJSON, self).get_context_data(**kwargs)
-        start = time.time()
-        data = json_graph.node_link_data(graph,
-            attrs=dict(id='id', source='source', target='target', key='id'))
-        logger.debug('Generated json in %.2f sec' % \
-            (time.time() - start))
-
-        start = time.time()
-        # networkx json format is not quite what sigma wants
-        # TODO: refactor into common location for reusability
-        # rename links -> edges
-        data['edges'] = data.pop('links')
-        i = 0
-        for edge in data['edges']:
-            # output doesn't include edge ids, but sigma wants them
-            edge['id'] = i
-            # output references source/target by index, not id
-            edge['source'] = data['nodes'][edge['source']]['id']
-            edge['target'] = data['nodes'][edge['target']]['id']
-            i += 1
-        logger.debug('Converted json for sigma.js in %.2f sec' % \
-            (time.time() - start))
-        return data
-
+    pass
 
 class SchoolsNetworkExport(NetworkGraphExportView, SchoolsNetworkBaseView):
     '''Downloadable eggograph for a
