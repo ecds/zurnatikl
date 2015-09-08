@@ -8,8 +8,8 @@ from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item
 from zurnatikl.apps.people.models import Person, School
 from .utils import add_nodes_to_graph, add_edges_to_graph
-from .base_views import NetworkGraphExportView, SigmajsJSONView, \
-    NetworkGraphExportView
+from .base_views import NetworkGraphExportView, SigmajsJSONView
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,47 +78,7 @@ class SchoolsNetworkBaseView(SchoolsNetwork):
     for use in disseminating the graph as JSON, GEXF, or GraphML.'''
 
     def get_context_data(self, **kwargs):
-        schools = self.get_queryset()
-
-        # generate the graph
-        graph = nx.Graph()  # multi? directional?
-        start = time.time()
-        graph.add_nodes_from(
-            # node id, node attributes
-            [(s.network_id, {'label': unicode(s)}) for s in schools],
-            type='School')
-
-        # add people, places, & journals associated with each school
-        for s in schools:
-            # a school may have one or more locations
-            graph.add_nodes_from(
-                [(loc.network_id, {'label': loc.short_label})
-                for loc in s.locations.all()],
-                type='Place')
-            graph.add_edges_from([(s.network_id, loc.network_id)
-                                  for loc in s.locations.all()])
-
-            # people can be associated with one or more schools
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname})
-                  for p in s.person_set.all()],
-                type='Person')
-            graph.add_edges_from([(s.network_id, p.network_id)
-                                  for p in s.person_set.all()])
-
-            # a journal can also be associated with a school
-            graph.add_nodes_from(
-                [(j.network_id, {'label': unicode(j)})
-                for j in s.journal_set.all()],
-                type='Journal')
-            graph.add_edges_from([(s.network_id, j.network_id)
-                                  for j in s.journal_set.all()])
-
-            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
-                (s.locations.all().count(), s.person_set.all().count(),
-                 s.journal_set.all().count(), s, time.time() - start))
-
-        return graph
+        return School.schools_network(self.get_queryset())
 
 
 class SchoolsNetworkJSON(SigmajsJSONView, SchoolsNetworkBaseView):

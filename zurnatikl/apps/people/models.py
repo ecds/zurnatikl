@@ -3,9 +3,16 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+import logging
 from multiselectfield import MultiSelectField
+import networkx as nx
+import time
 
 from zurnatikl.apps.geo.models import Location
+
+
+logger = logging.getLogger(__name__)
+
 
 #Schools
 class SchoolManager(models.Manager):
@@ -76,6 +83,54 @@ class School(models.Model):
         # tuple format:
         # source node id, target node id, optional dict of attributes (i.e. edge label)
         return [(self.network_id, loc.network_id) for loc in self.locations.all()]
+
+
+
+    @classmethod
+    def schools_network(cls, schools):
+        # generate a network graph for people, places, and journals
+        # associated with a set of schools (e.g., all schools categorized
+        # by a particular person)
+        graph = nx.Graph()
+        graph.add_nodes_from(
+            # node id, node attributes
+            [(s.network_id, {'label': unicode(s)}) for s in schools],
+            type='School')
+
+        # add people, places, & journals associated with each school
+        for s in schools:
+            start = time.time()
+            # a school may have one or more locations
+            graph.add_nodes_from(
+                [(loc.network_id, {'label': loc.short_label})
+                for loc in s.locations.all()],
+                type='Place')
+            graph.add_edges_from([(s.network_id, loc.network_id)
+                                  for loc in s.locations.all()])
+
+            # people can be associated with one or more schools
+            graph.add_nodes_from(
+                [(p.network_id, {'label': p.firstname_lastname})
+                  for p in s.person_set.all()],
+                type='Person')
+            graph.add_edges_from([(s.network_id, p.network_id)
+                                  for p in s.person_set.all()])
+
+            # journals can also be associated with a school
+            graph.add_nodes_from(
+                [(j.network_id, {'label': unicode(j)})
+                for j in s.journal_set.all()],
+                type='Journal')
+            graph.add_edges_from([(s.network_id, j.network_id)
+                                  for j in s.journal_set.all()])
+
+            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
+                (s.locations.all().count(), s.person_set.all().count(),
+                 s.journal_set.all().count(), s, time.time() - start))
+
+        return graph
+
+
 
 
 # Person and person parts

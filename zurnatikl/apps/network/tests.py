@@ -96,3 +96,40 @@ class GenerateNetworkTest(TestCase):
         self.assertNotContains(response, 'Yugen',
             msg_prefix='graphml should not convert unicode to ascii')
         # NOTE: could also test labels getting copied to names
+
+
+class PeopleViewsTestCase(TestCase):
+    fixtures = ['test_network.json']
+
+    def test_schools(self):
+        # main schools network page just loads json & sigma js
+        response = self.client.get(reverse('network:schools',
+            kwargs={'slug': 'donald-allen'}))
+        self.assertContains(response,
+            reverse('people:schools-json', kwargs={'slug': 'donald-allen'}),
+            msg_prefix='egograph page should load json for schools network')
+
+    def test_schools_json(self):
+        response = self.client.get(reverse('network:schools-json',
+            kwargs={'slug': 'donald-allen'}))
+        # basic sanity checking that this is json & looks as expected
+        self.assertEqual(response['content-type'], 'application/json')
+        self.assert_('edges' in response.content)
+        self.assert_('nodes' in response.content)
+
+    def test_egograph_export(self):
+        # basic testing that the view is configured correctly
+
+        # gexf format
+        response = self.client.get(reverse('network:schools-export',
+            kwargs={'slug': 'donald-allen', 'fmt': 'gexf'}))
+        self.assertEqual(response['content-type'], 'application/gexf+xml')
+        self.assertContains(response, '<gexf')
+
+        # graphml
+        response = self.client.get(reverse('network:schools-export',
+            kwargs={'slug': 'donald-allen', 'fmt': 'graphml'}))
+        self.assertEqual(response['content-type'], 'application/graphml+xml')
+        self.assertContains(response, '<graphml')
+
+

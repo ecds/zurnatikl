@@ -1,10 +1,10 @@
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
-import json
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.people.models import Person, School
+
 
 class SchoolTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -29,6 +29,46 @@ class SchoolTestCase(TestCase):
         self.assertFalse(beats.has_network_edges,
             'school with no location should have no network edges')
         self.assertEqual([], beats.network_edges)
+
+    def test_schools_network(self):
+        schools = School.objects.all()
+        # generate network from all schools in our fixture data
+        graph = School.schools_network(schools)
+
+
+        # each school and every associated person, place, and journal
+        # should be included in the network and have an edge
+        # connecting school and corresponding person/place/journal
+
+        for s in schools:
+            self.assert_(s.network_id in graph.nodes())
+            node = graph.node[s.network_id]
+            self.assertEqual('School', node['type'])
+            self.assertEqual(unicode(s), node['label'])
+
+            for p in s.person_set.all():
+                self.assert_(p.network_id in graph.nodes())
+                node = graph.node[p.network_id]
+                self.assertEqual('Person', node['type'])
+                self.assertEqual(p.firstname_lastname, node['label'])
+
+                self.assert_(s.network_id in graph.edge[p.network_id])
+
+            for j in s.journal_set.all():
+                self.assert_(j.network_id in graph.nodes())
+                node = graph.node[j.network_id]
+                self.assertEqual('Journal', node['type'])
+                self.assertEqual(unicode(j), node['label'])
+
+                self.assert_(s.network_id in graph.edge[j.network_id])
+
+            for loc in s.locations.all():
+                self.assert_(loc.network_id in graph.nodes())
+                node = graph.node[loc.network_id]
+                self.assertEqual('Place', node['type'])
+                self.assertEqual(loc.short_label, node['label'])
+
+                self.assert_(s.network_id in graph.edge[loc.network_id])
 
 
 class PeopleTestCase(TestCase):
