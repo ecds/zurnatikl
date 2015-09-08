@@ -18,11 +18,12 @@ class School(models.Model):
 
     objects = SchoolManager()
 
-    CATEGORIZER_CHOICES =(
-        ('donald-allen', 'Donald Allen'),
-        # NOTE: stored value of categorizer should be written in slug
-        # format, for use in network urls
-    )
+    CATEGORIZERS = {'donald-allen': 'Donald Allen'}
+    # NOTE: stored value of categorizer should be written in slug
+    # format, for use in network urls
+
+    CATEGORIZER_CHOICES = ((k, v) for k, v in CATEGORIZERS.iteritems())
+    # django requires list of tuple for field choices
 
     name = models.CharField(max_length=255)
     ''' Name of school of poetry'''
@@ -46,6 +47,11 @@ class School(models.Model):
     def location_names(self):
         return '; '.join([unicode(loc) for loc in self.locations.all()])
     location_names.short_description = u'Locations'
+
+    @property
+    def categorizer_name(self):
+        'display form (non-slug) of the school categorizer'
+        return self.CATEGORIZERS[self.categorizer]
 
     @property
     def network_id(self):
