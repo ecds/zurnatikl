@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Danowski documentation build configuration file, created by
+# Zurnatikl documentation build configuration file, created by
 # sphinx-quickstart on Fri Jun 13 12:51:07 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -14,6 +14,10 @@
 
 import sys
 import os
+
+# run django setup to avoid AppRegistryNotReady errors
+import django
+django.setup()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -52,8 +56,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Danowski'
-copyright = u'2014, Alex Thomas'
+project = u'Zurnatikl'
+copyright = u'2014, Emory University Library & IT Services'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -185,7 +189,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Danowskidoc'
+htmlhelp_basename = 'zurnatikldoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -205,8 +209,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Danowski.tex', u'Danowski Documentation',
-   u'Alex Thomas', 'manual'),
+  ('index', 'zurnatikl.tex', u'Zurnatikl Documentation',
+   u'Emory University Library and IT Services', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -235,8 +239,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'danowski', u'Danowski Documentation',
-     [u'Alex Thomas'], 1)
+    ('index', 'zurnatikl', u'Zurnatikl Documentation',
+     [u'Emory University Library and IT Services'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -249,8 +253,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Danowski', u'Danowski Documentation',
-   u'Alex Thomas', 'Danowski', 'One line description of project.',
+  ('index', 'zurnatikl', u'Zurnatikl Documentation',
+   u'Emory University Library & IT Services', 'Zurnatikl', 'Social networks in literary journals.',
    'Miscellaneous'),
 ]
 
@@ -270,13 +274,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Danowski'
-epub_author = u'Alex Thomas'
-epub_publisher = u'Alex Thomas'
-epub_copyright = u'2014, Alex Thomas'
+epub_title = u'Zurnatikl'
+epub_author = u'Emory University Library & IT Services'
+epub_publisher = u'Emory University'
+epub_copyright = u'2014, Emory University'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'Danowski'
+#epub_basename = u'zurnatikl'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is
@@ -337,5 +341,11 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
+# configuration for intersphinx: refer to the Python standard library, eulxml, django
+intersphinx_mapping = {
+    'django': ('http://django.readthedocs.org/en/latest/', None),
+    'eulxml': ('http://eulxml.readthedocs.org/en/latest/', None),
+    'eulfedora': ('http://eulfedora.readthedocs.org/en/latest/', None),
+    'python': ('http://docs.python.org/', None),
+}
+

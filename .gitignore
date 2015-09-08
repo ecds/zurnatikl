@@ -6,5 +6,7 @@ build/
 .coverage
 *.db
 nosetests.xml
+.noseids
+coverage.xml
 
-danowski/localsettings.py
+zurnatikl/localsettings.py

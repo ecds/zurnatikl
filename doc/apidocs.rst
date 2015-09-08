@@ -1,5 +1,5 @@
-:mod:`danwoski` Code Documentation
-==================================
+:mod:`zurnatikl` Code Documentation
+===================================
 
 Geo
 ---
@@ -7,13 +7,13 @@ Geo
 Models
 ^^^^^^
 
-.. automodule:: danowski.apps.geo.models
+.. automodule:: zurnatikl.apps.geo.models
    :members:
 
 Views
 ^^^^^
 
-.. automodule:: danowski.apps.geo.views
+.. automodule:: zurnatikl.apps.geo.views
    :members:
 
 People
@@ -22,13 +22,13 @@ People
 Models
 ^^^^^^
 
-.. automodule:: danowski.apps.people.models
+.. automodule:: zurnatikl.apps.people.models
    :members:
 
 Views
 ^^^^^
 
-.. automodule:: danowski.apps.people.views
+.. automodule:: zurnatikl.apps.people.views
    :members:
 
 Journals
@@ -37,11 +37,11 @@ Journals
 Models
 ^^^^^^
 
-.. automodule:: danowski.apps.journals.models
+.. automodule:: zurnatikl.apps.journals.models
    :members:
 
 Views
 ^^^^^
 
-.. automodule:: danowski.apps.journals.views
+.. automodule:: zurnatikl.apps.journals.views
    :members:

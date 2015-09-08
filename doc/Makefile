@@ -2,7 +2,7 @@
 #
 
 export PYTHONPATH:=$(PYTHONPATH):..
-export DJANGO_SETTINGS_MODULE=danowski.settings
+export DJANGO_SETTINGS_MODULE=zurnatikl.settings
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -88,17 +88,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/Danowski.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/zurnatikl.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/Danowski.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/zurnatikl.qhc"
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/Danowski"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/Danowski"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/zurnatikl"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/zurnatikl"
 	@echo "# devhelp"
 
 epub:
