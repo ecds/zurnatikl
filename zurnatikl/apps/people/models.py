@@ -19,7 +19,9 @@ class School(models.Model):
     objects = SchoolManager()
 
     CATEGORIZER_CHOICES =(
-        ('Donald Allen', 'Donald Allen'),
+        ('donald-allen', 'Donald Allen'),
+        # NOTE: stored value of categorizer should be written in slug
+        # format, for use in network urls
     )
 
     name = models.CharField(max_length=255)
