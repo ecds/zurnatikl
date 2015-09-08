@@ -1,15 +1,17 @@
 .. _README:
 
-**digital_danowski** is a Django_ web application created to investigate
-and analyze the networks among authors connected to some of the
-"little magazines" and mimeozines included in the
+**zurnatikl** is a Django_ web application created to investigate
+and analyze the networks among journal contributors such as authors, editors, and translators.  
+In particular, it was created to investigate the "little magazines" and mimeozines included in the
 `The Raymond Danowski Poetry Library`_. Read the `project description`_
 on the `Danowski Poetry Library site`_.
 
-
 Currently, this application consists of a Django admin site for data entry
 of journals, issues, items with associated people and locations, and
-a network graph export of that data for analysis with external tools.
+a network graph export of that data for analysis with external tools, and preliminary 
+presentation of bibliographic data and networks for journal contributors.
+
+The project code name **zurnatikl** is derived from the Latvian words for magazine or journal is (*žurnāls*) and network (*tīkls**).
 
 .. _Django: https://www.djangoproject.com/
 .. _project description: https://scholarblogs.emory.edu/danowskipoetrylibrary/digital-danowski/
