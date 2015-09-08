@@ -134,6 +134,14 @@ class Location(models.Model):
         # only include fields that are not empty
         return ', '.join([f for f in fields if f])
 
+    @property
+    def short_label(self):
+        # even shorter display label variant
+        if self.country.code == 'US':
+            fields = [self.street_address, self.city, self.state.code]
+        else:
+            fields = [self.street_address, self.city, self.country.name]
+        return ', '.join([f for f in fields if f])
 
     class Meta:
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')

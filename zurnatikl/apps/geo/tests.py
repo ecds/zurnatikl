@@ -46,6 +46,24 @@ class LocationTestCase(TestCase):
         self.assertEqual(expected_value, self.bannam.display_label,
             'display label for location with all fields should include them in order')
 
+    def test_short_label(self):
+        self.assertEqual("Mazatlan, Mexico", self.maz.short_label,
+            'location short label should not include country code')
+
+        # location with all values should work too; if U.S., country is omitted
+        expected_value = '%(st)s, %(city)s, %(state)s' % \
+            {'st': self.bannam.street_address, 'city': self.bannam.city,
+             'state': self.ca.code}
+        self.assertEqual(expected_value, self.bannam.short_label,
+            'short label for location with all fields should omit U.S.')
+
+        # no street address in US
+        self.bannam.street_address = None
+        expected_value = '%(city)s, %(state)s' % \
+            {'city': self.bannam.city, 'state': self.ca.code}
+        self.assertEqual(expected_value, self.bannam.short_label,
+            'short label for U.S. city should display as city, state code')
+
     def test_network_properties(self):
         # network id
         for loc in [self.maz, self.bannam]:
