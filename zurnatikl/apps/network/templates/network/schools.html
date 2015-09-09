@@ -24,4 +24,14 @@
 </div>
 {% endblock %}
 
-{% block json-url %}{% url 'network:schools-json' object_list.0.categorizer %}{% endblock %}
+{% block graph-init %}
+<script>
+init_sigma_graph({
+  json_url: "{% url 'network:schools-json' object_list.0.categorizer %}",
+  forceLink:  {
+     autoStop: true,
+     strongGravityMode: true,  {# this graph displays better with stronger gravity #}
+  }
+});
+</script>
+{% endblock %}
