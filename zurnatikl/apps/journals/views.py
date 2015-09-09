@@ -2,10 +2,11 @@ import re
 
 from django.db.models import Q
 from django.http import Http404
-from django.views.generic import View, ListView, DetailView
+from django.views.generic import View, ListView, DetailView, TemplateView
 from django.shortcuts import render
 
-from zurnatikl.apps.network.base_views import NetworkGraphExportView
+from zurnatikl.apps.network.base_views import NetworkGraphExportView, \
+    SigmajsJSONView
 from .models import Journal, Issue, Item
 from .forms import SearchForm
 
@@ -67,12 +68,28 @@ class SearchView(View):
         return render(request, self.template_name, ctx)
 
 
-class AuthorEditorNetworkExport(NetworkGraphExportView):
-    '''Downloadable eggograph for journals, authors, and editors
-    :class:`~zurnatikl.apps.people.models.Person` in GEXF or GraphML.'''
-    filename = 'journals-authors-editors'
+class ContributorNetwork(TemplateView):
+    template_name = 'journals/contributor_network.html'
+
+class ContributorNetworkBaseView(TemplateView):
+    '''Base view to generate full journal contributor network
+    for use in disseminating the graph as JSON, GEXF, or GraphML.'''
 
     def get_context_data(self, **kwargs):
-        # full journal-author-editor network
+        # full journal-contributor network
         return Journal.author_editor_network()
-        # set person slug as base filename
+
+
+class ContributorNetworkJSON(SigmajsJSONView, ContributorNetworkBaseView):
+    '''Journal contributor network in a JSON format appropriate for use
+    with Sigma.js'''
+
+
+class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseView):
+    '''Downloadable eggograph for
+    :class:`~zurnatikl.apps.journals.models.Journal` and
+    :class:`~zurnatikl.apps.people.models.Person`
+    contributors (authors, editors, and translators) as GEXF or GraphML.'''
+
+    filename = 'journals-contributors'
+

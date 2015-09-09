@@ -84,7 +84,7 @@ class SchoolsNetworkBaseView(SchoolsNetwork):
 class SchoolsNetworkJSON(SigmajsJSONView, SchoolsNetworkBaseView):
     '''Network graph based on a number of :class:`~zurnatikl.apps.people.models.School`
     objects in a JSON format appropriate for use with Sigma.js'''
-    pass
+
 
 class SchoolsNetworkExport(NetworkGraphExportView, SchoolsNetworkBaseView):
     '''Downloadable eggograph for a

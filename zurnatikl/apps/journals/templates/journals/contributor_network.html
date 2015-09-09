@@ -1,0 +1,40 @@
+{% extends 'network/graph_base.html' %}
+{% load static %}
+{# display all contributors to all journals #}
+
+{% block pregraph-content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li class="active">Contributor Network</li>
+</ol>
+
+<p>Download this graph as
+  <a href="{% url 'journals:contributor-network-export' 'gexf' %}">GEXF</a> or
+  <a href="{% url 'journals:contributor-network-export' 'graphml' %}">GraphML</a>
+</p>
+{% endblock %}
+
+{% block graph-init %}
+<script>
+var s = init_sigma_graph({
+  json_url: "{% url 'journals:contributor-network-json' %}",
+  sigma: {
+      labelThreshold: 10,
+  },
+  forceLink:  {
+      autoStop: true,
+      maxIterations: 100,
+      iterationsPerRender: 10,
+      barnesHutOptimize: true,
+  },
+  styles: {
+      nodes: {
+        size: {
+          min: 0.5,
+        }
+      }
+    }
+});
+</script>
+{% endblock %}
+

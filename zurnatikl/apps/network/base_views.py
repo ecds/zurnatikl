@@ -8,6 +8,8 @@ import os
 from StringIO import StringIO
 import time
 
+from .util import annotate_graph
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +45,18 @@ class SigmajsJSONView(JSONView):
     use with Sigma.js and serve it out as a JSON response.  Expects
     get_context_data to return the nx graph to be converted.'''
 
+    # by default, annotate all graphs with degree
+    annotate_fields = ['degree']
+
     def get_context_data(self, **kwargs):
         graph = super(SigmajsJSONView, self).get_context_data(**kwargs)
+
+        if self.annotate_fields:
+            start = time.time()
+            graph = annotate_graph(graph, self.annotate_fields)
+            logger.debug('Annotated graph with %s in %.2f sec' % \
+                (', '.join(self.annotate_fields), time.time() - start))
+
         start = time.time()
         data = json_graph.node_link_data(graph,
             attrs=dict(id='id', source='source', target='target', key='id'))
