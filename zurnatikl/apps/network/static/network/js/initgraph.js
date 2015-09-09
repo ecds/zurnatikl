@@ -18,9 +18,41 @@ function init_sigma_graph(opts) {
   var s = new sigma({
     renderer: {
       container: document.getElementById('graph-container'),
-      type: 'canvas'
+      type: 'canvas',
+
+    },
+    settings: {
+      labelThreshold: 0.5,
+      defaultNodeColor: '#777',
     }
   });
+
+  // custom color palette (placeholder)
+  var palette = {
+    type: {
+      'Person': '#7fc97f',
+      'Journal': '#beaed4',
+      'Place': '#fdc086',
+      'School': '#fdc086'
+    }
+  };
+
+  var styles = {
+    nodes: {
+      size: {
+        by: 'degree',
+        // bins: 7,   ??
+        min: 5,
+        max: 20
+      },
+/*    color: {
+        by: 'type',
+        scheme: 'type'
+      },  */
+    }
+  };
+
+
 
   // load graph data via json
   sigma.parsers.json(settings.json_url,  s,  function() {
@@ -28,22 +60,23 @@ function init_sigma_graph(opts) {
     $.each(s.graph.nodes(), function(i, node) {
       node.x = Math.random();
       node.y = Math.random();
-      node.size = 1;     // is this actually doing anything?
-      node.color = '#666';
+      // calculate and store degree for each node, to use for size
+      node.degree = s.graph.degree(node.id);
     });
     // set curved edges
     $.each(s.graph.edges(), function(i, edge) {
       edge.type = 'curve';
     });
 
-    // adjust node size by degree
-    // sigma.plugins.relativeSize(s, 1);
-    // NOTE: this works, but ends up with nearly all the nodes
-    // being unlabeled because they are so small
-    // leaving disabled for now
-
     // update the graph with the added nodes + edges
     s.refresh();
+
+    // load configured design (currently just sizing nodes by degree)
+    var design = sigma.plugins.design(s, {
+      styles: styles,
+      palette: palette
+    });
+    design.apply();
 
     // run forceLink implementation of force atlas2 algorithm
     var fa = sigma.layouts.startForceLink(s, settings.forceLink);
