@@ -1,0 +1,17 @@
+/* styles for sigma.js network graphs */
+#sigma-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 85vh;
+  background: #efefef;
+}
+#graph-container {
+  top: 0;
+  bottom: 0;
+  left: 35px;
+  right: 35px;
+  position: absolute;
+  background: #fff;
+}

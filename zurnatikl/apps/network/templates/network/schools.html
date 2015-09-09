@@ -1,25 +1,13 @@
-{% extends 'site_base.html' %}
+{% extends 'network/graph_base.html' %}
 {% load static %}
 {# display a network graph for people and places associated with a set of schools #}
 
-
-{% block javascript %}
-    {{ block.super }}
-    <script src="{% static 'js/sigma/sigma.min.js' %}"></script>
-    <script src="{% static 'js/sigma/sigma.parsers.json.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2.min.js' %}"></script>
-    {#<script src="{% static 'js/sigma/plugins/sigma.plugins.relativeSize.min.js' %}"></script> #}
-    {#<script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script> #}
-{% endblock %}
-
-
-{% block content %}
+{% block pregraph-content %}
 <ol class="breadcrumb">
   <li>Networks</li>
   <li>Schools</li>
   <li class="active">Categorized by {{ object_list.0.categorizer_name }}</li>
 </ol>
-
 
 <div class="container">
 <h1>Schools categorized by {{ object_list.0.categorizer_name }}</h1>
@@ -33,74 +21,17 @@
   <a href="{% url 'network:schools-export' slug 'graphml' %}">GraphML</a>
 </p>
 {% endwith %}
-
 </div>
-{# TODO: clean up css, make template/css/js more reusable (duplicated from person egographs) #}
+{% endblock %}
 
- <style>
-  #sigma-container {
-      position: relative;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 85vh;
-      background: #efefef;
-    }
-   #graph-container {
-      top: 0;
-      bottom: 0;
-      left: 35px;
-      right: 35px;
-      position: absolute;
-      background: #fff;
-    }
-  </style>
-  <div id="sigma-container">
-    <div id="graph-container"></div>
-  </div>
+{% block graph-init %}
 <script>
-
-// Instantiate sigma with an empty graph
-s = new sigma({
-  renderer: {
-    container: document.getElementById('graph-container'),
-    type: 'canvas'
+init_sigma_graph({
+  json_url: "{% url 'network:schools-json' object_list.0.categorizer %}",
+  forceLink:  {
+     autoStop: true,
+     strongGravityMode: true,  {# this graph displays better with stronger gravity #}
   }
 });
-
-// load graph data via json
-sigma.parsers.json("{% url 'network:schools-json' object_list.0.categorizer %}",
-  s,
-  function() {
-    // init nodes with random placement
-    $.each(s.graph.nodes(), function(i, node) {
-      node.x = Math.random();
-      node.y = Math.random();
-      node.size = 1;
-      node.color = '#666';
-    });
-    // set curved edges
-    $.each(s.graph.edges(), function(i, edge) {
-      edge.type = 'curve';
-    });
-    console.log(s.graph.edges());
-
-    // adjust node size by degree
-    // sigma.plugins.relativeSize(s, 1);
-    // NOTE: this works, but ends up with nearly all the nodes
-    // being unlabeled because they are so small
-    // leaving disabled for now
-
-    // update the graph with the added nodes + edges
-    s.refresh();
-    // run force atlas layout
-    s.startForceAtlas2({worker: true, barnesHutOptimize: false});
-    window.setTimeout(function() {
-      s.stopForceAtlas2();
-    }, 500);
-  }
-);
-
 </script>
-
 {% endblock %}
