@@ -161,6 +161,7 @@ class Journal(models.Model):
         if graph:
             return graph
         graph = nx.MultiGraph()
+        full_start = time.time()
 
         start = time.time()
         journals = Journal.objects.all()
@@ -263,6 +264,9 @@ class Journal(models.Model):
             graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
                 label='translated')
         logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
+
+        logger.debug('Complete journal contributor graph generated in %.2f sec' \
+            % (time.time() - full_start))
 
         cache.set('journal_auth_ed_network', graph)
         return graph
