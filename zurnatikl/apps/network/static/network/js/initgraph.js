@@ -56,10 +56,12 @@ function init_sigma_graph(opts) {
   });
 
 
-
+  console.log('loading data');
 
   // load graph data via json
   sigma.parsers.json(settings.json_url,  s,  function() {
+    console.log('data loaded');
+    $('#graph-container').trigger('graph:data_loaded');
     // init nodes with random placement
     $.each(s.graph.nodes(), function(i, node) {
       node.x = Math.random();
@@ -72,8 +74,6 @@ function init_sigma_graph(opts) {
       edge.type = 'curve';
     });
 
-    // update the graph with the added nodes + edges
-    s.refresh();
 
     // load configured design (currently just sizing nodes by degree)
     var design = sigma.plugins.design(s, {
@@ -82,8 +82,16 @@ function init_sigma_graph(opts) {
     });
     design.apply();
 
+    // update the graph with the added nodes + edges, and design styles
+    s.refresh();
+
+    console.log('running force directed layout');
     // run forceLink implementation of force atlas2 algorithm
     var fa = sigma.layouts.startForceLink(s, settings.forceLink);
+    // debugging to determine force layout timings
+    fa.bind('start stop interpolate', function(event) {
+      console.log(event.type);
+    });
   });
 
   // return the generated sigma instance

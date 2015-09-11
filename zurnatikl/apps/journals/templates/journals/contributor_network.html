@@ -2,6 +2,11 @@
 {% load static %}
 {# display all contributors to all journals #}
 
+{% block javascript %}
+    {{ block.super }}
+    <script src="{% static 'js/sigma/plugins/sigma.statistics.louvain.min.js' %}"></script>
+{% endblock %}
+
 {% block pregraph-content %}
 <ol class="breadcrumb">
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
@@ -34,6 +39,31 @@ var s = init_sigma_graph({
         }
       }
     }
+});
+
+$('#graph-container').on('graph:data_loaded', function() {
+    // community detection via louvain plugins
+  console.log('init louvain plugin');
+  var louvain = sigma.plugins.louvain(s.graph);
+  // console.log('run louvain community detection');
+  // louvain.run();
+  console.log('levels = ' + louvain.countLevels());
+// highest level
+  console.log('partitions = ' + louvain.getPartitions());
+  console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+
+  console.log(s.graph.nodes()[0]);
+
+  var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
+
+  // color nodes based on their community
+  s.graph.nodes().forEach(function(node) {
+    // by default, assigned community is set to _louvain
+    node.color = colors[node._louvain];
+});
+
+// refresh sigma renderers:
+s.refresh({skipIndexation: true});
 });
 </script>
 {% endblock %}
