@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db import models
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -202,7 +203,7 @@ class Journal(models.Model):
             count += translators.count()
             # translators are connected to the journal they contributed to
             graph.add_edges_from([(p.network_id, j.network_id) for p in translators],
-                label='contributor (translation)')
+                label='translator')
 
             logger.debug('Added %d journal edges for editors/authors/translators for %s in %.2f sec' % \
                 (count, j, time.time() - start))
@@ -222,21 +223,33 @@ class Journal(models.Model):
             # both directions
         logger.debug('Added co-editor edges in %.2f sec' % (time.time() - start))
 
-        # co-authors
+        # find co-authors via items with more than one creator
         start = time.time()
-        co_authors = Person.objects.filter(items_created__isnull=False) \
-            .annotate(creator_count=models.Count('items_created__creators')) \
+        edge_count = len(graph.edges())
+        coauthored_items = Item.objects.annotate(creator_count=models.Count('creators')) \
             .filter(creator_count__gt=1).distinct()
-        # for each author, find the people they authored with
-        # FIMXE: this is slow, currently 11 seconds for our data
-        for auth in co_authors:
-            co_auths = Person.objects.filter(items_created__creators=auth) \
-                                   .exclude(pk=auth.id).distinct()
-            graph.add_edges_from([(auth.network_id, co_auth.network_id) for co_auth in co_auths],
-                label='co-author')
-            # NOTE: some of these are redundant because we are
-            # setting relationships in both directions
-        logger.debug('Added co-author edges in %.2f sec' % (time.time() - start))
+        # each item has at least two; add an edge for first and second co-author
+        graph.add_edges_from([(item.creators.all()[0].network_id, item.creators.all()[1].network_id)
+            for item in coauthored_items],
+            label='co-author')
+        # only a handful have more than two authors, so handle them separately
+        for item in coauthored_items:
+            if item.creators.count() > 2:
+                # associate each creator with every other creator
+                idx = 0
+                for idx in range(item.creators.count()):
+                    coauth = item.creators.all()[idx]
+                    other_authors = item.creators.all()[idx+1:]
+                    # for the first author, skip the second author
+                    # (that edge already added for all items)
+                    if idx == 0:
+                         other_authors = other_authors[1:]
+                    graph.add_edges_from([(coauth.network_id, creator.network_id)
+                                          for creator in other_authors],
+                                         label='co-author')
+
+        logger.debug('Added %d co-author edges via items in %.2f sec' % \
+            (len(graph.edges()) - edge_count, time.time() - start))
 
         # author/editor and translator/editor
         start = time.time()
@@ -264,6 +277,37 @@ class Journal(models.Model):
             graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
                 label='translated')
         logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
+
+        # consolidate parallel edges of the same type
+        start = time.time()
+        edge_count = len(graph.edges())
+        for node in graph.nodes_iter():
+            old_edges = graph.edges(node, data=True, keys=True)
+            # gather edges by label, then count edges to the same target
+            edges = {}
+            # source for each edge is current node
+            for s, t, key, data in old_edges:
+                edge_type = data['label']
+                if edge_type not in edges:
+                    edges[edge_type] = defaultdict(int)
+                edges[edge_type][t] += 1
+
+            # remove the old edges and add the new, consolidated ones
+            graph.remove_edges_from(old_edges)
+            parallels = defaultdict(int)
+            for label, edges in edges.iteritems():
+                for target, count in edges.iteritems():
+                    parallels[target] += 1
+                    graph.add_edge(node, target, label=label,
+                        size=count * 10, count=parallels[target] * 3)
+                    # size and count are display-specific fields for sigma.js
+                    # parallel edges
+                    # count indicates spacing for parallel edges
+                    # size affects display size and when labels are visible
+                    # NOTE: size may be set too low for smaller graphs
+
+        logger.debug('Consolidated parallel edges (%d to %d) in %.2f sec' % \
+            (edge_count, len(graph.edges()), (time.time() - start)))
 
         logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec' \
             % (len(graph.nodes()), len(graph.edges()), time.time() - full_start))

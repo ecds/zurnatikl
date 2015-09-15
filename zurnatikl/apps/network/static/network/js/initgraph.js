@@ -9,7 +9,7 @@ function init_sigma_graph(opts) {
       labelThreshold: 0.5,
       defaultNodeColor: '#777',
       // drawEdgeLabels: true,
-      enableEdgeHovering: true
+      // enableEdgeHovering: true
     },
 
     // force link defaults
@@ -35,7 +35,7 @@ function init_sigma_graph(opts) {
         'contributor': '#fdbf6f',
         'co-editor': '#ff7f00',
         'co-author': '#cab2d6',
-        'contributor (translation)': '#6a3d9a',
+        'translator': '#6a3d9a',
         'edited': '#ffff99',
         'translated': '#b15928',
       }
@@ -90,9 +90,8 @@ function init_sigma_graph(opts) {
     });
     // set curved edges
     $.each(s.graph.edges(), function(i, edge) {
-      edge.type = 'curvedArrow';
+      edge.type = 'curve';
     });
-
 
     // load configured design (currently just sizing nodes by degree)
     var design = sigma.plugins.design(s, {
