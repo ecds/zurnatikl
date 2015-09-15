@@ -265,8 +265,8 @@ class Journal(models.Model):
                 label='translated')
         logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
 
-        logger.debug('Complete journal contributor graph generated in %.2f sec' \
-            % (time.time() - full_start))
+        logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec' \
+            % (len(graph.nodes()), len(graph.edges()), time.time() - full_start))
 
         cache.set('journal_auth_ed_network', graph)
         return graph
