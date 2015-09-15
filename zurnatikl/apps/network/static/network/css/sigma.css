@@ -15,3 +15,17 @@
   position: absolute;
   background: #fff;
 }
+#graph-status {
+  font-size: 35px;
+  position: fixed;
+  line-height: 300px;
+  vertical-align: middle;
+  z-index: 3;
+  width: 100%;
+  text-align: center;
+}
+
+#graph-status .status {
+  background: rgb(255, 255, 255); /* Fall-back for browsers that don't support rgba */
+  background: rgba(255, 255, 255, .5);
+}

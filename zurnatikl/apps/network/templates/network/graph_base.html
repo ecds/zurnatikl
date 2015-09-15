@@ -16,6 +16,9 @@
     <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.layout.forceLink.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.design.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
     {# additional plugins still TBD #}
     {#<script src="{% static 'js/sigma/plugins/sigma.plugins.relativeSize.min.js' %}"></script> #}
     {#<script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script> #}
@@ -28,7 +31,13 @@
 {% block pregraph-content %}{% endblock %}
 
 <div id="sigma-container">
-  <div id="graph-container"></div>
+  <div id="graph-container">
+      <div id="graph-status">
+      <span class="status">
+        <span id="text">Loading</span>... <i class="fa fa-spinner fa-spin"></i>
+      </span>
+      </div>
+  </div>
 </div>
 
 {% block postgraph-content %}{% endblock %}

@@ -8,6 +8,8 @@ function init_sigma_graph(opts) {
     sigma: {
       labelThreshold: 0.5,
       defaultNodeColor: '#777',
+      // drawEdgeLabels: true,
+      enableEdgeHovering: true
     },
 
     // force link defaults
@@ -21,10 +23,21 @@ function init_sigma_graph(opts) {
     // custom color palette (placeholder)
     palette: {
       type: {
-        'Person': '#7fc97f',
-        'Journal': '#beaed4',
-        'Place': '#fdc086',
-        'School': '#fdc086'
+        // preliminary color scheme from colorbrewer http://bl.ocks.org/mbostock/5577023
+        // node types
+        'Person': '#a6cee3',
+        'Journal': '#1f78b4',
+        'Place': '#b2df8a',
+        'School': '#33a02c',
+        // edge types
+        'edited': '#fb9a99',
+        'editor': '#e31a1c',
+        'contributor': '#fdbf6f',
+        'co-editor': '#ff7f00',
+        'co-author': '#cab2d6',
+        'contributor (translation)': '#6a3d9a',
+        'edited': '#ffff99',
+        'translated': '#b15928',
       }
     },
     styles: {
@@ -35,17 +48,23 @@ function init_sigma_graph(opts) {
           min: 3,
           max: 20
         },
-  /*    color: {
+        color: {
           by: 'type',
           scheme: 'type'
-        },  */
+        },
+      },
+      edges: {
+        color: {
+          by: 'label',
+          scheme: 'type'
+        }
       }
     }
 
   };
   // using deep merge so nested settings can be extended
   var settings = $.extend(true, {}, defaults, opts);
-  // console.log(settings);
+  var status = $('#graph-status #text');
 
   var s = new sigma({
     renderer: {
@@ -55,8 +74,8 @@ function init_sigma_graph(opts) {
     settings: settings.sigma
   });
 
-
   console.log('loading data');
+  status.text('Loading data');
 
   // load graph data via json
   sigma.parsers.json(settings.json_url,  s,  function() {
@@ -71,7 +90,7 @@ function init_sigma_graph(opts) {
     });
     // set curved edges
     $.each(s.graph.edges(), function(i, edge) {
-      edge.type = 'curve';
+      edge.type = 'curvedArrow';
     });
 
 
@@ -81,16 +100,18 @@ function init_sigma_graph(opts) {
       palette: settings.palette
     });
     design.apply();
+    $('#graph-container').trigger('graph:design_applied');
 
     // update the graph with the added nodes + edges, and design styles
     s.refresh();
 
-    console.log('running force directed layout');
     // run forceLink implementation of force atlas2 algorithm
+    status.text('Running force-directed layout');
+    console.log('running force directed layout');
     var fa = sigma.layouts.startForceLink(s, settings.forceLink);
-    // debugging to determine force layout timings
-    fa.bind('start stop interpolate', function(event) {
-      console.log(event.type);
+    fa.bind('stop', function(event) {
+        $('#graph-status').hide();
+        $('#graph-container').trigger('graph:layout_complete');
     });
   });
 

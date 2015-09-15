@@ -25,6 +25,7 @@ var s = init_sigma_graph({
   json_url: "{% url 'journals:contributor-network-json' %}",
   sigma: {
       labelThreshold: 10,
+      drawEdgeLabels: false,  {# graph is too large for edge labels, unless we can customize by zoom level #}
   },
   forceLink:  {
       autoStop: true,
@@ -41,29 +42,28 @@ var s = init_sigma_graph({
     }
 });
 
-$('#graph-container').on('graph:data_loaded', function() {
+// community detection should happen either on graph:layout_complete or
+// graph:design_applied, because otherwise design colors override
+// community colors
+$('#graph-container').on('graph:design_applied', function() {
+    // NOTE: could include in status, but community detection is
+    // so fast that it doesn't actually show up, so it isn't helpful
+
     // community detection via louvain plugins
-  console.log('init louvain plugin');
-  var louvain = sigma.plugins.louvain(s.graph);
-  // console.log('run louvain community detection');
-  // louvain.run();
-  console.log('levels = ' + louvain.countLevels());
-// highest level
-  console.log('partitions = ' + louvain.getPartitions());
-  console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+    console.log('Starting louvain community detection');
+    var louvain = sigma.plugins.louvain(s.graph);
+    console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
 
-  console.log(s.graph.nodes()[0]);
+    // placeholder colors for now
+    var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
 
-  var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
-
-  // color nodes based on their community
-  s.graph.nodes().forEach(function(node) {
-    // by default, assigned community is set to _louvain
-    node.color = colors[node._louvain];
-});
-
-// refresh sigma renderers:
-s.refresh({skipIndexation: true});
+    // color nodes based on their community
+    s.graph.nodes().forEach(function(node) {
+      // by default, assigned community number is set to _louvain
+      node.color = colors[node._louvain];
+    });
+    // refresh sigma renderers
+    s.refresh({skipIndexation: true});
 });
 </script>
 {% endblock %}
