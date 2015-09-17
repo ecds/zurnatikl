@@ -98,7 +98,7 @@ class GenerateNetworkTest(TestCase):
         # NOTE: could also test labels getting copied to names
 
 
-class PeopleViewsTestCase(TestCase):
+class NetworkViewsTestCase(TestCase):
     fixtures = ['test_network.json']
 
     def test_schools(self):
@@ -106,7 +106,7 @@ class PeopleViewsTestCase(TestCase):
         response = self.client.get(reverse('network:schools',
             kwargs={'slug': 'donald-allen'}))
         self.assertContains(response,
-            reverse('people:schools-json', kwargs={'slug': 'donald-allen'}),
+            reverse('network:schools-json', kwargs={'slug': 'donald-allen'}),
             msg_prefix='egograph page should load json for schools network')
 
     def test_schools_json(self):
