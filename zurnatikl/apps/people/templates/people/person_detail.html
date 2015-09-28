@@ -8,9 +8,7 @@
   <li class="active">{{ person.firstname_lastname }}</li>
 </ol>
 
-<div class="container">
-
-<h1>{{ person.firstname_lastname }}</h1>
+<h2>{{ person.firstname_lastname }}</h2>
 
 <ul class="list-inline">
     <li><a href="{% url 'people:egograph' person.slug %}">view egograph</a></li>
@@ -20,6 +18,7 @@
    </li>
 </ul>
 
+{% comment %}  jump links disabled for now, based on resonance design
 {# only display nav if at least two sections are present #}
 {% if person.items_created.all.exists and person.issues_edited.all.exists or person.items_created.all.exists and person.items_translated.all.exists or person.items_translated.all.exists and person.issues_edited.all.exists %}
 <div>
@@ -36,42 +35,45 @@
     <ul>
 </div>
 {% endif %}
+{% endcomment %}
 
 {% if person.items_created.all.exists %}
-    <h2><a name="author">Author</a></h2>
+{# <h3><a name="author">As Author</a></h3> #}
+<h3>As Author</h3>
 {# group by journal then by issue for nested list of items by journal/issue #}
 {% regroup person.items_created.all by issue.journal as items_by_journal %}
 <ul>
 {% for item_group in items_by_journal %}
     {% with journal=item_group.grouper %}
-    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
         <ul>
         {% regroup item_group.list by issue as items_by_issue %}
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
-            <li><h4>{% include 'journals/snippets/issue_link.html' %}</h4>
+            <li class="p-issue-li">{% include 'journals/snippets/issue_link.html' %}
                 <ul>
                     {% for item in issue_items.list %}
-                    <p>{{ item }}{% if item.translators.all %}, trans. {{ item.translators.all|readable_list:'firstname_lastname' }}{% endif %}</p>
+                    <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans. {{ item.translators.all|readable_list:'firstname_lastname' }}{% endif %}</li>
                     {% endfor %}
                 </ul>
             </li>
             {% endwith %} {# end issue group #}
         {% endfor %}
-    </ul></li>{# end journal group #}
+    </ul>{# end journal group #}
     {% endwith %}
 {% endfor %}
 </ul>
 {% endif %}
 
 {% if person.issues_edited.all.exists %}
-<h2><a name="editor">Editor</a></h2>
+{# <h3><a name="editor">As Editor</a></h3> #}
+<h3>As Editor</h3>
 {# group issues by journal to generate nested list #}
 {% regroup person.issues_edited.all by journal as issues_by_journal %}
 <ul>
 {% for issue_group in issues_by_journal %}
     {% with journal=issue_group.grouper %}
-    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
     <ul>
         {% for issue in issue_group.list %}
           <p>{% include 'journals/snippets/issue_link.html' with ed_with=person %}</p>
@@ -84,21 +86,22 @@
 {% endif %}
 
 {% if person.items_translated.all.exists %} {# NOTE: basically the same as author #}
-    <h2><a name="translator">Translator</a></h2>
+{# <h3><a name="translator">As Translator</a></h3> #}
+<h3>As Translator</h3>
 {# group by journal then by issue for nested list of items by journal/issue #}
 {% regroup person.items_translated.all by issue.journal as items_by_journal %}
 <ul>
 {% for item_group in items_by_journal %}
     {% with journal=item_group.grouper %}
-    <li><h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
         <ul>
         {% regroup item_group.list by issue as items_by_issue %}
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
-            <li><h4>{% include 'journals/snippets/issue_link.html' %}</h4>
+            <li p-issue-li>{% include 'journals/snippets/issue_link.html' %}
                 <ul>
                     {% for item in issue_items.list %}
-                    <p>{{ item }}{% if item.creators.all %}, by {{ item.creators.all|readable_list:'firstname_lastname' }}{% endif %}</p>
+                    <li class="p-article-li">{{ item }}{% if item.creators.all %}, by {{ item.creators.all|readable_list:'firstname_lastname' }}{% endif %}</li>
                     {% endfor %}
                 </ul>
             </li>
@@ -111,5 +114,4 @@
 {% endif %}
 
 
-</div>
 {% endblock %}

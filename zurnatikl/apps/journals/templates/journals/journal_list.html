@@ -2,18 +2,19 @@
 {# list all journals #}
 
 {% block content %}
-<div class="container">
-<h1>Journals</h1>
+<h2>Journals</h2>
+<p>Explore complete runs of twelve different midcentury magazines.</p>
 
-<ul>
+<div class="journal">
 {% for journal in object_list %}
-    <li>
-        <a href="{% url 'journals:journal' journal.slug %}">{{ journal.title }}</a>
-        {# {% if journal.publisher %}<p class="small">{{ journal.publisher }}</p>{% endif %} #}
-    </li>
+    <div class="journal-col" >
+        <a href="{% url 'journals:journal' journal.slug %}">
+        {# TODO: move size into CSS; fallback display for no image? #}
+        <p><img src="images/150x50.jpg" alt="" width="150" height="50"></p>
+        <p>{{ journal.title }}</p>
+        </a>
+    </div>
 {% endfor %}
-</ul>
 
-</div>
 {% endblock %}
 

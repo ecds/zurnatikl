@@ -24,7 +24,7 @@
 
 
 {% block content %}
-
+<div class="container"> {# FIXME: without this, graphs don't display; may need to drop main/secondary-main ? #}
 {% block pregraph-content %}{% endblock %}
 
 <div id="sigma-container">
@@ -44,5 +44,5 @@
 init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
 </script>
 {% endblock %}
-
+</div>
 {% endblock %} {# content #}

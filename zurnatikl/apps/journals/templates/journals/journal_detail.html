@@ -2,23 +2,34 @@
 {# display details for a single journal #}
 
 {% block content %}
+
+{# FIXME: design doesn't use bootstrap breadcrumbs? #}
+{# <div class="bread"><a href="/journals.html">Journals</a> / Beatitude</div> #}
+{# FIXME2: breadcrumb comes before main-secondary container? #}
 <ol class="breadcrumb">
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">{{ journal.title }}</li>
 </ol>
 
-<div class="container">
-
-<h1>{{ journal.title }}</h1>
-
+<h2>{{ journal.title }}</h2>
 {# Not currently displayed, but publisher, URI and ISSN available for some journals #}
 
+<div class="j-issues">
 <ul>
 {% for issue in journal.issue_set.all %}
-    <li>{% include 'journals/snippets/issue_link.html' %}</li>
+    <li class="j-issue-li">{% include 'journals/snippets/issue_link.html' %}</li>
 {% endfor %}
 </ul>
-
 </div>
+{# NOTE: layout doesn't work right without the image block #}
+    <div class="j-image">
+        {# <picture> #}
+            {# <source srcset="beatitude-img.png" media="(max-width: 320px)" class="img-responsive"> #}
+            {# <source srcset="beatitude-img.png" class="img-responsive"> #}
+            {# <img srcset="beatitude-img.png" alt="My default image" class="img-responsive"> #}
+        {# </picture> #}
+    </div>
+</div>
+
 {% endblock %}
 

@@ -9,64 +9,76 @@
   <li class="active">{{ issue.label }}</li>
 </ol>
 
-<div class="container">
+<h2><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h2>
 
-<h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
-<h2>{{ issue.label }} ({{ issue.date }})</h2>
+<div class="j-issues">
+
+<h3>{{ issue.label }} ({{ issue.date }})</h3>
 
 {# editors #}
 {% with editors=issue.editors.all %}
 {% if editors %}
-<h3>{{ editors|readable_list:'firstname_lastname' }},
-  editor{{ editors|pluralize }}</h3>
+<p>{{ editors|readable_list:'firstname_lastname' }},
+  editor{{ editors|pluralize }}</p>
 {% endif %}
 {% endwith %}
 
 {# contributing editors #}
 {% with editors=issue.contributing_editors.all %}
 {% if editors %}
-<h3>{{ editors|readable_list:'firstname_lastname' }},
-  contributing editor{{ editors|pluralize }}</h3>
+<p>{{ editors|readable_list:'firstname_lastname' }},
+  contributing editor{{ editors|pluralize }}</p>
 {% endif %}
 {% endwith %}
 
 {# publication address #}
 {% if issue.publication_address %}
-<h4>Published at {{ issue.publication_address.display_label }}</h4>
+<p>Published at {{ issue.publication_address.display_label }}</p>
 {% endif %}
 
 {# print address #}
 {% if issue.print_address %}
-<h4>Printed at {{ issue.print_address.display_label }}</h4>
+<p>Printed at {{ issue.print_address.display_label }}</p>
 {% endif %}
 
 {# price #}
 {% if issue.price %}
-<h4>Price per issue: ${{ issue.price }}</h4>
+<p>Price per issue: ${{ issue.price }}</p>
 {% endif %}
 
-<table>
-  <tr>
-    <th width="50">Start Page </th>
-    <th width="50">End Page </th>
-    <th valign="bottom">Contents</th>
-  </tr>
+<div class="toc">
+    <div class="toc-header">
+      <span>Start Page</span>
+      <span>End Page</span>
+      <span>Contents</span>
+    </div>
 {% for item in issue.item_set.all %}
-  <tr>
-    <td>{{ item.start_page }}</td>
-    <td>{{ item.end_page }}</td>
-    <td>{{ item.title }}{% if item.creators.count or item.translators.count %},{% endif %}
+  <ul>
+    <li>{{ item.start_page }}</li>
+    <li>{{ item.end_page }}</li>
+    <li>{{ item.title }}{% if item.creators.count or item.translators.count %},{% endif %}
       {% if item.creators.count %}
        {{ item.creators.all|readable_list:'firstname_lastname' }}{% if item.translators.count %}, {% endif %}
       {% endif %}
       {% if item.translators.count %}
        trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
       {% endif %}
-    </td>
-  </tr>
+    </li>
+  </ul>
 
 {% endfor %}
-</table>
+</div>
+</div> {# j-issues #}
+
+{# FIXME: layout doesn't work properly without an image here #}
+  <div class="j-image">
+{% comment %}   <picture>
+      <source srcset="beatitude-issue-9-img.png" media="(max-width: 320px)" class="img-responsive">
+      <source srcset="beatitude-issue-9-img.png" class="img-responsive">
+      <img srcset="beatitude-issue-9-img.png" alt="My default image" class="img-responsive">
+    </picture>{% endcomment %}
+  </div>
+
 
 <nav>
   <ul class="pager">
