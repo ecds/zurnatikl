@@ -1,71 +1,193 @@
-{% extends "eultheme/site_base.html" %}
-{% load static %} {% load widget_tweaks %}
-{% block nav-title %}
-{# <span class="glyphicon glyphicon-tower"></span> #}
-<span class="site-title">Digital Danowski</span>
-  {% endblock %}
-{% block page-title %}Digital Danowski{% block page-subtitle %}{% endblock %}{% endblock %}
-
-{% block navlinks %}
-    <li><a href="{% url 'journals:list' %}">Journals</a></li>
-    <li><a href="{% url 'people:list' %}">People</a></li>
-{% endblock %}
-
-{% block nav_class %}navbar-inverse navbar-fixed-top{% endblock %}
-
-{% block navbar-extra %}
+{% load static %} {% load eultheme %} {% load widget_tweaks %}
+{# based on eultheme/site_base.html in part #}
 {% comment %}
-  {% if user.is_authenticated %}
-    <ul class="nav navbar-nav navbar-right">
-      <li class="hidden-xs hidden-sm"><span class="nav-text">Welcome, {% firstof user.first_name user.username %}.</span></li>
-      <li>
-        <a href="{% url 'accounts:logout' %}">Logout
-         <span class="glyphicon glyphicon-log-out"></span></a>
-       </li>
-    </ul>
-  {% else %}
-     <ul class="nav navbar-nav navbar-right">
-        <li><a href="{% url 'accounts:login' %}">Login
-          <span class="glyphicon glyphicon-log-in"></span></a>
-        </li>
-    </ul>
-  {% endif %}
+NOTE: This site uses RDFa and schema.org vocabulary.  Every page will be declared as schema:Webpage
+by default; use page_rdf_type to override with a webpage subclass.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en" xmlns:schema="http://schema.org/" xmlns:og="http://ogp.me/ns#">
+
+<script type="text/javascript" src="js/megamenu.js"></script>
+<script>$(document).ready(function(){$(".megamenu").megamenu();});</script>
+<link rel="stylesheet" href="css/font-awesome.min.css" />
+
+</head>
+<body>
+  <head>
+    <title>{% block page-title %}Schooling Donald Allen{% block page-subtitle %}{% endblock %}{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# design includes this, do we care? #}
+    {#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> #}
+    {% block metadata %}{% endblock %}
+
+    {% block favicon %}
+    {# no favicon for new design? #}
+    {# <link id="siteFavIcon" rel="shortcut icon" type="image/x-icon" href="{% static 'eultheme/img/favicon.ico' %}"> #}
+    {% endblock %}
+
+    <!-- Bootstrap -->
+    <link href="{% static 'eultheme/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'eultheme/css/font-awesome.min.css' %}" rel="stylesheet"/>
+    {# <link href="{% static 'eultheme/css/selectize.css' %}" rel="stylesheet"/> #}
+    {# FIXME: eultheme navbar styles conflict with resonance navbar styling #}
+    <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/>
+    {# resonance styles #}
+    <link href="{% static 'css/menu.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {# FIXME: megamenu.css missing? #}
+    <link href="{% static 'css/megamenu.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {# local styles (pre-resonance, graphs) #}
+    <link href="{% static 'css/local.css' %}" rel="stylesheet"/>
+
+    {% block css %}{% endblock %} {# add per-page css here #}
+
+    {% comment %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    {% endcomment %}
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    {% if EULTHEME_NO_EXTERNAL_JS %}  {# use local copy when requested #}
+    <script src="{% static 'eultheme/js/jquery.min.js' %}"></script>
+    {% else %}
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    {% endif %}
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'eultheme/js/bootstrap.min.js' %}"></script>
+    {#<script src="{% static 'eultheme/js/selectize.js' %}"></script> #}
+    <script src="{% static 'eultheme/js/eultheme.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/megamenu.js' %}"></script>
+    <script>
+    $(document).ready(function(){
+        $('.search-form input').tooltip();
+        $(".megamenu").megamenu();
+    });
+    </script>
+
+    {% block javascript %}{% endblock %} {# add any additional javascript here #}
+    {% block head_extras %}{% endblock %}  {# any header metadata, etc #}
+  </head>
+  <body class="{% block body_class %}{% endblock %}"{% block body_attrs %}{% endblock %}>
+
+  {# TODO: snippetize this in eultheme for easy inclusion in non-standard base-templates #}
+    {% block beta_banner %}
+      {% if ENABLE_BETA_WARNING %}
+      <div class="ribbon beta-warning fade">
+        <h2>This site is in <code>BETA</code></h2>
+        <p>Content may change or be removed without warning.</p>
+        <button class="btn btn-default">OK</button>
+      </div>
+      {% endif %}
+    {% endblock %}
+
+    {# downtime banner from eultheme; TODO: move logic into snippet so it can just be included #}
+    {% block mx_banner %}
+      {% if banner %}
+      {% include 'mx/banner.html' %}
+      {% endif %}
+    {% endblock %}
+
+    {# header #}
+    <div class="container">
+      <div class="main-content">
+        <!-- HEADER -->
+      <div class="header">
+        <div class="logo">
+          <a href="{% url 'site-index' %}">
+            <picture>
+            {# FIXME: this picture tag use is useless, right? #}
+                <source srcset="{% static 'images/SDAlogo.png' %}" class="img-responsive">
+                <img srcset="{% static 'images/SDAlogo.png' %}" alt="" class="img-responsive">
+            </picture>
+          </a>
+        </div>
+        <div class="banner-image">
+        {# TODO: randomized images to be provided by django #}
+          <picture>
+              <source srcset="/images/home/SCA_Home__0012_Yugen-3-sm.jpg" media="(max-width: 320px)" class="img-responsive">
+              <source srcset="/images/home/SCA_Home__0012_Yugen-3.jpg" class="img-responsive">
+              <img srcset="/images/home/SCA_Home__0012_Yugen-3.jpg" alt="My default image" class="img-responsive">
+          </picture>
+        </div>
+      </div>
+      <!-- END HEADER -->
+    <div class="bootstrap_container">
+
+    <!-- MENU -->
+      <nav class="navbar navbar-default w3_megamenu" role="navigation">
+                <div class="navbar-header">
+                <button type="button" data-toggle="collapse" data-target="#defaultmenu" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="index.html" class="navbar-brand"></a>
+        </div>
+            <div id="defaultmenu" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+             <li class="dropdown w3_megamenu-fw"><a href="#" class="dropdown-toggle">About</a></li>
+             <li class="dropdown w3_megamenu-fw"><a href="{% url 'journals:list' %}" class="dropdown-toggle">Journals</a></li>
+             <li class="dropdown w3_megamenu-fw"><a href="{% url 'people:list' %}" class="dropdown-toggle">People</a></li>
+            <li class="dropdown w3_megamenu-fw"><a href="#" class="dropdown-toggle">Networks</a></li>
+            <li class="dropdown w3_megamenu-fw"><a href="#" class="dropdown-toggle">Digital Danowski</a></li>
+
+            {% if user.is_staff %} {# admin link for logged-in staff #}
+               <li><a href="{% url 'admin:index' %}" title="Admin"><i class="fa fa-cog"></i></a></li>
+            {% endif %}
+
+            <li class="dropdown w3_megamenu-fw">
+            {% if search_form %}
+            <form class="form-search navbar-search pull-right" role="form" method="GET" action="{% url 'journals:search' %}">
+                <label class="sr-only" for="{{ search_form.keyword.name }}">{{ search_form.keyword.label }}</label>
+                {% render_field search_form.keyword class+="searchform" placeholder='Search' data-toggle="tooltip" data-placement="bottom" data-animation="true" autocomplete="off" data-original-title=search_form.keyword.help_text %}
+                  <button type="submit" class="btn btn-search">
+                    <span><i class="fa fa-search"></i></span>
+                 </button>
+            </form>
+           {% endif %} {# search form #}
+           </li>
+          </ul>
+        </div>
+        </nav>
+      <!-- END MENU -->
+  </div>
+  {# FIXME: sr-only nav in eultheme, none in resonance design? #}
+  {# TODO: admin link in eultheme, where to add in resonance design ? #}
+  {% comment %}
+    {% if user.is_staff %}
+      <li><a href="{% block admin-url %}{% url 'admin:index' %}{% endblock %}">Admin</a></li>
+    {% endif %}
   {% endcomment %}
 
-{% if search_form %}
-<div class="navbar-right">
-<form class="form-inline navbar-form search-form" role="form" method="GET" action="{% url 'journals:search' %}">
-   <div class="form-group">
-      <div class="input-group">
-      <label class="sr-only" for="{{ search_form.keyword.name }}">{{ search_form.keyword.label }}</label>
-      {% render_field search_form.keyword class+="form-control" placeholder='Search' data-toggle="tooltip" data-placement="auto right" data-animation="true" title=search_form.keyword.help_text %}
-      <span class="input-group-btn">
-        <button type="submit" class="btn">
-            <span class="glyphicon glyphicon-search"></span>
-        </button>
-      </span>
+  {# FIXME: do we have/expect any messages in front-end of this site? #}
+  {% block message %}
+    {% if messages %} {# default display of django messages, when present #}
+    <div class="messages">
+        {% for message in messages %} {# should work for success, info, warning #}
+        <p {% if message.tags %} class="{{ message.tags|messagetag_css }}"{% endif %}>{{ message|safe }}</p>
+        {% endfor %}
     </div>
-  </div>
-</form>
-</div>
-{% endif %}
+    {% endif %}
+  {% endblock %}
 
-{% endblock %}
+  {% block content %}{% endblock %}
 
-{% block css %}
-  {{ block.super }}
-  <link href="{% static 'css/local.css' %}" rel="stylesheet"/>
-{% endblock %}
 
-{% block javascript %}
-    {{ block.super }}
-  <script>
-$(document).ready(function(){
-    $('.search-form input').tooltip();
-});
-</script>
-
-{% endblock %}
-
-{% block footer-content %}
-{% endblock %}
+  {# resonance design doesn't include a footer, can we just use this? #}
+    <div class="container footer">
+      <hr/>
+      <div class="col-xs-12 col-sm-10">
+      <p id="sw_version">{{ SW_VERSION }}  {# TODO: see if we can make sw version context processor sharable/reusable #}</p>
+      {% block footer-content %}{% endblock %}
+    </div>
+    <div class="col-xs-12 col-sm-2">
+      <div class="lits">
+        <p>Powered by:</p>
+        <img src="{% static 'eultheme/img/LITS-logo-bk.png' %}"/>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

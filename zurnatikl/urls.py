@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic.base import RedirectView
+from django.views.generic import TemplateView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -12,8 +13,7 @@ from ajax_select import urls as ajax_select_urls
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # until we have a public-facing site homepage, redirect to journals
-    url(r'^$', RedirectView.as_view(url='/journals/', permanent=False),
+    url(r'^$', TemplateView.as_view(template_name="site_index.html"),
         name='site-index'),
     url(r'^network/', include('zurnatikl.apps.network.urls',
         namespace='network')),
