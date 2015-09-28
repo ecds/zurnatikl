@@ -25,19 +25,37 @@ function init_sigma_graph(opts) {
       type: {
         // preliminary color scheme from colorbrewer http://bl.ocks.org/mbostock/5577023
         // node types
-        'Person': '#a6cee3',
-        'Journal': '#1f78b4',
-        'Place': '#b2df8a',
-        'School': '#33a02c',
+        // 'Person': '#a6cee3',
+        // 'Journal': '#1f78b4',
+        // 'Place': '#b2df8a',
+        // 'School': '#33a02c',
         // edge types
-        'edited': '#fb9a99',
-        'editor': '#e31a1c',
-        'contributor': '#fdbf6f',
-        'co-editor': '#ff7f00',
-        'co-author': '#cab2d6',
-        'translator': '#6a3d9a',
-        'edited': '#ffff99',
-        'translated': '#b15928',
+        // 'edited': '#fb9a99',
+        // 'editor': '#e31a1c',
+        // 'contributor': '#fdbf6f',
+        // 'co-editor': '#ff7f00',
+        // 'co-author': '#cab2d6',
+        // 'translator': '#6a3d9a',
+        // 'edited': '#ffff99',
+        // 'translated': '#b15928',
+
+        // colors from resonance
+        // node types
+        'Person': '#bc1626',  // red
+        'Journal': '#004052',  // first blue
+        'Place': '#e5c951',   // yellow
+        'School': '#996628', // brown
+        // edge types
+        'edited': '#0c7549',  // green
+        'editor': '#d84f05',  // orange
+        'contributor': '#11203d',  // dark blue
+        'co-editor': '#872675',    // light purple
+        'co-author': '#de03a7',   // pink
+        'translator': '#0aa3aa',  // teal
+        'edited': '#577469',      // green-gray
+        'translated': '#a2d23a',  // light green
+
+
       }
     },
     styles: {
@@ -79,7 +97,8 @@ function init_sigma_graph(opts) {
 
   // load graph data via json
   sigma.parsers.json(settings.json_url,  s,  function() {
-    console.log('data loaded');
+    console.log('data loaded (' + s.graph.nodes().length + ' nodes, '
+                 + s.graph.edges().length + ' edges)');
     $('#graph-container').trigger('graph:data_loaded');
     // init nodes with random placement
     $.each(s.graph.nodes(), function(i, node) {
