@@ -2,17 +2,39 @@
 {# list authors and editors #}
 
 {% block content %}
-<div class="container">
-<h2>Authors, Editors, and Translators</h2>
+<div class="container" id="lovely-things-list">
+<h1>Authors, Editors, and Translators
+
+
+<ul class="filter">
+ 			<li class="btn btn-default" id="filter-none">Show all</li>
+            <li class="btn btn-default" id="filter-author">Authors</li>
+            <li class="btn btn-default" id="filter-editor">Editors</li>
+            <li class="btn btn-default" id="filter-translator">Translators</li>
+ </ul>
+</h1>
+
+ 
 
 <p>{{ object_list.count }} people who are editors, authors, or translators.</p>
 
 <div class="columns">
+<ul class="list" style="list-style-type: none;">
 {% for person in object_list %}
-    <div>
+
+    <li>
+    
+    <span class="categoryeditor" style="display: none;">{% if person.affiliation_editor %}editor{% endif %}</span>
+    <span class="categoryauthor" style="display: none;">{% if person.affiliation_creator %}author{% endif %}</span>
+    <span class="categorytranslator" style="display: none;">{% if person.affiliation_translator %}translator{% endif %}</span>
         <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
-    </div>
-{% endfor %}
+   
+    </li>
+
+{% endfor %}	
+</ul>
+
+
 </div>
 
 </div>

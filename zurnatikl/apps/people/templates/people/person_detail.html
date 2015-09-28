@@ -53,7 +53,12 @@
             <li class="p-issue-li">{% include 'journals/snippets/issue_link.html' %}
                 <ul>
                     {% for item in issue_items.list %}
-                    <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans. {{ item.translators.all|readable_list:'firstname_lastname' }}{% endif %}</li>
+                    <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans. 
+                    {% for translator in item.translators.all %}
+                    <a href="{{translator.get_absolute_url}}">{{translator}}</a>,
+                    {% endfor %}
+                    {% endif %}
+                    </li>
                     {% endfor %}
                 </ul>
             </li>

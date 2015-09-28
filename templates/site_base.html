@@ -56,10 +56,54 @@ by default; use page_rdf_type to override with a webpage subclass.
     {#<script src="{% static 'eultheme/js/selectize.js' %}"></script> #}
     <script src="{% static 'eultheme/js/eultheme.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/megamenu.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
     <script>
     $(document).ready(function(){
         $('.search-form input').tooltip();
         $(".megamenu").megamenu();
+        var options = {
+  valueNames: [ 'categoryauthor','categoryeditor', 'categorytranslator' ]
+};
+
+var featureList = new List('lovely-things-list', options);
+
+$('#filter-author').click(function() {
+  featureList.filter(function(item) {
+    if (item.values().categoryauthor == "author") {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  return false;
+});
+
+$('#filter-editor').click(function() {
+  featureList.filter(function(item) {
+    if (item.values().categoryeditor == "editor") {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  return false;
+});
+
+$('#filter-translator').click(function() {
+  featureList.filter(function(item) {
+    if (item.values().categorytranslator == "translator") {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  return false;
+});
+
+$('#filter-none').click(function() {
+  featureList.filter();
+  return false;
+});
     });
     </script>
 

@@ -259,6 +259,21 @@ class Person(models.Model):
         return attrs
 
     @property
+    def affiliation_editor(self):
+        return self.issues_edited.exists() or self.issues_contrib_edited.exists()
+
+    @property
+    def affiliation_creator(self):
+        return self.items_created.exists()
+
+    @property
+    def affiliation_translator(self):
+        return self.items_translated.exists()
+
+
+    
+
+    @property
     def has_network_edges(self):
         return self.schools.exists() or self.dwellings.exists()
 

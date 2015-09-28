@@ -3,10 +3,16 @@
 {% with editors=issue.editors.all %}
 <a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a>
     ({{ issue.date }}){% if ed_with %}{% if editors|all_except:ed_with %},
-    edited with {{ editors|all_except:ed_with|readable_list:'firstname_lastname' }}
+    edited with 
+    {% for editor in editors|all_except:ed_with %}
+    <a href="{{translator.get_absolute_url}}">{{editor.firstname_lastname}}</a>,
+    {% endfor %}
   {% endif %}
 {% else %},
    {% if editors %}
-   ed. {{ editors|readable_list:'firstname_lastname' }}
+   ed. 
+{% for editor in editors %}
+ <a href="{{translator.get_absolute_url}}">{{editor.firstname_lastname}}</a>,
+  {% endfor %}
    {% endif %}
 {% endif %}{% endwith %}
