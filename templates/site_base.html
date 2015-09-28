@@ -122,7 +122,7 @@ by default; use page_rdf_type to override with a webpage subclass.
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'about' %}" class="dropdown-toggle">About</a></li>
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'journals:list' %}" class="dropdown-toggle">Journals</a></li>
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'people:list' %}" class="dropdown-toggle">People</a></li>
-            <li class="dropdown w3_megamenu-fw"><a href="#" class="dropdown-toggle">Networks</a></li>
+            <li class="dropdown w3_megamenu-fw"><a href="{% url 'network:index' %}" class="dropdown-toggle">Networks</a></li>
             <li class="dropdown w3_megamenu-fw"><a href="#" class="dropdown-toggle">Digital Danowski</a></li>
 
             {% if user.is_staff %} {# admin link for logged-in staff #}
