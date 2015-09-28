@@ -77,7 +77,7 @@ class ContributorNetworkBaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         # full journal-contributor network
-        return Journal.author_editor_network()
+        return Journal.contributor_network()
 
 
 class ContributorNetworkJSON(SigmajsJSONView, ContributorNetworkBaseView):

@@ -152,8 +152,8 @@ class Journal(models.Model):
 
 
     @classmethod
-    def author_editor_network(self):
-        'Network of authors, editors, translators, and journals'
+    def contributor_network(self):
+        'Network graph of authors, editors, translators, and journals'
 
         # NOTE: this is probably a bit slow to be generating on the fly.
         # For now, cache the network after it's generated, but that
