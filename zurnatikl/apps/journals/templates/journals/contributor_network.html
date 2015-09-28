@@ -53,6 +53,14 @@ $('#graph-container').on('graph:design_applied', function() {
 
     // placeholder colors for now
     var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
+    // network colors from resonance
+    var colors = ["#004052", "#996628", "#e5c951",
+      "#bc1626", "#0aa3aa", "#d84f05",
+      "#11203d" ,"#872675", "#577469",
+      "#0c7549", "#28236b", "#de03a7",
+      "#a2d23a", "#ffa700"];
+
+    // TODO: set edges to use source node color (? or gray?)
 
     // color nodes based on their community
     s.graph.nodes().forEach(function(node) {
