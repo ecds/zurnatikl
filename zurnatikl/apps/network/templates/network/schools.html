@@ -10,17 +10,17 @@
 </ol>
 
 <div class="container">
-<h1>Schools categorized by {{ object_list.0.categorizer_name }}</h1>
 
+{% with object_list.0.categorizer as slug %}
+  {% url 'network:schools-export' slug 'gexf' as gexf_url %}
+  {% url 'network:schools-export' slug 'graphml' as graphml_url %}
+  {% include 'network/snippets/download_graph.html' %}
+{% endwith %}
+
+<h1>Schools categorized by {{ object_list.0.categorizer_name }}</h1>
 <p>People, journals, and locations associated with schools as
     categorized by {{ object_list.0.categorizer_name }}.</p>
 {# schools available in object_list if we want to list them #}
-{% with object_list.0.categorizer as slug %}
-
-{% include 'journals/snippets/download_graph.html' with url_var='network:schools-export' url_var2=slug %}
-
-
-{% endwith %}
 </div>
 {% endblock %}
 

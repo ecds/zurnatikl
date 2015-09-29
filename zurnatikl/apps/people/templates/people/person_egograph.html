@@ -9,10 +9,12 @@
   <li class="active">Egograph</li>
 </ol>
 
-<p>Download this graph as
-  <a href="{% url 'people:egograph-export' person.slug 'gexf' %}">GEXF</a> or
-  <a href="{% url 'people:egograph-export' person.slug 'graphml' %}">GraphML</a>
-</p>
+{% url 'people:egograph-export' person.slug 'gexf' as gexf_url %}
+{% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
+{% include 'network/snippets/download_graph.html' %}
+
+<h2>{{ person.firstname_lastname }}'s Connections</h2>
+
 {% endblock %}
 
 {% block graph-init %}

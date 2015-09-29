@@ -12,7 +12,10 @@
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Contributor Network</li>
 </ol>
-{% include 'journals/snippets/download_graph.html' with url_var='journals:contributor-network-export' url_var2='' %}
+
+{% url 'journals:contributor-network-export' 'gexf' as gexf_url %}
+{% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
+{% include 'network/snippets/download_graph.html' %}
 
 {% endblock %}
 
