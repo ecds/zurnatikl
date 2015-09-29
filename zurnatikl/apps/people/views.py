@@ -64,7 +64,7 @@ class EgographBaseView(SingleObjectMixin):
         person = self.get_object()
 
         # get the full journal-author-editor network
-        graph = Journal.author_editor_network()
+        graph = Journal.contributor_network()
         # restrict graph to an egograph around the current person
         # with a radius of 1 before export
         return nx.generators.ego.ego_graph(graph, person.network_id, 1)
