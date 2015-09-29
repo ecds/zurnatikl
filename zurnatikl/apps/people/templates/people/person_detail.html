@@ -10,13 +10,9 @@
 
 <h2>{{ person.firstname_lastname }}</h2>
 
-<ul class="list-inline">
-    <li><a href="{% url 'people:egograph' person.slug %}">view egograph</a></li>
-    <li>(download as
-        <a href="{% url 'people:egograph-export' person.slug 'gexf' %}">GEXF</a> or
-       <a href="{% url 'people:egograph-export' person.slug 'graphml' %}">GraphML</a>)
-   </li>
-</ul>
+{% include 'journals/snippets/download_graph.html' with url_var='people:egograph-export' url_var2=person.slug %}
+
+
 
 {% comment %}  jump links disabled for now, based on resonance design
 {# only display nav if at least two sections are present #}

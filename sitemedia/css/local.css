@@ -32,6 +32,15 @@
  color: black;
 }
 
+#download-nav{
+    margin-left: 0px;
+}
+
+#dropdownMenu1:hover {
+   background-color: #ebebeb;
+ color: black; 
+}
+
 #lovely-things-list {
 	margin-top: 15px;
 }

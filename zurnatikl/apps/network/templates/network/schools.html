@@ -16,10 +16,10 @@
     categorized by {{ object_list.0.categorizer_name }}.</p>
 {# schools available in object_list if we want to list them #}
 {% with object_list.0.categorizer as slug %}
-<p>Download this graph as
-  <a href="{% url 'network:schools-export' slug 'gexf' %}">GEXF</a> or
-  <a href="{% url 'network:schools-export' slug 'graphml' %}">GraphML</a>
-</p>
+
+{% include 'journals/snippets/download_graph.html' with url_var='network:schools-export' url_var2=slug %}
+
+
 {% endwith %}
 </div>
 {% endblock %}

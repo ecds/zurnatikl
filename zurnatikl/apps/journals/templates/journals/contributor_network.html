@@ -12,11 +12,8 @@
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Contributor Network</li>
 </ol>
+{% include 'journals/snippets/download_graph.html' with url_var='journals:contributor-network-export' url_var2='' %}
 
-<p>Download this graph as
-  <a href="{% url 'journals:contributor-network-export' 'gexf' %}">GEXF</a> or
-  <a href="{% url 'journals:contributor-network-export' 'graphml' %}">GraphML</a>
-</p>
 {% endblock %}
 
 {% block graph-init %}
