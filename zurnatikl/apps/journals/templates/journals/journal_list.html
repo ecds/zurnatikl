@@ -5,6 +5,9 @@
 <h2>Journals</h2>
 <p>Explore complete runs of twelve different midcentury magazines.</p>
 
+<p><a href="{% url 'journals:contributor-network' %}">View connections</a>
+among the journals and their contributors.</p>
+
 <div class="journal">
 {% for journal in object_list %}
     <div class="journal-col" >
