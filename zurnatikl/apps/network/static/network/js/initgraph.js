@@ -84,6 +84,24 @@ function init_sigma_graph(opts) {
   var settings = $.extend(true, {}, defaults, opts);
   var status = $('#graph-status #text');
 
+  // populate color key based on actual configured colors
+  var nodecolor_key = $('#node-colors');
+  var edgecolor_key = $('#edge-colors');
+  var node_types = ['Person', 'Journal', 'Place', 'School'];
+  var dt, dd;
+
+  for (var type in defaults.palette.type) {
+      dt = $('<dt/>').attr('style', 'background-color:' + defaults.palette.type[type]);
+      dd = $('<dd/>').html(type);
+      if (node_types.indexOf(type) != -1) {  // node type
+        nodecolor_key.append(dt);
+        nodecolor_key.append(dd);
+      } else {   // edge type
+        edgecolor_key.append(dt);
+        edgecolor_key.append(dd);
+      }
+  }
+
   var s = new sigma({
     renderer: {
       container: document.getElementById('graph-container'),
@@ -137,3 +155,23 @@ function init_sigma_graph(opts) {
   return s;
 
 }
+
+/* off-canvas menu for graph control panel & color key
+adapted from http://tympanus.net/Development/OffCanvasMenuEffects/cornermorph.html
+*/
+$(document).ready(function(){
+    var menu_openbtn = $('#open-button'),
+      menu_isopen = false;
+
+  function toggleMenu() {
+    if (menu_isopen) {
+      $(document.body).removeClass('show-menu');
+    } else {
+      $(document.body).addClass('show-menu');
+    }
+    menu_isopen = !menu_isopen;
+  }
+
+  menu_openbtn.on("click", toggleMenu);
+});
+

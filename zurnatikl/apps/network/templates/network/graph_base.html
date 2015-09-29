@@ -6,6 +6,7 @@
 {% block css %}
   {{ block.super }}
   <link href="{% static 'network/css/sigma.css' %}" rel="stylesheet"/>
+  <link href="{% static 'css/cornermenu.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 
@@ -24,7 +25,9 @@
 
 
 {% block content %}
+
 <div class="container"> {# FIXME: without this, graphs don't display; may need to drop main/secondary-main ? #}
+
 {% block pregraph-content %}{% endblock %}
 
 <div id="sigma-container">
@@ -36,6 +39,27 @@
       </div>
   </div>
 </div>
+
+<div class="menu-wrap">
+        <nav class="menu">
+        <div>
+           <h4>Colors</h4>
+           <div id="graph-color-key">
+             <h5>Nodes</h5>
+             <dl class="graph-colors" id="node-colors"></dl>
+             {% comment %} actual colors will be added by graph init in this format
+              <dt style="background-color:#004052"/>
+              <dd>Person</dd>{% endcomment %}
+               <h5>Edges</h5>
+              <dl class="graph-colors" id="edge-colors"></dl>
+          </dl>
+        </div>
+        <hr/>
+        </nav>
+      </div>
+      <button class="menu-button" id="open-button"><i class="fa fa-fw fa-cog"></i><span>Open Menu</span></button>
+</div>
+
 
 {% block postgraph-content %}{% endblock %}
 
