@@ -3,20 +3,23 @@
 
 {% block content %}
 <div class="container" id="lovely-things-list">
-<h1>Authors, Editors, and Translators
+<div class="col-md-5"><h1>Authors, Editors, and Translators</h1></div>
+<div class="col-md-7">
+
 
 
 <ul class="filter">
- 			<li class="btn btn-default" id="filter-none">Show all</li>
-            <li class="btn btn-default" id="filter-author">Authors</li>
-            <li class="btn btn-default" id="filter-editor">Editors</li>
-            <li class="btn btn-default" id="filter-translator">Translators</li>
+ 			<li class="btn btn-default active" role="button" id="filter-none">All</li>
+            <li class="btn btn-default" role="button" id="filter-author">Authors</li>
+            <li class="btn btn-default" role="button" id="filter-editor">Editors</li>
+            <li class="btn btn-default" role="button" id="filter-translator">Translators</li>
  </ul>
-</h1>
 
- 
+</div>
 
-<p>{{ object_list.count }} people who are editors, authors, or translators.</p>
+<span>{{ object_list.count }} people who are editors, authors, or translators.</span>
+
+
 
 <div class="columns">
 <ul class="list" style="list-style-type: none;">
@@ -24,9 +27,9 @@
 
     <li>
     
-    <span class="categoryeditor" style="display: none;">{% if person.affiliation_editor %}editor{% endif %}</span>
-    <span class="categoryauthor" style="display: none;">{% if person.affiliation_creator %}author{% endif %}</span>
-    <span class="categorytranslator" style="display: none;">{% if person.affiliation_translator %}translator{% endif %}</span>
+    <span class="categoryeditor" style="display: none;">{% if person.id in editors_ids %}editor{% endif %}</span>
+    <span class="categoryauthor" style="display: none;">{% if person.id in authors_ids %}author{% endif %}</span>
+    <span class="categorytranslator" style="display: none;">{% if person.id in translators_ids %}translator{% endif %}</span>
         <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
    
     </li>

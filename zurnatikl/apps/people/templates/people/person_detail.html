@@ -55,7 +55,7 @@
                     {% for item in issue_items.list %}
                     <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans. 
                     {% for translator in item.translators.all %}
-                    <a href="{{translator.get_absolute_url}}">{{translator}}</a>,
+                    <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
                     {% endfor %}
                     {% endif %}
                     </li>
@@ -106,7 +106,11 @@
             <li p-issue-li>{% include 'journals/snippets/issue_link.html' %}
                 <ul>
                     {% for item in issue_items.list %}
-                    <li class="p-article-li">{{ item }}{% if item.creators.all %}, by {{ item.creators.all|readable_list:'firstname_lastname' }}{% endif %}</li>
+                    <li class="p-article-li">{{ item }}{% if item.creators.all %}, by 
+                        {% for creator in item.creators.all %}
+                        <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
+                        {% endfor %}
+                    {% endif %}</li>
                     {% endfor %}
                 </ul>
             </li>

@@ -28,6 +28,16 @@ class PeopleList(ListView):
             Q(items_translated__isnull=False)
         ).distinct()
 
+    def get_context_data(self, **kwargs):
+        context = super(PeopleList, self).get_context_data(**kwargs)
+        authors = Person.objects.filter(Q(items_created__isnull=False)).distinct()
+        context['authors_ids'] = [author.id for author in authors]
+        editors = Person.objects.filter(Q(issues_edited__isnull=False) | Q(issues_contrib_edited__isnull=False)).distinct()
+        context['editors_ids'] = [editor.id for editor in editors]
+        translators = Person.objects.filter(Q(items_translated__isnull=False)).distinct()
+        context['translators_ids'] = [translator.id for translator in translators]
+        return context
+
 
 class PersonDetail(DetailView):
     '''Display details for a single

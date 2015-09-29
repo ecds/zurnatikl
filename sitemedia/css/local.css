@@ -4,4 +4,42 @@
     -o-column-width:        225px;
     -ms-column-width:       225px;
     column-width:           225px;
+    margin-top: 15px;
+}
+
+.categoryeditor, .categoryauthor, .categorytranslator {
+
+	display: none;
+}
+
+#filter-none:hover {
+ background-color: #ebebeb;
+ color: black;
+}
+
+#filter-author:hover {
+ background-color: #ebebeb;
+ color: black;
+}
+
+#filter-translator:hover {
+ background-color: #ebebeb;
+ color: black;
+}
+
+#filter-editor:hover {
+ background-color: #ebebeb;
+ color: black;
+}
+
+#lovely-things-list {
+	margin-top: 15px;
+}
+
+#lovely-things-list span {
+	margin: 15px;
+}
+
+.filter {
+	margin-top: 5px;
 }

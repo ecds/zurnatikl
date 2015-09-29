@@ -18,16 +18,18 @@
 {# editors #}
 {% with editors=issue.editors.all %}
 {% if editors %}
-<p>{{ editors|readable_list:'firstname_lastname' }},
-  editor{{ editors|pluralize }}</p>
+{% for editor in editors %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+  {% endfor %}
 {% endif %}
 {% endwith %}
 
 {# contributing editors #}
 {% with editors=issue.contributing_editors.all %}
 {% if editors %}
-<p>{{ editors|readable_list:'firstname_lastname' }},
-  contributing editor{{ editors|pluralize }}</p>
+{% for editor in editors %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+  {% endfor %}
 {% endif %}
 {% endwith %}
 
@@ -58,8 +60,10 @@
     <li>{{ item.end_page }}</li>
     <li>{{ item.title }}{% if item.creators.count or item.translators.count %},{% endif %}
       {% if item.creators.count %}
-       {{ item.creators.all|readable_list:'firstname_lastname' }}{% if item.translators.count %}, {% endif %}
-      {% endif %}
+      {% for creator in item.creators.all %}
+ <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
+  {% endfor %}
+     {% endif %}  
       {% if item.translators.count %}
        trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
       {% endif %}
