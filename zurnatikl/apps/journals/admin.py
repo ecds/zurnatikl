@@ -43,9 +43,9 @@ class IssueInline(admin.StackedInline, SortableInline):
 
 
 class JournalAdmin(admin.ModelAdmin):
-    list_display = ['title', 'uri', 'publisher', 'issn']
-    search_fields = list_display = ['title', 'uri', 'publisher', 'issn',
+    search_fields = ['title', 'uri', 'publisher', 'issn',
        'notes']
+    list_display = search_fields + ['admin_thumbnail']
     filter_horizontal = ('schools', )
     inlines = [IssueInline, ]
     form = JournalForm

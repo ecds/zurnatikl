@@ -3,14 +3,17 @@ from django.db import models
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
+from django.utils.safestring import mark_safe
 import itertools
 import logging
 import networkx as nx
 import time
 
+from django_date_extensions import fields as ddx
+from stdimage.models import StdImageField
+
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.people.models import Person, School
-from django_date_extensions import fields as ddx
 
 
 logger = logging.getLogger(__name__)
@@ -101,6 +104,14 @@ class Journal(models.Model):
         'Leave blank to have a slug automatically generated. ' +
         'Change carefully, since editing this field this changes the site URL.')
 
+    image = StdImageField(blank=True,
+        variations={
+            # sizes needed for site design use
+            'thumbnail': {'width': 150, 'height': 50, 'crop': True},
+            # FIXME: this size doesn't seem to be right
+            'large': {'width': 942, 'height': 352, 'crop': True},
+    })
+
     # generate natural key
     def natural_key(self):
         return (self.title,)
@@ -127,6 +138,12 @@ class Journal(models.Model):
 
     def get_absolute_url(self):
         return reverse('journals:journal', kwargs={'slug': self.slug})
+
+    def admin_thumbnail(self):
+        if self.image:
+            return mark_safe('<img src="%s"/>' % self.image.thumbnail.url)
+
+    admin_thumbnail.short_description = 'thumbnail'
 
     @property
     def network_id(self):

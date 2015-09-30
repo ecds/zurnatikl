@@ -23,11 +23,7 @@
 </div>
 {# NOTE: layout doesn't work right without the image block #}
     <div class="j-image">
-        {# <picture> #}
-            {# <source srcset="beatitude-img.png" media="(max-width: 320px)" class="img-responsive"> #}
-            {# <source srcset="beatitude-img.png" class="img-responsive"> #}
-            {# <img srcset="beatitude-img.png" alt="My default image" class="img-responsive"> #}
-        {# </picture> #}
+        <img src="{{ journal.image.large.url }}" class="img-responsive">
     </div>
 </div>
 
