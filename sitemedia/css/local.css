@@ -64,6 +64,11 @@
 	margin: 15px;
 }
 
-.filter {
-	margin-top: 5px;
+#filtering{
+    margin-left: 0px;
+}
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
 }

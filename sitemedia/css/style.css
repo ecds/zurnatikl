@@ -293,7 +293,7 @@ div#OR {
   	flex-shrink: 1;
   }
   .main h2 {
-  	margin-top: 30px;
+  	margin-top: 10px;
   	padding: 0 10px 0 10px;
   }
   .main h3 {
@@ -551,7 +551,7 @@ div#OR {
   	flex-basis: 1;
   }
   .main h2 {
-  	margin-top: 30px;
+  	margin-top: 10px;
   	padding: 0 10px 0 10px;
   }
 	.main h3 {
@@ -816,7 +816,7 @@ div#OR {
   	flex-basis: 900px;
   }
   .main h2 {
-  	margin-top: 30px;
+  	margin-top: 10px;
   	padding: 0;
   }
   .main h3 {
@@ -1038,7 +1038,7 @@ div#OR {
   	flex-basis: 900px;
   }
   .main h2 {
-  	margin-top: 30px;
+  	margin-top: 10px;
   	padding: 0;
   }
   .main h3 {
@@ -1228,7 +1228,9 @@ h3,
 }
 
 
-
+.filter {
+  margin-top: 30px;
+}
 /**********-- End Bootstrap modifications--**********/
 
 

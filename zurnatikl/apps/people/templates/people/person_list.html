@@ -3,23 +3,26 @@
 
 {% block content %}
 <div class="container" id="lovely-things-list">
-<div class="col-md-5"><h1>Authors, Editors, and Translators</h1></div>
-<div class="col-md-7">
-
-
-
-<ul class="filter">
+<div class="col-md-12 col-centered" style="max-width: 1000px;">
+<div class="col-md-2">
+<h2>People</h2></div>
+<div class="col-md-10"><ul class="filter" id="filtering">
  			<li class="btn btn-default active" role="button" id="filter-none">All</li>
             <li class="btn btn-default" role="button" id="filter-author">Authors</li>
             <li class="btn btn-default" role="button" id="filter-editor">Editors</li>
             <li class="btn btn-default" role="button" id="filter-translator">Translators</li>
- </ul>
+ </ul></div>
+<div class="col-md-12">
+	<p>
+	Track {{ object_list.count }} people as authors, editors, and translators.
+	
+</p>
 
 </div>
 
-<span>Track {{ object_list.count }} people as authors, editors, and translators.</p>
-
-<div class="columns">
+</div>
+<div class="col-md-12">
+<div class="columns col-centered" style="max-width: 1000px;">
 <ul class="list" style="list-style-type: none;">
 {% for person in object_list %}
 
@@ -28,16 +31,17 @@
     <span class="categoryeditor" style="display: none;">{% if person.id in editors_ids %}editor{% endif %}</span>
     <span class="categoryauthor" style="display: none;">{% if person.id in authors_ids %}author{% endif %}</span>
     <span class="categorytranslator" style="display: none;">{% if person.id in translators_ids %}translator{% endif %}</span>
-        <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
+    <p>
+    	 <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
+    </p>
+       
 
     </li>
 
 {% endfor %}
 </ul>
-
-
 </div>
-
+</div>
 </div>
 {% endblock %}
 
