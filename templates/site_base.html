@@ -167,8 +167,13 @@ by default; use page_rdf_type to override with a webpage subclass.
     {% endif %}
   {% endblock %}
 
-  <div class="main-secondary main"> {# needed for all pages except site index (?) #}
+  <div class="main-secondary main "> {# needed for all pages except site index (?) #}
+   <div class="container">
+    <div class="col-centered">
     {% block content %}{% endblock %}
+    </div>
+    </div>
+  {% block content_full %}{% endblock %}
   </div>
 
   {# resonance design doesn't include a footer; sticking with existing eultheme footer #}
