@@ -1,6 +1,10 @@
 {% extends 'site_base.html' %}
 
+
+
 {% block content %}
+
+{{ images }}
     <div class="main-home">
         <div class="main-img-1">
             <picture>
@@ -9,20 +13,20 @@
                 <img srcset="/images/home/SCA_Home__0003_CComics2.jpg" alt="My default image" class="img-responsive">
             </picture>
         </div>
-        <div class="main-txt-1">
+        <a href="{% url 'about' %}" class="main-txt-1">
             <p><span class="section-title">LEARN ABOUT THE PROJECT</span>: Drawing on the impressive holdings of the
             Raymond Danowski Poetry Library at Emory University, Schooling Donald Allen uses data from a dozen
             midcentury poetry journals to visualize and debate the schools of poetry established by Allen’s noted
             anthology <em>The New American Poetry: 1945-1960</em>. The results complicate and challenge some key narratives
             and assumptions of postwar literary history.</p>
-         </div>
+         </a>
     </div>
     <div class="main-home">
-         <div class="main-txt-2">
+        <a href="{% url 'people:list' %}" class="main-txt-2">
             <p><span class="section-title">MEET THE AUTHORS</span>: Schooling Donald Allen collects publication data
             on over 750 different authors, editors, and translators featured in a robust sample of rare and influential
             magazines. The results allow unprecedented insight into who was publishing where, with whom, and when.</p>
-         </div>
+         </a>
          <div class="main-img-2">
             <picture>
                 <source srcset="/images/home/SCA_Home__0006_NewAmPoetryDJ-sm.jpg" media="(max-width: 320px)" class="img-responsive">
@@ -39,19 +43,19 @@
                 <img srcset="/images/home/SCA_Home__0008_SemiColon1.jpg" alt="My default image" class="img-responsive">
             </picture>
          </div>
-         <div class="main-txt-3">
+         <a href="{% url 'journals:list' %}" class="main-txt-3">
             <p><span class="section-title">BROWSE THE JOURNALS</span>: Explore complete runs of a dozen iconic
             and rare postwar poetry journals. From New York to Los Angeles, the Beats to Black Mountain poets,
             the project includes some of the most important poetry publications of the twentieth century.</p>
 
-         </div>
+         </a>
     </div>
     <div class="main-home">
-         <div class="main-txt-4">
+         <a href="{% url 'network:index' %}" class="main-txt-4">
             <p><span class="section-title">VIEW THE CONNECTIONS</span>: Investigate network graphs that visualize
             the relationships among the authors, editors, translators, and the journals they contributed to, and
             compare how the print communities measure against the familiar poetic schools. </p>
-         </div>
+         </a>
          <div class="main-img-4">
             <picture>
                 <source srcset="/images/home/SCA_Home__0001_C-No-9-Cover-sm.jpg" media="(max-width: 320px)" class="img-responsive">
