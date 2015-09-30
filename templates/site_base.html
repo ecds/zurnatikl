@@ -15,8 +15,7 @@ by default; use page_rdf_type to override with a webpage subclass.
     {% block metadata %}{% endblock %}
 
     {% block favicon %}
-    {# no favicon for new design? #}
-    {# <link id="siteFavIcon" rel="shortcut icon" type="image/x-icon" href="{% static 'eultheme/img/favicon.ico' %}"> #}
+    <link rel='shortcut icon' type='image/x-icon' href="{% static 'images/favicon.ico' %}" />
     {% endblock %}
 
     <!-- Bootstrap -->

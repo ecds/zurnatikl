@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     (r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls) ),
 
+    # add redirect for favicon at root of site
+    (r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)),
 )
 
 urlpatterns+=static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
