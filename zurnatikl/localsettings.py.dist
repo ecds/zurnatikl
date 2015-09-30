@@ -34,6 +34,12 @@ DATABASES = {
     }
 }
 
+# Directory where uploaded images should be stored
+# NOTE: in QA/Prod this should be *outside* fabric deploy directory,
+# so it can be preserved across deploys
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

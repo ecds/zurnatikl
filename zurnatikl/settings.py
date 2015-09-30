@@ -29,12 +29,14 @@ INSTALLED_APPS = [
     'eultheme',
     'downtime',      # required by eultheme even if we aren't using it
     'widget_tweaks',
+    'stdimage',
     #### local apps
     'zurnatikl.apps.admin',
     'zurnatikl.apps.geo',
     'zurnatikl.apps.people',
     'zurnatikl.apps.journals',
     'zurnatikl.apps.network',
+    'zurnatikl.apps.content',
     # uncomment in your greatest time of need!
     # (migrating partial data from one DB to another, hopefully we never
     # need this again)
@@ -99,6 +101,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'sitemedia'),
 ]
+
+MEDIA_URL = '/media/'
 
 
 # used with admin_reorder template tag
