@@ -13,5 +13,5 @@ lxml
 
 -e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
 django-widget-tweaks
-django-imagekit
+django-stdimage
 
