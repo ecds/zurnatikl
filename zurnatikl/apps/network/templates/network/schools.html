@@ -15,6 +15,7 @@
   {% url 'network:schools-export' slug 'gexf' as gexf_url %}
   {% url 'network:schools-export' slug 'graphml' as graphml_url %}
   {% include 'network/snippets/download_graph.html' %}
+  
 {% endwith %}
 
 <h2>Schools categorized by {{ object_list.0.categorizer_name }}</h2>
@@ -26,7 +27,7 @@
 
 {% block graph-init %}
 <script>
-init_sigma_graph({
+var s = init_sigma_graph({
   json_url: "{% url 'network:schools-json' object_list.0.categorizer %}",
   forceLink:  {
      autoStop: true,
@@ -34,5 +35,6 @@ init_sigma_graph({
      iterationsPerRender: 25,
   }
 });
+alert(s.graph.position())
 </script>
 {% endblock %}

@@ -16,7 +16,26 @@
 {% url 'journals:contributor-network-export' 'gexf' as gexf_url %}
 {% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
 {% include 'network/snippets/download_graph.html' %}
+<div id="control-pane">
+    <h2 class="underline">filters</h2>
 
+    <div>
+      <h3>min degree <span id="min-degree-val">0</span></h3>
+      0 <input id="min-degree" type="range" min="0" max="0" value="0"> <span id="max-degree-value">0</span><br>
+    </div>
+    <div>
+      <h3>node category</h3>
+      <select id="node-category">
+        <option value="" selected>All categories</option>
+      </select>
+    </div>
+    <span class="line"></span>
+    <div>
+      <button id="reset-btn">Reset filters</button>
+      <button id="export-btn">Export</button>
+    </div>
+    <div id="dump" class="hidden"></div>
+  </div>
 {% endblock %}
 
 {% block graph-init %}
@@ -41,6 +60,7 @@ var s = init_sigma_graph({
       }
     }
 });
+
 
 // community detection should happen either on graph:layout_complete or
 // graph:design_applied, because otherwise design colors override
@@ -73,6 +93,57 @@ $('#graph-container').on('graph:design_applied', function() {
     // refresh sigma renderers
     s.refresh({skipIndexation: true});
 });
+
+// $('.move-icon').bind('click keypress',function(event) {
+//       var newPos = s.position();
+//       switch ($(this).attr('action')) {
+//         case 'up':
+//           newPos.stageY += moveDelay;
+//           break;
+//         case 'down':
+//           newPos.stageY -= moveDelay;
+//           break;
+//         case 'left':
+//           newPos.stageX += moveDelay;
+//           break;
+//         case 'right':
+//           newPos.stageX -= moveDelay;
+//           break;
+//       }
+
+//       s.goTo(newPos.stageX, newPos.stageY);
+
+//       event.stopPropagation();
+//       return false;
+//     });
+
+//     $('.zoom-icon').bind('click keypress',function(event) {
+//       var ratio = s.position().ratio;
+//       switch ($(this).attr('action')) {
+//         case 'in':
+//           ratio *= zoomDelay;
+//           break;
+//         case 'out':
+//           ratio /= zoomDelay;
+//           break;
+//       }
+
+//       s.goTo(
+//         $('#graph-container').width() / 2,
+//         $('#graph-container').height() / 2,
+//         ratio
+//       );
+
+//       event.stopPropagation();
+//       return false;
+//     });
+
+//     $('.refresh-icon').bind('click keypress',function(event) {
+//       s.position(0, 0, 1).draw();
+
+//       event.stopPropagation();
+//       return false;
+//     });
 </script>
 {% endblock %}
 

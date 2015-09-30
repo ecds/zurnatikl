@@ -1,3 +1,5 @@
+
+
 $(document).ready(function(){
 var options = {
   valueNames: [ 'categoryauthor','categoryeditor', 'categorytranslator' ],

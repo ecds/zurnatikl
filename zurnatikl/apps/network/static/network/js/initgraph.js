@@ -156,10 +156,13 @@ function init_sigma_graph(opts) {
 
 }
 
+
+
 /* off-canvas menu for graph control panel & color key
 adapted from http://tympanus.net/Development/OffCanvasMenuEffects/cornermorph.html
 */
 $(document).ready(function(){
+
     var menu_openbtn = $('#open-button'),
       menu_isopen = false;
 
@@ -173,5 +176,6 @@ $(document).ready(function(){
   }
 
   menu_openbtn.on("click", toggleMenu);
+
 });
 

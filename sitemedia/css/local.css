@@ -93,3 +93,82 @@
     padding-left: 0px;
     padding-right: 0px;
  }
+.move {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    top: 0;
+    right: 40px;
+    margin: 5px;
+}
+
+.contains-icon[action="up"] {
+    top: 0;
+    left: 24px;
+}
+
+.contains-icon {
+    outline: none;
+    margin-left: 2px;
+    margin-top: 2px;
+    width: 21px;
+    height: 21px;
+    position: absolute;
+    cursor: pointer;
+    -webkit-box-shadow: inset 0 -1px 3px #555;
+    -moz-box-shadow: inset 0 -1px 3px #555;
+    box-shadow: inset 0 -1px 3px #555;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.main-home {
+margin-left: -30px;
+}
+
+.main-home 
+/* plugin styles for filter sigma */
+ #control-pane {
+      top: 10px;
+      /*bottom: 10px;*/
+      right: 10px;
+      position: absolute;
+      width: 230px;
+      background-color: rgb(249, 247, 237);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #control-pane > div {
+      margin: 10px;
+      overflow-x: auto;
+    }
+    .line {
+      clear: both;
+      display: block;
+      width: 100%;
+      margin: 0;
+      padding: 12px 0 0 0;
+      border-bottom: 1px solid #aac789;
+      background: transparent;
+    }
+    h2, h3, h4 {
+      padding: 0;
+      font-variant: small-caps;
+    }
+    .green {
+      color: #437356;
+    }
+    h2.underline {
+      color: #437356;
+      background: #f4f0e4;
+      margin: 0;
+      border-radius: 2px;
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+    .hidden {
+      display: none;
+      visibility: hidden;
+    }
+    input[type=range] {
+      width: 160px;

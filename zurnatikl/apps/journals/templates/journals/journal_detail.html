@@ -13,18 +13,23 @@
 
 <h2>{{ journal.title }}</h2>
 {# Not currently displayed, but publisher, URI and ISSN available for some journals #}
-
-<div class="j-issues">
-<ul>
-{% for issue in journal.issue_set.all %}
-    <li class="j-issue-li">{% include 'journals/snippets/issue_link.html' %}</li>
-{% endfor %}
-</ul>
+<div class="col-md-6">
+    <div class="j-issues">
+    <ul>
+    {% for issue in journal.issue_set.all %}
+        <li class="j-issue-li">{% include 'journals/snippets/issue_link.html' %}</li>
+    {% endfor %}
+    </ul>
+    </div>
 </div>
-{# NOTE: layout doesn't work right without the image block #}
+<div class="col-md-6">
     <div class="j-image">
         <img src="{{ journal.image.large.url }}" class="img-responsive">
-    </div>
+    </div>  
+</div>
+
+{# NOTE: layout doesn't work right without the image block #}
+    
 </div>
 
 {% endblock %}

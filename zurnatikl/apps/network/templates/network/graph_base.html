@@ -21,6 +21,10 @@
     <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
     <script src="{% static 'network/js/initgraph.js' %}"></script>
+    <script src="https://rawgit.com/Linkurious/linkurious.js/develop/dist/sigma.min.js"></script>
+    <script type="text/javascript">
+      
+    </script>
 {% endblock %}
 
 
@@ -65,7 +69,9 @@
 
 {% block graph-init %} {# extend to override config options #}
 <script>
-init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
+var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
+var filter = sigma.plugins.filter(s);
+
 </script>
 {% endblock %}
 </div>
