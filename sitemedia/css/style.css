@@ -293,7 +293,7 @@ div#OR {
   	flex-shrink: 1;
   }
   .main h2 {
-  	margin-top: 10px;
+  	margin-top: 30px;
   	padding: 0 10px 0 10px;
   }
   .main h3 {
@@ -535,6 +535,13 @@ div#OR {
   	flex-direction:         column;
 
   }
+  .main-home a {
+    display: inline-block;
+  }
+  .main-home a:hover, .main-home a:link, .main-home a:visited, .main-home a:active {
+    color: white;
+    text-decoration: none;
+  }
    .main-secondary {
   	display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
   	display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
@@ -551,7 +558,7 @@ div#OR {
   	flex-basis: 1;
   }
   .main h2 {
-  	margin-top: 10px;
+  	margin-top: 30px;
   	padding: 0 10px 0 10px;
   }
 	.main h3 {
@@ -816,7 +823,7 @@ div#OR {
   	flex-basis: 900px;
   }
   .main h2 {
-  	margin-top: 10px;
+  	margin-top: 30px;
   	padding: 0;
   }
   .main h3 {
@@ -1038,7 +1045,7 @@ div#OR {
   	flex-basis: 900px;
   }
   .main h2 {
-  	margin-top: 10px;
+  	margin-top: 30px;
   	padding: 0;
   }
   .main h3 {
@@ -1227,10 +1234,16 @@ h3,
     outline: 0px auto -webkit-focus-ring-color;
 }
 
-
-.filter {
-  margin-top: 30px;
+/* adjust styles for main page blocks */
+.main-home a {
+    display: inline-block;
 }
+.main-home a:hover, .main-home a:link, .main-home a:visited, .main-home a:active {
+    color: white;
+    text-decoration: none;
+}
+
+
 /**********-- End Bootstrap modifications--**********/
 
 
