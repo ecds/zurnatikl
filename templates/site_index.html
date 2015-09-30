@@ -7,11 +7,7 @@
 {{ images }}
     <div class="main-home">
         <div class="main-img-1">
-            <picture>
-                <source srcset="/images/home/SCA_Home__0003_CComics2-sm.jpg" media="(max-width: 320px)" class="img-responsive">
-                <source srcset="/images/home/SCA_Home__0003_CComics2.jpg" class="img-responsive">
-                <img srcset="/images/home/SCA_Home__0003_CComics2.jpg" alt="My default image" class="img-responsive">
-            </picture>
+        {% include 'content/snippets/homepage_image.html' with img=images.0 %}
         </div>
         <a href="{% url 'about' %}" class="main-txt-1">
             <p><span class="section-title">LEARN ABOUT THE PROJECT</span>: Drawing on the impressive holdings of the
@@ -28,26 +24,17 @@
             magazines. The results allow unprecedented insight into who was publishing where, with whom, and when.</p>
          </a>
          <div class="main-img-2">
-            <picture>
-                <source srcset="/images/home/SCA_Home__0006_NewAmPoetryDJ-sm.jpg" media="(max-width: 320px)" class="img-responsive">
-                <source srcset="/images/home/SCA_Home__0006_NewAmPoetryDJ.jpg" class="img-responsive">
-                <img srcset="/images/home/SCA_Home__0006_NewAmPoetryDJ.jpg" alt="My default image" class="img-responsive">
-            </picture>
+             {% include 'content/snippets/homepage_image.html' with img=images.1 %}
         </div>
     </div>
     <div class="main-home">
          <div class="main-img-3">
-            <picture>
-                <source srcset="/images/home/SCA_Home__0008_SemiColon1-sm.jpg" media="(max-width: 320px)" class="img-responsive">
-                <source srcset="/images/home/SCA_Home__0008_SemiColon1.jpg" class="img-responsive">
-                <img srcset="/images/home/SCA_Home__0008_SemiColon1.jpg" alt="My default image" class="img-responsive">
-            </picture>
+            {% include 'content/snippets/homepage_image.html' with img=images.2 %}
          </div>
          <a href="{% url 'journals:list' %}" class="main-txt-3">
             <p><span class="section-title">BROWSE THE JOURNALS</span>: Explore complete runs of a dozen iconic
             and rare postwar poetry journals. From New York to Los Angeles, the Beats to Black Mountain poets,
             the project includes some of the most important poetry publications of the twentieth century.</p>
-
          </a>
     </div>
     <div class="main-home">
@@ -57,11 +44,7 @@
             compare how the print communities measure against the familiar poetic schools. </p>
          </a>
          <div class="main-img-4">
-            <picture>
-                <source srcset="/images/home/SCA_Home__0001_C-No-9-Cover-sm.jpg" media="(max-width: 320px)" class="img-responsive">
-                <source srcset="/images/home/SCA_Home__0001_C-No-9-Cover.jpg" class="img-responsive">
-                <img srcset="/images/home/SCA_Home__0001_C-No-9-Cover.jpg" alt="My default image" class="img-responsive">
-            </picture>
+             {% include 'content/snippets/homepage_image.html' with img=images.3 %}
          </div>
     </div>
     <div class="clearfix"></div>

@@ -1,0 +1,7 @@
+<picture>
+    <source srcset="{{ img.image.homepage_sm.url }}" media="(max-width: 320px)" class="img-responsive"/>
+    <source srcset="{{ img.image.homepage.url }}" class="img-responsive"/>
+    <img src="{{ img.image.homepage.url }}" class="img-responsive"
+        alt="{{ img.alt_text|default:'' }}" title="{{ img.title }}" />
+</picture>
+

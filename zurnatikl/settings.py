@@ -58,6 +58,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     ### local context processors
     "zurnatikl.version_context",
     "zurnatikl.apps.journals.context_processors.search",
+    "zurnatikl.apps.content.context_processors.banner_image",
 )
 
 
