@@ -78,6 +78,8 @@
     background-color: #fff;
     text-align: right;
     padding-right: 15px;
+    padding-bottom: 0px;
+    margin-bottom: 5px;
 }
 
 .breadcrumb>.active {
@@ -126,4 +128,3 @@
 .main-home {
 margin-left: -30px;
 }
-
