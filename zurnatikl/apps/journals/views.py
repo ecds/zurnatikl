@@ -11,7 +11,6 @@ from .models import Journal, Issue, Item
 from .forms import SearchForm
 
 
-
 class JournalList(ListView):
     'List all Journals'
     model = Journal

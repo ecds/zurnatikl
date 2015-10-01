@@ -1,0 +1,88 @@
+{% extends 'site_base.html' %}
+{# display details for a single issue in a journal #}
+{% load journal_extras %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></li>
+  <li class="active">{{ issue.label }}</li>
+</ol>
+
+<div class="container">
+
+<h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
+<h2>{{ issue.label }} ({{ issue.date }})</h2>
+
+{# editors #}
+{% with editors=issue.editors.all %}
+{% if editors %}
+<h3>{{ editors|readable_list:'firstname_lastname' }},
+  editor{{ editors|pluralize }}</h3>
+{% endif %}
+{% endwith %}
+
+{# contributing editors #}
+{% with editors=issue.contributing_editors.all %}
+{% if editors %}
+<h3>{{ editors|readable_list:'firstname_lastname' }},
+  contributing editor{{ editors|pluralize }}</h3>
+{% endif %}
+{% endwith %}
+
+{# publication address #}
+{% if issue.publication_address %}
+<h4>Published at {{ issue.publication_address.display_label }}</h4>
+{% endif %}
+
+{# print address #}
+{% if issue.print_address %}
+<h4>Printed at {{ issue.print_address.display_label }}</h4>
+{% endif %}
+
+{# price #}
+{% if issue.price %}
+<h4>Price per issue: ${{ issue.price }}</h4>
+{% endif %}
+
+<table>
+  <tr>
+    <th width="50">Start Page </th>
+    <th width="50">End Page </th>
+    <th valign="bottom">Contents</th>
+  </tr>
+{% for item in issue.item_set.all %}
+  <tr>
+    <td>{{ item.start_page }}</td>
+    <td>{{ item.end_page }}</td>
+    <td>{{ item.title }}{% if item.creators.all.count or item.translators.all.count %},{% endif %}
+      {% if item.creators.all.count %}
+       {{ item.creators.all|readable_list:'firstname_lastname' }}{% if item.translators.count %}, {% endif %}
+      {% endif %}
+      {% if item.translators.all.count %}
+       trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
+      {% endif %}
+    </td>
+  </tr>
+
+{% endfor %}
+</table>
+
+<nav>
+  <ul class="pager">
+    {% if issue.previous_issue %}
+    <li class="previous"><a href="{% url 'journals:issue' issue.journal.slug issue.previous_issue.id %}"><span aria-hidden="true">&larr;</span> {{ issue.previous_issue.label }}</a></li>
+    {% else %}
+    <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span></a></li>
+    {% endif %}
+    {% if issue.next_issue %}
+    <li class="next"><a href="{% url 'journals:issue' issue.journal.slug issue.next_issue.id %}">{{ issue.next_issue.label }} <span aria-hidden="true">&rarr;</span></a></li>
+    {% else %}
+    <li class="next disabled"><a href="#"><span aria-hidden="true">&rarr;</span></a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+</div>
+{% endblock %}
+

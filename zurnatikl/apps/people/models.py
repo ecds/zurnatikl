@@ -14,6 +14,7 @@ from zurnatikl.apps.geo.models import Location
 logger = logging.getLogger(__name__)
 
 
+
 #Schools
 class SchoolManager(models.Manager):
     def get_by_natural_key(self, name):

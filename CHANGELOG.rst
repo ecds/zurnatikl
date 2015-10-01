@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+Release 1.5.1
+-------------
+
+* Style tweaks: fix homepage image display for Firefox, adjust
+  margins and heading for people page
+
 Release 1.5 - Network graphs and site design
 --------------------------------------------
 
@@ -62,6 +68,7 @@ Release 1.4 - Initial biography release
 * As a user, when I add a journal or a person to the dataset I want the
   slug field to auto-populate so the slugs have a consistent logic to
   their creation.
+
 
 Release 1.3 - Journal contents & admin improvements
 ---------------------------------------------------
@@ -135,6 +142,7 @@ Release 1.1
   with a particular person so I can make corrections to incorrect
   entries.  (Updated UI style and added spacing for select options)
 * bugfix: Pagination links are not visible
+
 
 Release 1.0.1
 -------------
