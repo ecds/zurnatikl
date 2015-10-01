@@ -1,6 +1,48 @@
 CHANGELOG
 =========
 
+Release 1.5 - Network graphs and site design
+--------------------------------------------
+
+* As a user, I want to see a network graph for individuals associated
+  with the schools that Donald Allen categorized so I can visualize
+  these relationships.
+* As a user, I want to see a network graph of all journals, editors,
+  authors, and translators so I can compare the relationships in our
+  data set to the schools network graph.
+* As a user, I want to see individuals and journals grouped by detected
+  communities so I can compare those groups to the schools network graph.
+* As a user, I want to see an indication of the type of node and lines
+  in a graph, so that I can identify journals and types of contributors.
+* As a user, I want a consistent way to access downloadable network
+  files, so I can work with the content on my own.
+* As a user, I want to view network graphs in fullscreen, so that I can
+  interact with larger networks even on smaller screens.
+* As a user, when I am browsing issues or contributor pages, I want to
+  be able to navigate to other mentioned people, so that I can browse
+  their connections.
+* As a user, when browsing journal contributors, I want to filter by
+  editor, author, or translator, so that I can narrow the list, or see
+  specific types of contributors.
+* As a user, when I come to the site homepage, I want to see the main
+  parts of the site and how to navigate to the parts that interest me.
+* As an admin, I want to upload images for use on the home page and
+  secondary page banner so that I can manage the site image content.
+* As a user, when I come to the home page of the site, I want to see a
+  selection of images so that I can get a visual sense of materials
+  related to the site.
+* As a user, I want to see a consistent header and navigation so that I
+  have a consistent experience as I move through the site.
+* As an admin, I want to upload and associate a thumbnail with each
+  journal so that I can give users a visual sense of each journal.
+* As a user, I want to see images of journals, to have a sense of each
+  journal's visual identity.
+
+* GitHub repository and django project were renamed to use the codename
+  **zurnatikl**.
+* Switched from sigma.js to linkurious.js for network graph display.
+
+
 Release 1.4 - Initial biography release
 ---------------------------------------
 
