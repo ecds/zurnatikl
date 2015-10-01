@@ -1,4 +1,5 @@
 {% extends 'site_base.html' %}
+{% load static %}
 
 {% block page-subtitle %} | Networks{% endblock %}
 
@@ -8,11 +9,23 @@
   <h2>Networks</h2>
 <p>The network graphs here aim to illustrate literary communities. One graph is generated from Donald Allen’s remarks about poetic schools in the introduction to <em>The New American Poetry</em>. Allen associates people, places, and journals with certain schools of poetry: the New York School, the Beats, Black Mountain, and so on. The other network graph visualizes connections among <a href="{% url 'people:list' %}">editors, authors, and translators</a> of <a href="{% url 'journals:list' %}">twelve poetry journals</a> of the era. <em>Schooling Donald Allen</em> seeks to compare the schools Allen describes with the communities detected in the journals’ data.</p>
 
-{# consider using bootstrap thumbnail styles here: http://getbootstrap.com/components/#thumbnails #}
-<div>
-<a href="{% url 'network:schools' 'donald-allen' %}"><img src="" alt="Thumbnail image of the Schooling Donald Allen network graph"></a>
-<a href="{% url 'journals:contributor-network' %}"><img src="" alt="Thumbnail image of the journals contribution network graph"></a>
+<div class="row">
+  <div class="col-xs-8 col-sm-6 col-md-6">
+    <a href="{% url 'network:schools' 'donald-allen' %}" class="thumbnail"
+        title="Schooling Donald Allen network graph">
+        <img src="{% static 'images/schools_graph.png' %}"
+             alt="Thumbnail image of the Schooling Donald Allen network graph"/>
+    </a>
+  </div>
+  <div class="col-xs-8 col-sm-6 col-md-6">
+    <a href="{% url 'journals:contributor-network' %}" class="thumbnail"
+       title="Journal contributor network graph">
+        <img src="{% static 'images/journal_communities.png' %}"
+        alt="Thumbnail image of the journals contribution network graph"/>
+    </a>
+  </div>
 </div>
+{# TODO: generate smaller images and use html5 picture element #}
 
 <p>Network graphs are made up of nodes (the points) and edges (the lines that connect the nodes). In the journal contribution graph here, the nodes are journals or people, and the edges represent various relationships. The people are editors, authors, and/or translators with connections to the journals they contributed to, as well as connections to other people: between co-editors, co-authors, editors and contributors, and translators and authors.</p>
 
