@@ -90,8 +90,9 @@ $('#graph-container').on('graph:design_applied', function() {
         // by default, assigned community number is set to _louvain
         node.color = colors[node._louvain];
       });
+      // hide color key since it isn't relevant
       $("#graph-color-key").hide();
-      // refresh sigma renderers
+      // refresh sigma renderersr
       s.refresh({skipIndexation: true});
     }
     color_by_community();

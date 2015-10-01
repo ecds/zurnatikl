@@ -1,11 +1,11 @@
 {% extends 'site_base.html' %}
 
-{% block page-subtitle %} | About{% endblock %} 
+{% block page-subtitle %} | About{% endblock %}
 
 {% block content %}
   <!--I don't understand why this header is h2 when there's no h1-- should be semantic but leaving as h2 for css sake. Also added an anchor link that the nav bar can link to for Digital Danowski-->
   <!--Need to add internal links for all of the journals, networks page-->
-  
+
   <h2>About</h2>
 
     <p><strong>Schooling Donald Allen: Networking the New American Poetry</strong> uses data
@@ -15,36 +15,47 @@
     Emory University, Schooling Donald Allen uses over 10,000 data points to answer fundamental
     questions — and question our assumptions — about the nature of poetry and culture in the second
     half of the twentieth century.</p>
-    
+
     <p>Specifically, the project seeks to test Allen’s
     taxonomy of postwar poetic schools against the networks of publication, collaboration, and
     editorial labor captured in the Danowski Poetry Library’s wide-ranging archive of postwar
     magazines, periodicals, newsletters, and literary journals.</p>
-    
+
      <p>To visualize those networks, the project undertook ambitious data
     collection, recording bibliographic and other information from twelve journals of midcentury
-    American poetry—including <a href="">Beatitude</a>, <a href="">The Black Mountain Review</a>, <a href="">Origin</a>, <a href="">Measure</a>, <a href="">The Floating
-    Bear</a>, <a href="">Intrepid</a>, <a href="">Yugen</a>, <a href="">“C”: A Magazine of Poetry</a>, <a href="">Big Table</a>, <a href="">Fuck You: A Magazine of the Arts</a>,
-    <a href="">J: A Magazine of Poetry</a>, and <a href="">Evergreen Review</a>—many available digitally for the first time.
+    American poetry—including
+    <a href="{% url 'journals:journal' 'beatitude' %}">Beatitude</a>,
+    <a href="{% url 'journals:journal' 'black-mountain-review' %}">The Black Mountain Review</a>,
+    <a href="{% url 'journals:journal' 'origin' %}">Origin</a>,
+    <a href="{% url 'journals:journal' 'measure' %}">Measure</a>,
+    <a href="{% url 'journals:journal' 'floating-bear' %}">The Floating Bear</a>,
+    <a href="{% url 'journals:journal' 'intrepid' %}">Intrepid</a>,
+    <a href="{% url 'journals:journal' 'yugen' %}">Yugen</a>,
+    <a href="{% url 'journals:journal' 'c-a-journal-of-poetry' %}">“C”: A Journal of Poetry</a>,
+    <a href="{% url 'journals:journal' 'big-table' %}">Big Table</a>,
+    <a href="{% url 'journals:journal' 'fuck-you' %}">Fuck You: A Magazine of the Arts</a>,
+    <a href="{% url 'journals:journal' 'j-a-magazine-of-poetry' %}">J: A Magazine of Poetry</a>, and
+    <a href="{% url 'journals:journal' 'evergreen-review' %}">Evergreen Review</a>—many
+    available digitally for the first time.
     The resulting resource documents over 750 different authors, editors, and translators, and
     includes over 10,000 pieces of data.</p>
-    
+
     <p>With the first round data collection completed, we are undertaking the
-    next phase of the project. This work includes creating <a href="">network graphs</a>—visual analyses of
+    next phase of the project. This work includes creating <a href="{% url 'network:index' %}">network graphs</a>—visual analyses of
     connections among schools, poets, journals,and geographical location—and expanding the
     scope of the data questions. Initial findings have already been presented at two conferences
     presentations in June 2015: by Lisa Chinn at the DHSI (Digital Humanities Summer Institute)
     and Brian Croxall at the CSDH/SCHN Digital Humanities Conference. We anticipate sharing
     full results for Schooling Donald Allen by summer 2016.</p>
 
-    <a name="DigDan"></a><h2>Digital Danowski</h2>
+    <a name="DigitalDanowski"></a><h2>Digital Danowski</h2>
     <p>The poetry library of record for the twentieth century, the <a href="http://rose.library.emory.edu/collections/literature-poetry/danowski-library.html">Raymond Danowski Poetry Library</a> includes 75,000 volumes, 50,000 issues of journals, thousands of broadsides,
     countercultural material, manuscripts, recordings, and objects. Assembled by collector
     Raymond Danowski over 30 years, the collection is thought to have been the largest library
     in private hands until its arrival at Emory in 2004.</p>
 
     <p><strong>Digital Danowski</strong> is a new initiative of the Danowski Poetry Library that
-    seeks to make visible portions of the collection otherwise unseen. Goals for the projects include: 
+    seeks to make visible portions of the collection otherwise unseen. Goals for the projects include:
 
     <ul>
         <li>Challenging received narratives of literary history</li>
