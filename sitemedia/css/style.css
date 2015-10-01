@@ -51,6 +51,7 @@ label{
 .banner-image {
 	margin-bottom: 1px;
     flex-basis: 450px;
+    min-width: 0;
 }
 
 .logo h1 {
@@ -1063,6 +1064,7 @@ div#OR {
   .main-img-1, .main-img-2, .main-img-3, .main-img-4, .main-txt-1, .main-txt-2, .main-txt-3, .main-txt-4 {
 	flex-basis: 450px;
 	margin-right: 1px;
+  min-width: 0;
    }
     .main-txt-1 {
    	order: 1;

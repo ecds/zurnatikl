@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+Release 1.5.1
+-------------
+
+* Style tweaks: fix homepage image display for Firefox, adjust
+  margins and heading for people page
+
 Release 1.5 - Network graphs and site design
 --------------------------------------------
 
