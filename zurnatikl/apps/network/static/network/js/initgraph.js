@@ -138,6 +138,11 @@ function init_sigma_graph(opts) {
     });
   });
 
+  // configure fullscreen button
+  s.renderers[0].fullScreen({
+    id : 'graph-fullscreen'
+  });
+
   // return the generated sigma instance
   return s;
 

@@ -51,6 +51,9 @@ body,
 	background: transparent;
 	outline: none;
 }
+.menu-button#graph-fullscreen {
+	top: 325px;
+}
 
 .menu-button span {
 	display: none;
