@@ -8,11 +8,15 @@ from fabric.colors import green, yellow
 from fabric.context_managers import cd, hide, settings
 from fabric.contrib import files
 from fabric.contrib.console import confirm
-import danowski
+import zurnatikl
 
 ##
 # automated build/test tasks
 ##
+
+# NOTE: for historical reasons, the deploy environment and username
+# are currently *danowski* altohugh the codebase and django app are now
+# named *zurnatikl*
 
 
 def all_deps():
@@ -51,7 +55,7 @@ def build():
 # deploy tasks
 ##
 
-env.project = 'danowski'
+env.project = 'zurnatikl'
 env.rev_tag = ''
 env.git_rev = ''
 env.remote_path = '/home/httpd/sites/danowski'
@@ -62,7 +66,7 @@ env.remote_acct = 'danowski'
 def configure(path=None, user=None, url_prefix=None, remote_proxy=None):
     'Configuration settings used internally for the build.'
 
-    env.version = danowski.__version__
+    env.version = zurnatikl.__version__
     config_from_git()
     # construct a unique build directory name based on software version and git revision
     env.build_dir = '%(project)s-%(version)s%(rev_tag)s' % env
@@ -84,7 +88,7 @@ def config_from_git():
     """Infer revision from local git checkout."""
     # if not a released version, use revision tag
     env.git_rev = local('git rev-parse --short HEAD', capture=True).strip()
-    if danowski.__version_info__[-1]:
+    if zurnatikl.__version_info__[-1]:
         env.rev_tag = '-r' + env.git_rev
 
 

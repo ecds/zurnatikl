@@ -1,0 +1,48 @@
+{% extends 'site_base.html' %}
+
+
+{% block content %}
+    <div class="main-home">
+        <div class="main-img-1">
+        {% include 'content/snippets/homepage_image.html' with img=images.0 %}
+        </div>
+        <a href="{% url 'about' %}" class="main-txt-1">
+            <p><span class="section-title">LEARN ABOUT THE PROJECT</span>: Drawing on the impressive holdings of the
+            Raymond Danowski Poetry Library at Emory University, Schooling Donald Allen uses data from a dozen
+            midcentury poetry journals to visualize and debate the schools of poetry established by Allen’s noted
+            anthology <em>The New American Poetry: 1945-1960</em>. The results complicate and challenge some key narratives
+            and assumptions of postwar literary history.</p>
+         </a>
+    </div>
+    <div class="main-home">
+        <a href="{% url 'people:list' %}" class="main-txt-2">
+            <p><span class="section-title">MEET THE AUTHORS</span>: Schooling Donald Allen collects publication data
+            on over 750 different authors, editors, and translators featured in a robust sample of rare and influential
+            magazines. The results allow unprecedented insight into who was publishing where, with whom, and when.</p>
+         </a>
+         <div class="main-img-2">
+             {% include 'content/snippets/homepage_image.html' with img=images.1 %}
+        </div>
+    </div>
+    <div class="main-home">
+         <div class="main-img-3">
+            {% include 'content/snippets/homepage_image.html' with img=images.2 %}
+         </div>
+         <a href="{% url 'journals:list' %}" class="main-txt-3">
+            <p><span class="section-title">BROWSE THE JOURNALS</span>: Explore complete runs of a dozen iconic
+            and rare postwar poetry journals. From New York to Los Angeles, the Beats to Black Mountain poets,
+            the project includes some of the most important poetry publications of the twentieth century.</p>
+         </a>
+    </div>
+    <div class="main-home">
+         <a href="{% url 'network:index' %}" class="main-txt-4">
+            <p><span class="section-title">VIEW THE CONNECTIONS</span>: Investigate network graphs that visualize
+            the relationships among the authors, editors, translators, and the journals they contributed to, and
+            compare how the print communities measure against the familiar poetic schools. </p>
+         </a>
+         <div class="main-img-4">
+             {% include 'content/snippets/homepage_image.html' with img=images.3 %}
+         </div>
+    </div>
+    <div class="clearfix"></div>
+{% endblock %}

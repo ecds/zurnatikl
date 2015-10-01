@@ -1,0 +1,27 @@
+{% extends 'site_base.html' %}
+{# list all journals #}
+
+{% block page-subtitle %} | Journals{% endblock %}
+
+{% block content %}
+<h2>Journals</h2>
+<p>Explore complete runs of twelve different midcentury magazines.</p>
+
+<p><a href="{% url 'journals:contributor-network' %}">View connections</a>
+among the journals and their contributors.</p>
+
+<div class="journal">
+{% for journal in object_list %}
+    <div class="journal-col" >
+        <a href="{% url 'journals:journal' journal.slug %}">
+        {# TODO: fallback display for no image? #}
+        <p>
+            <img src="{{ journal.image.thumbnail.url }}" alt="" width="150" height="50">
+        </p>
+        <p>{{ journal.title }}</p>
+        </a>
+    </div>
+{% endfor %}
+
+{% endblock %}
+

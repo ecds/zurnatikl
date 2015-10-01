@@ -1,0 +1,123 @@
+{% extends 'site_base.html' %}
+{# display details for a single person #}
+{% load journal_extras %}
+
+{% block page-subtitle %} | People | {{ person.firstname_lastname }}{% endblock %}
+
+{% block content %}
+<div class="col-md-12 person-detail">
+<ol class="breadcrumb">
+  <li><a href="{% url 'people:list' %}">People</a></li>
+  <li class="active">{{ person.firstname_lastname }}</li>
+</ol>
+
+<h2>{{ person.firstname_lastname }}</h2>
+
+<p><a href="{% url 'people:egograph' person.slug %}">View connections.</a></p>
+
+
+{% comment %}  jump links disabled for now, based on resonance design
+{# only display nav if at least two sections are present #}
+{% if person.items_created.all.exists and person.issues_edited.all.exists or person.items_created.all.exists and person.items_translated.all.exists or person.items_translated.all.exists and person.issues_edited.all.exists %}
+<div>
+    <ul>
+        {% if person.items_created.all.exists %}
+        <li><a href="#author">Author</a></li>
+        {% endif %}
+        {% if person.issues_edited.all.exists %}
+        <li><a href="#editor">Editor</a></li>
+        {% endif %}
+        {% if person.items_translated.all.exists %}
+        <li><a href="#translator">Translator</a></li>
+        {% endif %}
+    <ul>
+</div>
+{% endif %}
+{% endcomment %}
+
+{% if person.items_created.all.exists %}
+{# <h3><a name="author">As Author</a></h3> #}
+<h3>As Author</h3>
+{# group by journal then by issue for nested list of items by journal/issue #}
+{% regroup person.items_created.all by issue.journal as items_by_journal %}
+<ul>
+{% for item_group in items_by_journal %}
+    {% with journal=item_group.grouper %}
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
+        <ul>
+        {% regroup item_group.list by issue as items_by_issue %}
+        {% for issue_items in items_by_issue %}
+            {% with issue=issue_items.grouper %}
+            <li class="p-issue-li">{% include 'journals/snippets/issue_link.html' %}
+                <ul>
+                    {% for item in issue_items.list %}
+                    <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans.
+                    {% for translator in item.translators.all %}
+                    <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endwith %} {# end issue group #}
+        {% endfor %}
+    </ul>{# end journal group #}
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if person.issues_edited.all.exists %}
+{# <h3><a name="editor">As Editor</a></h3> #}
+<h3>As Editor</h3>
+{# group issues by journal to generate nested list #}
+{% regroup person.issues_edited.all by journal as issues_by_journal %}
+<ul>
+{% for issue_group in issues_by_journal %}
+    {% with journal=issue_group.grouper %}
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
+    <ul>
+        {% for issue in issue_group.list %}
+          <p>{% include 'journals/snippets/issue_link.html' with ed_with=person %}</p>
+        {% endfor %}
+    </ul>
+    </li>
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if person.items_translated.all.exists %} {# NOTE: basically the same as author #}
+{# <h3><a name="translator">As Translator</a></h3> #}
+<h3>As Translator</h3>
+{# group by journal then by issue for nested list of items by journal/issue #}
+{% regroup person.items_translated.all by issue.journal as items_by_journal %}
+<ul>
+{% for item_group in items_by_journal %}
+    {% with journal=item_group.grouper %}
+    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
+        <ul>
+        {% regroup item_group.list by issue as items_by_issue %}
+        {% for issue_items in items_by_issue %}
+            {% with issue=issue_items.grouper %}
+            <li p-issue-li>{% include 'journals/snippets/issue_link.html' %}
+                <ul>
+                    {% for item in issue_items.list %}
+                    <li class="p-article-li">{{ item }}{% if item.creators.all %}, by
+                        {% for creator in item.creators.all %}
+                        <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
+                        {% endfor %}
+                    {% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endwith %} {# end issue group #}
+        {% endfor %}
+    </ul></li>{# end journal group #}
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+</div>
+{% endblock %}

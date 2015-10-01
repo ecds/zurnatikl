@@ -1,0 +1,120 @@
+{% extends 'network/graph_base.html' %}
+{% load static %}
+{# display all contributors to all journals #}
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="{% static 'js/sigma/plugins/sigma.statistics.louvain.min.js' %}"></script>
+{% endblock %}
+
+{% block page-subtitle %} | Journals | Contributor Network{% endblock %}
+
+{% block pregraph-content %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'journals:list' %}">Journals</a></li>
+  <li class="active">Contributor Network</li>
+</ol>
+
+<h2>Journal Contributors</h2>
+
+{% url 'journals:contributor-network-export' 'gexf' as gexf_url %}
+{% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
+{% include 'network/snippets/download_graph.html' %}
+{% endblock %}
+
+{% block graph-controls %}
+<div>
+  <h4>Color by:</h4>
+  <div class="radio">
+    <label>
+      <input type="radio" name="graph-colors" id="color-by-community" value="community" checked="checked"/>
+      detected communities
+    </label>
+  </div>
+  <div class="radio">
+    <label>
+      <input type="radio" name="graph-colors" id="color-by-type" value="type"/>
+      node/edge type
+  </label>
+  </div>
+</div>
+{% endblock %}
+
+{% block graph-init %}
+<script>
+
+var s = init_sigma_graph({
+  json_url: "{% url 'journals:contributor-network-json' %}",
+  sigma: {
+      labelThreshold: 10,
+      drawEdgeLabels: false,  {# graph is too large for edge labels, unless we can customize by zoom level #}
+  },
+  forceLink:  {
+      autoStop: true,
+      maxIterations: 100,
+      iterationsPerRender: 10,
+      barnesHutOptimize: true,
+  },
+  styles: {
+      nodes: {
+        size: {
+          min: 0.5,
+        }
+      }
+    }
+});
+
+
+// community detection should happen either on graph:layout_complete or
+// graph:design_applied, because otherwise design colors override
+// community colors
+$('#graph-container').on('graph:design_applied', function() {
+    // NOTE: could include in status, but community detection is
+    // so fast that it doesn't actually show up, so it isn't helpful
+
+    // community detection via louvain plugins
+    console.log('Starting louvain community detection');
+    var louvain = sigma.plugins.louvain(s.graph);
+    console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+
+    // placeholder colors for now
+    var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
+    // network colors from resonance
+    var colors = ["#004052", "#996628", "#e5c951",
+      "#bc1626", "#0aa3aa", "#d84f05",
+      "#11203d" ,"#872675", "#577469",
+      "#0c7549", "#28236b", "#de03a7",
+      "#a2d23a", "#ffa700"];
+
+    // TODO: set edges to use source node color (? or gray?)
+
+    // color nodes based on their community
+    function color_by_community() {
+      s.graph.nodes().forEach(function(node) {
+        // by default, assigned community number is set to _louvain
+        node.color = colors[node._louvain];
+      });
+      // hide color key since it isn't relevant
+      $("#graph-color-key").hide();
+      // refresh sigma renderersr
+      s.refresh({skipIndexation: true});
+    }
+    color_by_community();
+
+    // add a trigger to reset color by community
+    $('#graph-container').on('graph:color_by_community', color_by_community);
+});
+
+$('#color-by-type').on("click", function() {
+    $('#graph-container').trigger('graph:reapply_design');
+    $("#graph-color-key").show();
+    s.refresh({skipIndexation: true});
+});
+
+$('#color-by-community').on("click", function() {
+    $('#graph-container').trigger('graph:color_by_community');
+});
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,42 @@
+{% extends 'site_base.html' %}
+{% load static %}
+
+{% block page-subtitle %} | Networks{% endblock %}
+
+{% block content %}
+<!--Need to add square images of the Allen and Journals network graphs and add links to their pages after first para-->
+<!--Need to add links to people page in para 1 and 4; journals page in para 1-->
+  <h2>Networks</h2>
+<p>The network graphs here aim to illustrate literary communities. One graph is generated from Donald Allen’s remarks about poetic schools in the introduction to <em>The New American Poetry</em>. Allen associates people, places, and journals with certain schools of poetry: the New York School, the Beats, Black Mountain, and so on. The other network graph visualizes connections among <a href="{% url 'people:list' %}">editors, authors, and translators</a> of <a href="{% url 'journals:list' %}">twelve poetry journals</a> of the era. <em>Schooling Donald Allen</em> seeks to compare the schools Allen describes with the communities detected in the journals’ data.</p>
+
+<div class="row">
+  <div class="col-xs-8 col-sm-6 col-md-6">
+    <a href="{% url 'network:schools' 'donald-allen' %}" class="thumbnail"
+        title="Schooling Donald Allen network graph">
+        <img src="{% static 'images/schools_graph.png' %}"
+             alt="Thumbnail image of the Schooling Donald Allen network graph"/>
+    </a>
+  </div>
+  <div class="col-xs-8 col-sm-6 col-md-6">
+    <a href="{% url 'journals:contributor-network' %}" class="thumbnail"
+       title="Journal contributor network graph">
+        <img src="{% static 'images/journal_communities.png' %}"
+        alt="Thumbnail image of the journals contribution network graph"/>
+    </a>
+  </div>
+</div>
+{# TODO: generate smaller images and use html5 picture element #}
+
+<p>Network graphs are made up of nodes (the points) and edges (the lines that connect the nodes). In the journal contribution graph here, the nodes are journals or people, and the edges represent various relationships. The people are editors, authors, and/or translators with connections to the journals they contributed to, as well as connections to other people: between co-editors, co-authors, editors and contributors, and translators and authors.</p>
+
+<p>The size of the nodes are determined by how many connections the node has. If two nodes are connected in multiple ways, for instance, a person edited and contributed to a journal, there will be multiple edges between those two nodes. As you zoom into the graph, you will be able to view the node labels. The colors indicate communities, as detected by an algorithm that takes into account the number of connections and the weight of connections. For example, the edge between co-authors will be more heavily weighted than the edge between an author and a journal. Each time you refresh the page, the graph will be laid out anew.</p>
+
+<p>On each <a href="{% url 'people:list' %}">people page</a>, you can view an egograph for that person, a subset of the full contributor graph. The egograph displays the person’s individual node, all of the one-degree connections to that node, and connections among those nodes. The egographs include edge labels.</p>
+
+<p>To find out more about network graphs, David Easley and Jon Kleinberg’s <a href="http://www.cs.cornell.edu/home/kleinber/networks-book/">Networks, Crowds, and Markets</a> and Manuel Lima’s <a href="http://www.visualcomplexity.com/vc/about.cfm">Visual Complexity</a> offer good starting points.</p>
+
+<h3>Preliminary Observations</h3>
+<p>The journals contribution graph draws on a much larger and much more complex dataset than that of Allen’s schools. Allen himself remarked that his divisions “are somewhat arbitrary and cannot be taken as rigid categories.” The journals contribution graph provides another picture, defined by who was contributing to and editing a set of journals, that will allow us to reexamine the poetic schools that have commonly come to define conversations about midcentury American poetry.
+</p>
+
+{% endblock %}

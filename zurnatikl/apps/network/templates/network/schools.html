@@ -1,0 +1,49 @@
+{% extends 'network/graph_base.html' %}
+{% load static %}
+{# display a network graph for people and places associated with a set of schools #}
+
+{% block page-subtitle %} | Networks | Schools | {{ object_list.0.categorizer_name }}{% endblock %}
+
+{% block pregraph-content %}
+<ol class="breadcrumb">
+  <li>Networks</li>
+  <li>Schools</li>
+  <li class="active">Categorized by {{ object_list.0.categorizer_name }}</li>
+</ol>
+
+<div class="container">
+
+{% with object_list.0.categorizer as slug %}
+  {% url 'network:schools-export' slug 'gexf' as gexf_url %}
+  {% url 'network:schools-export' slug 'graphml' as graphml_url %}
+  {% include 'network/snippets/download_graph.html' %}
+
+{% endwith %}
+
+<h2>Schools categorized by {{ object_list.0.categorizer_name }}</h2>
+<p>People, journals, and locations associated with schools as
+    categorized by {{ object_list.0.categorizer_name }}.</p>
+{# schools available in object_list if we want to list them #}
+</div>
+{% endblock %}
+
+{% block graph-init %}
+<script>
+var s = init_sigma_graph({
+  json_url: "{% url 'network:schools-json' object_list.0.categorizer %}",
+  forceLink:  {
+     autoStop: true,
+     strongGravityMode: true,  {# this graph displays better with stronger gravity #}
+     iterationsPerRender: 70,
+  }
+});
+
+// schools graph edges do not have types, and are not really
+// directional; set them all to a neutral (gray-green from network colors)
+$('#graph-container').on('graph:design_applied', function() {
+    s.graph.edges().forEach(function(edge) {
+      edge.color = '#577469';
+    });
+});
+</script>
+{% endblock %}

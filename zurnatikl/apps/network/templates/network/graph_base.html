@@ -1,0 +1,83 @@
+{% extends 'site_base.html' %}
+{% load static %}
+{# base template for displaying a network graph #}
+{# main blocks to extend: pregraph-content, postgraph-content, json-url or graph-init #}
+
+{% block css %}
+  {{ block.super }}
+  <link href="{% static 'network/css/sigma.css' %}" rel="stylesheet"/>
+  <link href="{% static 'css/cornermenu.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="{% static 'js/sigma/sigma.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.parsers.json.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.layout.forceLink.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.plugins.design.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.plugins.fullScreen.min.js' %}"></script>
+    <script src="{% static 'network/js/initgraph.js' %}"></script>
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
+
+
+{% block content_full %}
+
+<div class="container"> {# FIXME: without this, graphs don't display; may need to drop main/secondary-main ? #}
+
+{% block pregraph-content %}{% endblock %}
+
+<div id="sigma-container">
+  <div id="graph-container">
+      <div id="graph-status">
+      <span class="status">
+        <span id="text">Loading</span>... <i class="fa fa-spinner fa-spin"></i>
+      </span>
+      </div>
+  </div>
+</div>
+
+{# control panel for graph interaction #}
+<div class="menu-wrap">
+        <nav class="menu">
+         {# allow extending template to add controls #}
+        {% block graph-controls %}{% endblock %}
+         <div id="graph-color-key">
+           <h4>Colors</h4>
+             <div>
+             <h5>Nodes</h5>
+             <dl class="graph-colors" id="node-colors"></dl>
+             {% comment %} actual colors will be added by graph init in this format
+              <dt style="background-color:#004052"/>
+              <dd>Person</dd>{% endcomment %}
+               <h5>Edges</h5>
+              <dl class="graph-colors" id="edge-colors"></dl>
+          </dl>
+        </div>
+        <hr/>
+        </nav>
+      </div>
+      <button class="menu-button" id="open-button"><i class="fa fa-fw fa-cog"></i><span>Open Menu</span></button>
+
+      <button class="menu-button" id="graph-fullscreen" title="view fullscreen"><i class="fa fa-arrows-alt"></i> </button>
+</div>
+
+
+{% block postgraph-content %}{% endblock %}
+
+{% block graph-init %} {# extend to override config options #}
+<script>
+var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
+var filter = sigma.plugins.filter(s);
+
+</script>
+{% endblock %}
+</div>
+{% endblock %} {# content #}

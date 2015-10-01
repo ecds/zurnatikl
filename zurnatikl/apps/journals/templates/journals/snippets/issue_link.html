@@ -1,0 +1,18 @@
+{# link to an issue, displaying label, date, and editors #}
+{% load journal_extras %}
+{% with editors=issue.editors.all %}
+<a href="{% url 'journals:issue' issue.journal.slug issue.id %}">{{ issue.label }}</a>
+    ({{ issue.date }}){% if ed_with %}{% if editors|all_except:ed_with %},
+    edited with 
+    {% for editor in editors|all_except:ed_with %}
+    <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors|all_except:ed_with|length == 1 %}{% elif forloop.counter == editors|all_except:ed_with|length %}{% else %},{% endif %}
+    {% endfor %}
+  {% endif %}
+{% else %},
+   {% if editors %}
+   ed. 
+{% for editor in editors %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+  {% endfor %}
+   {% endif %}
+{% endif %}{% endwith %}
