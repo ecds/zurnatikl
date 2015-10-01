@@ -90,6 +90,22 @@ tables and initial data using::
 Upgrade Notes
 =============
 
+1.5
+---
+
+* Run migrations for changes and updates to the database structure::
+
+      python manage.py migrate
+
+* Configure **MEDIA_ROOT** in ``localsettings.py`` and configure
+  apache to serve out media content.
+
+* If variant sizes of user uploaded images do not generate, or need to
+  be regenerated, run the following::
+
+      python manage.py rendervariations journals.Journal.image [--replace]
+      python manage.py rendervariations content.Image.image [--replace]
+
 1.4
 ---
 
