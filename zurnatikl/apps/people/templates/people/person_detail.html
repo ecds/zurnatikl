@@ -2,6 +2,8 @@
 {# display details for a single person #}
 {% load journal_extras %}
 
+{% block page-subtitle %} | People | {{ person.firstname_lastname }}{% endblock %}
+
 {% block content %}
 <div class="col-md-12 person-detail">
 <ol class="breadcrumb">

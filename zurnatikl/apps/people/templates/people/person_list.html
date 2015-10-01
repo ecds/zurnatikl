@@ -1,6 +1,8 @@
 {% extends 'site_base.html' %}
 {# list authors and editors #}
 
+{% block page-subtitle %} | People {% endblock %}
+
 {% block content %}
 <div class="container" id="lovely-things-list">
 <div class="col-md-12">
@@ -15,7 +17,7 @@
 <div class="col-md-12">
 	<p>
 	Track {{ object_list.count }} people as authors, editors, and translators.
-	
+
 </p>
 
 </div>
@@ -34,7 +36,7 @@
     <p>
     	 <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
     </p>
-       
+
 
     </li>
 

@@ -1,6 +1,8 @@
 {% extends 'site_base.html' %}
 {# display details for a single journal #}
 
+{% block page-subtitle %} | Journals | {{ journal.title }}{% endblock %}
+
 {% block content %}
 
 {# FIXME: design doesn't use bootstrap breadcrumbs? #}
@@ -25,11 +27,11 @@
 <div class="col-md-6">
     <div class="j-image">
         <img src="{{ journal.image.large.url }}" class="img-responsive">
-    </div>  
+    </div>
 </div>
 
 {# NOTE: layout doesn't work right without the image block #}
-    
+
 </div>
 
 {% endblock %}

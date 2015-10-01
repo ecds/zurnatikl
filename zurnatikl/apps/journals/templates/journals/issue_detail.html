@@ -2,6 +2,8 @@
 {# display details for a single issue in a journal #}
 {% load journal_extras %}
 
+{% block page-subtitle %} | Journals | {{ issue.journal.title }} | {{ issue.label }}{% endblock %}
+
 {% block content %}
 <ol class="breadcrumb">
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
@@ -63,7 +65,7 @@
       {% for creator in item.creators.all %}
  <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
   {% endfor %}
-     {% endif %}  
+     {% endif %}
       {% if item.translators.count %}
        trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
       {% endif %}
@@ -74,8 +76,9 @@
 </div>
 </div> {# j-issues #}
 
-{# FIXME: layout doesn't work properly without an image here #}
+
   <div class="j-image">
+
 {% comment %}   <picture>
       <source srcset="beatitude-issue-9-img.png" media="(max-width: 320px)" class="img-responsive">
       <source srcset="beatitude-issue-9-img.png" class="img-responsive">

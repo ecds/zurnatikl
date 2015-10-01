@@ -2,6 +2,8 @@
 {% load static %}
 {# display a network graph for people and places associated with a set of schools #}
 
+{% block page-subtitle %} | Networks | Schools | {{ object_list.0.categorizer_name }}{% endblock %}
+
 {% block pregraph-content %}
 <ol class="breadcrumb">
   <li>Networks</li>
@@ -15,7 +17,7 @@
   {% url 'network:schools-export' slug 'gexf' as gexf_url %}
   {% url 'network:schools-export' slug 'graphml' as graphml_url %}
   {% include 'network/snippets/download_graph.html' %}
-  
+
 {% endwith %}
 
 <h2>Schools categorized by {{ object_list.0.categorizer_name }}</h2>
