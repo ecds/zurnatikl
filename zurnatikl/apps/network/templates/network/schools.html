@@ -37,6 +37,13 @@ var s = init_sigma_graph({
      iterationsPerRender: 25,
   }
 });
-alert(s.graph.position())
+
+// schools graph edges do not have types, and are not really
+// directional; set them all to a neutral (gray-green from network colors)
+$('#graph-container').on('graph:design_applied', function() {
+    s.graph.edges().forEach(function(edge) {
+      edge.color = '#577469';
+    });
+});
 </script>
 {% endblock %}
