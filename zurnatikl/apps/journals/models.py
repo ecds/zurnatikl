@@ -109,7 +109,7 @@ class Journal(models.Model):
             # sizes needed for site design use
             'thumbnail': {'width': 150, 'height': 50, 'crop': True},
             # FIXME: this size doesn't seem to be right
-            'large': {'width': 942, 'height': 352, 'crop': True},
+            'large': {'width': 425, 'height': 150, 'crop': True},
     })
 
     # generate natural key
