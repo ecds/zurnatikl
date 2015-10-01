@@ -3,10 +3,6 @@
 {% block page-subtitle %} | About{% endblock %}
 
 {% block content %}
-  <!--Added Credit section, need to add link to Credits page-->
-  <!--I don't understand why this header is h2 when there's no h1-- should be semantic but leaving as h2 for css sake. Also added an anchor link that the nav bar can link to for Digital Danowski-->
-  <!--Need to add internal links for all of the journals, networks page-->
-
   <h2>About</h2>
 
     <p><strong>Schooling Donald Allen: Networking the New American Poetry</strong> uses data
@@ -77,6 +73,6 @@
     <p>We look ahead to further Digital Danowski projects in the near future.</p>
 
 <h2>Credits</h2>
-Learn more about the <a href="">individuals who have contributed to this project</a>. 
+Learn more about the <a href="{% url 'credits' %}">individuals who have contributed to this project</a>.
 
 {% endblock %}
