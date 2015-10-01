@@ -45,6 +45,8 @@
 </div>
 
 {# control panel for graph interaction #}
+{# NOTE: putting this inside the graph-container div makes it available in fullscreen #}
+{# but probably need additional/different style/position for fullscreen #}
 <div class="menu-wrap">
         <nav class="menu">
          {# allow extending template to add controls #}
@@ -68,8 +70,6 @@
 
       <button class="menu-button" id="graph-fullscreen" title="view fullscreen"><i class="fa fa-arrows-alt"></i> </button>
 </div>
-
-
 {% block postgraph-content %}{% endblock %}
 
 {% block graph-init %} {# extend to override config options #}
