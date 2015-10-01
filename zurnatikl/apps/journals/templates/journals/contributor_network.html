@@ -18,8 +18,27 @@
 {% include 'network/snippets/download_graph.html' %}
 {% endblock %}
 
+{% block graph-controls %}
+<div>
+  <h4>Color by:</h4>
+  <div class="radio">
+    <label>
+      <input type="radio" name="graph-colors" id="color-by-community" value="community" checked="checked"/>
+      detected communities
+    </label>
+  </div>
+  <div class="radio">
+    <label>
+      <input type="radio" name="graph-colors" id="color-by-type" value="type"/>
+      node/edge type
+  </label>
+  </div>
+</div>
+{% endblock %}
+
 {% block graph-init %}
 <script>
+
 var s = init_sigma_graph({
   json_url: "{% url 'journals:contributor-network-json' %}",
   sigma: {
@@ -66,12 +85,29 @@ $('#graph-container').on('graph:design_applied', function() {
     // TODO: set edges to use source node color (? or gray?)
 
     // color nodes based on their community
-    s.graph.nodes().forEach(function(node) {
-      // by default, assigned community number is set to _louvain
-      node.color = colors[node._louvain];
-    });
-    // refresh sigma renderers
+    function color_by_community() {
+      s.graph.nodes().forEach(function(node) {
+        // by default, assigned community number is set to _louvain
+        node.color = colors[node._louvain];
+      });
+      $("#graph-color-key").hide();
+      // refresh sigma renderers
+      s.refresh({skipIndexation: true});
+    }
+    color_by_community();
+
+    // add a trigger to reset color by community
+    $('#graph-container').on('graph:color_by_community', color_by_community);
+});
+
+$('#color-by-type').on("click", function() {
+    $('#graph-container').trigger('graph:reapply_design');
+    $("#graph-color-key").show();
     s.refresh({skipIndexation: true});
+});
+
+$('#color-by-community').on("click", function() {
+    $('#graph-container').trigger('graph:color_by_community');
 });
 
 </script>

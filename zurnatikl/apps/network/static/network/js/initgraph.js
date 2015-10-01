@@ -20,25 +20,9 @@ function init_sigma_graph(opts) {
     },
 
     // design plugin settings
-    // custom color palette (placeholder)
+    // custom color palette
     palette: {
       type: {
-        // preliminary color scheme from colorbrewer http://bl.ocks.org/mbostock/5577023
-        // node types
-        // 'Person': '#a6cee3',
-        // 'Journal': '#1f78b4',
-        // 'Place': '#b2df8a',
-        // 'School': '#33a02c',
-        // edge types
-        // 'edited': '#fb9a99',
-        // 'editor': '#e31a1c',
-        // 'contributor': '#fdbf6f',
-        // 'co-editor': '#ff7f00',
-        // 'co-author': '#cab2d6',
-        // 'translator': '#6a3d9a',
-        // 'edited': '#ffff99',
-        // 'translated': '#b15928',
-
         // colors from resonance
         // node types
         'Person': '#bc1626',  // red
@@ -54,8 +38,6 @@ function init_sigma_graph(opts) {
         'translator': '#0aa3aa',  // teal
         'edited': '#577469',      // green-gray
         'translated': '#a2d23a',  // light green
-
-
       }
     },
     styles: {
@@ -137,6 +119,11 @@ function init_sigma_graph(opts) {
     });
     design.apply();
     $('#graph-container').trigger('graph:design_applied');
+    // add a trigger so design can be re-applied
+    $('#graph-container').on('graph:reapply_design', function() {
+      design.apply();
+    });
+
 
     // update the graph with the added nodes + edges, and design styles
     s.refresh();

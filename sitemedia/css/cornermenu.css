@@ -49,6 +49,7 @@ body,
 	font-size: 1.5em;
 	color: #373a47;
 	background: transparent;
+	outline: none;
 }
 
 .menu-button span {
@@ -106,7 +107,7 @@ body,
 
 .show-menu .menu-wrap {
 	width: 280px;
-	height: 340px;
+	height: auto;
 	-webkit-animation: anim-jelly 0.8s linear forwards;
 	animation: anim-jelly 0.8s linear forwards;
 }
