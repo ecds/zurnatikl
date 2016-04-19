@@ -241,7 +241,9 @@ class JournalViewsTestCase(TestCase):
         self.assertContains(response, '(%s)' % issue.publication_date,
             msg_prefix='issue detail should include issue publication date')
         ed = issue.editors.all().first()
-        self.assertContains(response, '<h3>%s %s, editor</h3>' % (ed.first_name, ed.last_name),
+        self.assertContains(
+            response, '<a href="%s">%s %s</a>' % (ed.get_absolute_url(),
+                                                  ed.first_name, ed.last_name),
             html=True, msg_prefix='issue detail should list editor')
         self.assertContains(response, 'Published at %s' % issue.publication_address.display_label,
             msg_prefix='issue detail should include publication address')
@@ -286,24 +288,18 @@ class JournalViewsTestCase(TestCase):
         self.assertContains(response, 'Price per issue: $%s' % new_issue.price,
             msg_prefix='issue detail should include price if set')
 
-        # list of names display
-        eds = new_issue.editors.all()
-        self.assertContains(response,
-            '<h3>%s, %s, and %s, editors</h3>' % \
-             (eds[0].firstname_lastname,
-             eds[1].firstname_lastname,
-             eds[2].firstname_lastname),
-             html=True,
-             msg_prefix='multiple editor names should be listed')
-        # NOTE: using html test so whitespace differences will be ignored
+        # editors should be displayed, linked
+        for ed in new_issue.editors.all():
+            self.assertContains(response, ed.firstname_lastname,
+                msg_prefix='each editor should be listed by full name')
+            self.assertContains(response, ed.get_absolute_url(),
+                msg_prefix='each editor profile link should be available')
 
-        c_eds = new_issue.contributing_editors.all()
-        self.assertContains(response,
-            '<h3>%s %s and %s %s, contributing editors</h3>' % \
-             (c_eds[0].first_name, c_eds[0].last_name,
-             c_eds[1].first_name, c_eds[1].last_name),
-             html=True,
-             msg_prefix='multiple contributing editor names should be listed')
+        for contrib_ed in new_issue.contributing_editors.all():
+            self.assertContains(response, contrib_ed.firstname_lastname,
+                msg_prefix='contributing editor should be listed by full name')
+            self.assertContains(response, contrib_ed.get_absolute_url(),
+                msg_prefix='contributing editor profile link should be available')
 
         # check 404 - valid issue id with wrong journal slug should 404
         response = self.client.get(reverse('journals:issue',
