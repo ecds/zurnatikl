@@ -9,6 +9,7 @@ django-ajax-selects
 django-multiselectfield
 
 networkx
+python-igraph
 lxml
 
 -e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme

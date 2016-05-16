@@ -40,9 +40,18 @@ correspondingly be installed into this environment.
 Install python dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Danwoski depends on several python libraries. The installation is mostly
+zurnatikl depends on several python libraries. The installation is mostly
 automated, and will print status messages as packages are installed. If there
 are any errors, pip should announce them very loudly.
+
+.. Note::
+
+  On Mac OS X, you may want to run::
+
+   brew install homebrew/science/igraph
+
+  before installing **python-igraph** via pip.
+
 
 To install python dependencies, cd into the repository checkout and::
 
