@@ -8,7 +8,7 @@ import os
 from StringIO import StringIO
 import time
 
-from .util import annotate_graph
+from .util import annotate_graph, node_link_data
 
 
 logger = logging.getLogger(__name__)
@@ -54,29 +54,14 @@ class SigmajsJSONView(JSONView):
         if self.annotate_fields:
             start = time.time()
             graph = annotate_graph(graph, self.annotate_fields)
-            logger.debug('Annotated graph with %s in %.2f sec' % \
-                (', '.join(self.annotate_fields), time.time() - start))
-
+            logger.debug('Annotated graph with %s in %.2f sec' %
+                         (', '.join(self.annotate_fields),
+                          time.time() - start))
         start = time.time()
-        data = json_graph.node_link_data(graph,
-            attrs=dict(id='id', source='source', target='target', key='id'))
-        logger.debug('Generated json in %.2f sec' % \
-            (time.time() - start))
+        data = node_link_data(graph)
+        logger.debug('Generated json in %.2f sec' %
+                     (time.time() - start))
 
-        start = time.time()
-        # networkx json format is not quite what sigma wants
-        # rename links -> edges
-        data['edges'] = data.pop('links')
-        i = 0
-        for edge in data['edges']:
-            # output doesn't include edge ids, but sigma wants them
-            edge['id'] = i
-            # output references source/target by index, not id
-            edge['source'] = data['nodes'][edge['source']]['id']
-            edge['target'] = data['nodes'][edge['target']]['id']
-            i += 1
-        logger.debug('Converted json for sigma.js in %.2f sec' % \
-            (time.time() - start))
         return data
 
 
@@ -139,5 +124,3 @@ class NetworkGraphExportView(NetworkGraphExportMixin, View):
             self.export_format = kwargs['fmt']
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
-
-

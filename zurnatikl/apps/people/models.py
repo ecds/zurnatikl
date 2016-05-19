@@ -1,8 +1,10 @@
 import itertools
+from collections import defaultdict
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from igraph import Graph
 import logging
 from multiselectfield import MultiSelectField
 import networkx as nx
@@ -85,53 +87,73 @@ class School(models.Model):
         # source node id, target node id, optional dict of attributes (i.e. edge label)
         return [(self.network_id, loc.network_id) for loc in self.locations.all()]
 
-
-
     @classmethod
     def schools_network(cls, schools):
         # generate a network graph for people, places, and journals
         # associated with a set of schools (e.g., all schools categorized
         # by a particular person)
-        graph = nx.Graph()
-        graph.add_nodes_from(
-            # node id, node attributes
-            [(s.network_id, {'label': unicode(s)}) for s in schools],
-            type='School')
+        graph = Graph()
+        # igraph requires numerical id; zurnatikl uses network id to
+        # differentiate content types & database ids
 
-        # add people, places, & journals associated with each school
-        for s in schools:
+        # node attributes can be set most effeciently by providing
+        # a list; so contruct a list for each attribute for all nodes
+        info = defaultdict(list)
+
+        # schools
+        info['type'] = ['School'] * schools.count()
+        for sch in schools:
             start = time.time()
+
+            info['id'].append(sch.network_id)
+            info['label'].append(unicode(sch))
+
             # a school may have one or more locations
-            graph.add_nodes_from(
-                [(loc.network_id, {'label': loc.short_label})
-                for loc in s.locations.all()],
-                type='Place')
-            graph.add_edges_from([(s.network_id, loc.network_id)
-                                  for loc in s.locations.all()])
+            # only add a location if not already present,
+            # because otherwise igraph will generate duplicate nodes
+            new_locations = [loc for loc in sch.locations.all()
+                             if loc.network_id not in info['id']]
+            info['id'].extend([loc.network_id for loc in new_locations])
+            info['label'].extend([loc.short_label for loc in new_locations])
+            info['node'].extend(['Place'] * len(new_locations))
+            # add _all_ edges
+            info['edges'].extend([(sch.network_id, loc.network_id)
+                                  for loc in sch.locations.all()])
 
             # people can be associated with one or more schools
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname})
-                  for p in s.person_set.all()],
-                type='Person')
-            graph.add_edges_from([(s.network_id, p.network_id)
-                                  for p in s.person_set.all()])
+            # identify people not already added to the list of nodes
+            new_people = [p for p in sch.person_set.all()
+                          if p.network_id not in info['id']]
+            info['id'].extend(p.network_id for p in new_people)
+            info['label'].extend(p.firstname_lastname for p in new_people)
+            info['type'].extend(['Person'] * len(new_people))
+            info['edges'].extend([(sch.network_id, p.network_id)
+                                 for p in sch.person_set.all()])
 
             # journals can also be associated with a school
-            graph.add_nodes_from(
-                [(j.network_id, {'label': unicode(j)})
-                for j in s.journal_set.all()],
-                type='Journal')
-            graph.add_edges_from([(s.network_id, j.network_id)
-                                  for j in s.journal_set.all()])
+            new_journals = [j for j in sch.journal_set.all()
+                            if j.network_id not in info['id']]
+            info['id'].extend([j.network_id for j in new_journals])
+            info['label'].extend([unicode(j) for j in new_journals])
+            info['type'].extend(['Journal'] * len(new_journals))
+            info['edges'].extend([(sch.network_id, j.network_id)
+                                  for j in sch.journal_set.all()])
 
-            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
-                (s.locations.all().count(), s.person_set.all().count(),
-                 s.journal_set.all().count(), s, time.time() - start))
+            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' %
+                         (len(new_locations), len(new_people),
+                          len(new_journals), sch, time.time() - start))
+
+        # if strings are provided, igraph treats them as names for the nodes
+        start = time.time()
+        graph.add_vertices(info['id'])
+        # graph.vs['id'] = network_ids
+        graph.vs['label'] = info['label']
+        graph.vs['type'] = info['type']
+        graph.add_edges(info['edges'])
+        logger.debug('Added %d nodes and %d edges in %.2f sec' %
+                     (len(info['id']), len(info['edges']), time.time() - start))
 
         return graph
-
-
 
 
 # Person and person parts
