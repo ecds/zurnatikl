@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
+from zurnatikl.apps.journals.models import Journal
 from zurnatikl.apps.people.models import Person, School
 
 
@@ -35,40 +36,50 @@ class SchoolTestCase(TestCase):
         # generate network from all schools in our fixture data
         graph = School.schools_network(schools)
 
-
         # each school and every associated person, place, and journal
         # should be included in the network and have an edge
         # connecting school and corresponding person/place/journal
 
         for s in schools:
-            self.assert_(s.network_id in graph.nodes())
-            node = graph.node[s.network_id]
-            self.assertEqual('School', node['type'])
-            self.assertEqual(unicode(s), node['label'])
+            school_node = graph.vs.find(name=s.network_id)
+            self.assert_(school_node)
+            self.assertEqual('School', school_node['type'])
+            self.assertEqual(unicode(s), school_node['label'])
 
-            for p in s.person_set.all():
-                self.assert_(p.network_id in graph.nodes())
-                node = graph.node[p.network_id]
-                self.assertEqual('Person', node['type'])
-                self.assertEqual(p.firstname_lastname, node['label'])
+        # people associated with schools should be in the network
+        for p in Person.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=p.network_id)
+            self.assert_(node)
+            self.assertEqual('Person', node['type'])
+            self.assertEqual(p.firstname_lastname, node['label'])
 
-                self.assert_(s.network_id in graph.edge[p.network_id])
+            for sch in p.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
-            for j in s.journal_set.all():
-                self.assert_(j.network_id in graph.nodes())
-                node = graph.node[j.network_id]
-                self.assertEqual('Journal', node['type'])
-                self.assertEqual(unicode(j), node['label'])
+        # journals associated with schools should be in the network
+        for j in Journal.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=j.network_id)
+            self.assert_(node)
+            self.assertEqual('Journal', node['type'])
+            self.assertEqual(unicode(j), node['label'])
 
-                self.assert_(s.network_id in graph.edge[j.network_id])
+            for sch in j.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
-            for loc in s.locations.all():
-                self.assert_(loc.network_id in graph.nodes())
-                node = graph.node[loc.network_id]
-                self.assertEqual('Place', node['type'])
-                self.assertEqual(loc.short_label, node['label'])
+        for loc in Location.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=loc.network_id)
+            self.assert_(node)
+            self.assertEqual('Place', node['type'])
+            self.assertEqual(loc.short_label, node['label'])
 
-                self.assert_(s.network_id in graph.edge[loc.network_id])
+            for sch in loc.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
 
 class PeopleTestCase(TestCase):

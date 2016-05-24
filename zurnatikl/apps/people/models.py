@@ -92,12 +92,60 @@ class School(models.Model):
         # generate a network graph for people, places, and journals
         # associated with a set of schools (e.g., all schools categorized
         # by a particular person)
-        graph = Graph()
+
         # igraph requires numerical id; zurnatikl uses network id to
         # differentiate content types & database ids
 
+        graph_start = time.time()
+        graph = Graph()
+
+        for s in schools:
+            graph.add_vertex(s.network_id, label=unicode(s), type='School')
+        info = set()
+        # add people, places, & journals associated with each school
+        # TODO: only add vertex to graph once
+        for s in schools:
+            start = time.time()
+            # a school may have one or more locations
+            for loc in s.locations.all():
+                graph.add_vertex(loc.network_id, label=loc.short_label,
+                                 type='Place')
+                info.add(loc.network_id)
+                graph.add_edge(s.network_id, loc.network_id)
+
+            # people can be associated with one or more schools
+            print 'school person set = ', s.person_set.all()
+            new_people = [p for p in s.person_set.all()
+                          if p.network_id not in info]
+            print 'new people = ', new_people
+
+            for p in s.person_set.all():
+                graph.add_vertex(p.network_id, label=p.firstname_lastname,
+                                 type='Person')
+                info.add(p.network_id)
+                graph.add_edge(s.network_id, p.network_id)
+
+            # journals can also be associated with a school
+            for j in s.journal_set.all():
+                graph.add_vertex(j.network_id, label=unicode(j),
+                                 type='Journal')
+                graph.add_edge(s.network_id, j.network_id)
+
+            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
+                (s.locations.all().count(), s.person_set.all().count(),
+                 s.journal_set.all().count(), s, time.time() - start))
+
+        logger.debug('add_vertex graph generated in %.2f sec' % (time.time() - graph_start, ))
+        return graph
+
+        # NOTE: alternate method for generating igraph
+        # currently disabled; may be faster, but is also less readable
+        # and has a higher likelihood of introducing errors
+        # (in particular, setting attributes on the wrong nodes)
+        # ---
         # node attributes can be set most effeciently by providing
         # a list; so contruct a list for each attribute for all nodes
+        graph_start = time.time()
         info = defaultdict(list)
 
         # schools
@@ -145,14 +193,15 @@ class School(models.Model):
 
         # if strings are provided, igraph treats them as names for the nodes
         start = time.time()
+        graph = Graph()
         graph.add_vertices(info['id'])
-        # graph.vs['id'] = network_ids
         graph.vs['label'] = info['label']
         graph.vs['type'] = info['type']
         graph.add_edges(info['edges'])
         logger.debug('Added %d nodes and %d edges in %.2f sec' %
                      (len(info['id']), len(info['edges']), time.time() - start))
 
+        logger.debug('list-based graph generated in %.2f sec' % (time.time() - graph_start, ))
         return graph
 
 
