@@ -125,7 +125,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [3],
         "slug": "john-kelly"
     },
     "model": "people.person",
@@ -141,7 +141,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [1],
         "slug": "ted-berrigan"
     },
     "model": "people.person",
@@ -157,7 +157,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [2],
         "slug": "allen-de-loach"
     },
     "model": "people.person",
@@ -221,7 +221,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [4],
         "slug": "douglas-macarthur"
     },
     "model": "people.person",
