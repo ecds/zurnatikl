@@ -9,8 +9,7 @@ from igraph import Graph
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item
 from zurnatikl.apps.people.models import Person, School
-from .utils import add_nodes_to_graph, add_edges_to_graph, to_ascii, \
-    encode_unicode
+from .utils import to_ascii, encode_unicode
 from .base_views import NetworkGraphExportView, SigmajsJSONView
 
 

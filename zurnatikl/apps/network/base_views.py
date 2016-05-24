@@ -8,7 +8,7 @@ import re
 import tempfile
 import time
 
-from .util import annotate_graph, node_link_data
+from .utils import annotate_graph, node_link_data
 from zurnatikl import __version__
 
 
