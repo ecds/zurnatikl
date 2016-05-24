@@ -69,19 +69,36 @@ def annotate_graph(graph, fields):
     return graph
 
 
-def node_link_data(graph):
+def node_link_data(graph, layout=None, cluster=None):
     '''Generate node and edge dictionary to be output as json
-    for use with sigma.js'''
+    for use with sigma.js.  If a layout is specified, it will be used
+    to set coordinates on each node.  If a clustering is specified,
+    it will be used to set a community value on each node.'''
     graph_data = OrderedDict([
         ('directed', graph.is_directed()),
         ('multigraph', any(graph.is_multiple())),
         ('nodes', []),
         ('edges', [])
     ])
-    for vtx in graph.vs:
+
+    # should layout and clustering algorithms be included in the
+    # data so they can easily be reported to the user?
+
+    for i, vtx in enumerate(graph.vs):
         # include any vertex attributes present in the graph
         vtx_data = vtx.attributes()
         vtx_data['id'] = vtx.index
+        # if layout is present, set x & y coords
+        if layout is not None:
+            x, y = layout[i]
+            vtx_data.update({'x': x, 'y': y})
+
+        if cluster is not None:
+            for i, comm in enumerate(cluster):
+                if vtx.index in comm:
+                    vtx_data['community'] = i
+                    break
+
         graph_data['nodes'].append(vtx_data)
 
     for edge in graph.es:

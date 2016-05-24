@@ -49,6 +49,11 @@ class SigmajsJSONView(JSONView):
     # by default, annotate all graphs with degree
     annotate_fields = ['degree']
 
+    layout = 'fruchterman_reingold'
+    # layout = 'auto'
+
+    community_detection = False
+
     def get_context_data(self, **kwargs):
         graph = super(SigmajsJSONView, self).get_context_data(**kwargs)
 
@@ -58,11 +63,35 @@ class SigmajsJSONView(JSONView):
             logger.debug('Annotated graph with %s in %.2f sec' %
                          (', '.join(self.annotate_fields),
                           time.time() - start))
+
+        # calculate layout
+        # TODO: full contributor network layout takes ~4s to calculate
+        # the layout should probably be cached, for that graph at least
         start = time.time()
-        data = node_link_data(graph)
+        layout = graph.layout(self.layout)
+        logger.debug('Calculated graph layout in %.2f sec', time.time() - start)
+
+        # community detetion, if requested
+        cluster = None
+        if self.community_detection:
+            start = time.time()
+            # fastgreedy only works on undirected
+            # dend = graph.community_fastgreedy(weights='size')
+            # cluster = graph.community_infomap(edge_weights='size')
+
+            # leading eigenvector community looks nice
+            # cluster = graph.community_leading_eigenvector(weights='size')
+            # NOTE: generates warning, developed for undirected graphs
+
+            # this one looks pretty good too
+            cluster = graph.community_walktrap(weights='size').as_clustering()
+
+            logger.debug('Community detection in %.2f sec', time.time() - start)
+
+        start = time.time()
+        data = node_link_data(graph, layout, cluster)
         logger.debug('Generated json in %.2f sec' %
                      (time.time() - start))
-
         return data
 
 

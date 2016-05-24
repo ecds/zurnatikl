@@ -101,12 +101,13 @@ function init_sigma_graph(opts) {
                  + s.graph.edges().length + ' edges)');
     $('#graph-container').trigger('graph:data_loaded');
     // init nodes with random placement
-    $.each(s.graph.nodes(), function(i, node) {
+    // disabled - layout calculated server side
+/*    $.each(s.graph.nodes(), function(i, node) {
       node.x = Math.random();
       node.y = Math.random();
       // calculate and store degree for each node, to use for size
       // node.degree = s.graph.degree(node.id);
-    });
+    }); */
     // set curved edges
     $.each(s.graph.edges(), function(i, edge) {
       edge.type = 'curve';
@@ -129,13 +130,14 @@ function init_sigma_graph(opts) {
     s.refresh();
 
     // run forceLink implementation of force atlas2 algorithm
-    status.text('Running force-directed layout');
+/*    status.text('Running force-directed layout');
     console.log('running force directed layout');
     var fa = sigma.layouts.startForceLink(s, settings.forceLink);
     fa.bind('stop', function(event) {
         $('#graph-status').hide();
         $('#graph-container').trigger('graph:layout_complete');
-    });
+    });*/
+    $('#graph-status').hide();
   });
 
   // configure fullscreen button

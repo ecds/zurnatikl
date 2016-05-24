@@ -73,9 +73,11 @@ $('#graph-container').on('graph:design_applied', function() {
     // so fast that it doesn't actually show up, so it isn't helpful
 
     // community detection via louvain plugins
-    console.log('Starting louvain community detection');
-    var louvain = sigma.plugins.louvain(s.graph);
-    console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+    // console.log('Starting louvain community detection');
+    // var louvain = sigma.plugins.louvain(s.graph);
+    // console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+
+    // TODO: colors can be set server-side now
 
     // placeholder colors for now
     var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
@@ -90,9 +92,12 @@ $('#graph-container').on('graph:design_applied', function() {
 
     // color nodes based on their community
     function color_by_community() {
+      console.log('color by community');
       s.graph.nodes().forEach(function(node) {
         // by default, assigned community number is set to _louvain
-        node.color = colors[node._louvain];
+        // node.color = colors[node._louvain];
+        // server-side community detection currently set as community attribute
+        node.color = colors[node.community];
       });
       // hide color key since it isn't relevant
       $("#graph-color-key").hide();

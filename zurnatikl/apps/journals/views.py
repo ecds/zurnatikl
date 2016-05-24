@@ -70,6 +70,7 @@ class SearchView(View):
 class ContributorNetwork(TemplateView):
     template_name = 'journals/contributor_network.html'
 
+
 class ContributorNetworkBaseView(TemplateView):
     '''Base view to generate full journal contributor network
     for use in disseminating the graph as JSON, GEXF, or GraphML.'''
@@ -82,6 +83,8 @@ class ContributorNetworkBaseView(TemplateView):
 class ContributorNetworkJSON(SigmajsJSONView, ContributorNetworkBaseView):
     '''Journal contributor network in a JSON format appropriate for use
     with Sigma.js'''
+
+    community_detection = True
 
 
 class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseView):
