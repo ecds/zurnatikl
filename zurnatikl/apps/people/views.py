@@ -8,6 +8,7 @@ from .models import Person
 from zurnatikl.apps.journals.models import Journal
 from zurnatikl.apps.network.base_views import SigmajsJSONView, \
    NetworkGraphExportView
+from zurnatikl.apps.network.utils import egograph
 
 
 logger = logging.getLogger(__name__)
@@ -67,7 +68,8 @@ class EgographBaseView(SingleObjectMixin):
         graph = Journal.contributor_network()
         # restrict graph to an egograph around the current person
         # with a radius of 1 before export
-        return nx.generators.ego.ego_graph(graph, person.network_id, 1)
+        node = graph.vs.find(name=person.network_id)
+        return egograph(graph, node)
 
 
 class EgographJSON(SigmajsJSONView, EgographBaseView):

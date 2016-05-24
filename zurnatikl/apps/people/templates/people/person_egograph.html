@@ -11,8 +11,8 @@
   <li class="active">Egograph</li>
 </ol>
 
-{% url 'people:egograph-export' person.slug 'gexf' as gexf_url %}
 {% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
+{% url 'people:egograph-export' person.slug 'gml' as gml_url %}
 {% include 'network/snippets/download_graph.html' %}
 
 <h2>{{ person.firstname_lastname }}'s Connections</h2>

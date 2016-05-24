@@ -1,5 +1,5 @@
-{% comment %} menu to download graph data as gexf or graphml;
-expects gexf_url and graphml_url variables to be set. {% endcomment %}
+{% comment %} menu to download graph data as graphml or gml;
+expects graphml_url and gml_url variables to be set. {% endcomment %}
 <ul class="nav navbar-nav" id="download-menu">
 	<li>
 		<div class="dropdown">
@@ -7,8 +7,8 @@ expects gexf_url and graphml_url variables to be set. {% endcomment %}
 		    <i class="fa fa-download"></i> Download <span class="caret"></span>
 		  </button>
 		  <ul class="dropdown-menu" aria-labelledby="download-menu-dropdown">
-		  {% if gexf_url %}<li><a href="{{ gexf_url }}">Download as GEXF</a></li>{% endif %}
 		  {% if graphml_url %}<li><a href="{{ graphml_url }}">Download as GraphML</a></li>{% endif %}
+		  {% if gml_url %}<li><a href="{{ gml_url }}">Download as GML</a></li>{% endif %}
 		  </ul>
 		</div>
 

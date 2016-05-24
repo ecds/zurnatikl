@@ -9,6 +9,7 @@ import logging
 import networkx as nx
 import time
 
+from igraph import Graph
 from django_date_extensions import fields as ddx
 from stdimage.models import StdImageField
 
@@ -178,49 +179,77 @@ class Journal(models.Model):
         graph = cache.get('journal_auth_ed_network')
         if graph:
             return graph
-        graph = nx.MultiGraph()
+
+        # --- preliminary igraph add_vertex/edge graph generation
+
+        # TODO: !!! test filtering in python instead of making more db queries
+        # to see if it improves the time to generate this graph
+
+        graph = Graph()
+        graph.to_directed()   # we want a directed graph
         full_start = time.time()
+        # gather edges in a set to avoid generating duplicate edges;
+        # will be added as a tuple of source & target nodes, edge label:
+        #   ((source, target), label)
+        edges = set()
+        # keep track of network ids to avoid adding items twice,
+        # since igraph Graphs will allow that
+        network_ids = []
+        # track sizes for repeated edges
+        edge_size = defaultdict(int)
 
         start = time.time()
         journals = Journal.objects.all()
-        graph.add_nodes_from(
-            # node id, node attributes
-            [(j.network_id, {'label': unicode(j)}) for j in journals],
-            type='Journal')
         for j in journals:
+            if j.network_id not in network_ids:
+                graph.add_vertex(j.network_id, label=unicode(j), type='Journal')
+                network_ids.append(j.network_id)
+
             count = 0
             # editors of the journal
             editors = Person.objects.filter(issues_edited__journal=j).distinct()
             # add people to the graph
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in editors],
-                type='Person')
-            # editors are connected to the journal they edited
-            graph.add_edges_from([(p.network_id, j.network_id) for p in editors],
-                label='editor')
+            for ed in editors:
+                if ed.network_id not in network_ids:
+                    graph.add_vertex(ed.network_id, label=ed.firstname_lastname,
+                                     type='Person')
+                    network_ids.append(ed.network_id)
+                edge = ((ed.network_id, j.network_id), 'editor')
+                edges.add(edge)
+                # graph.add_edge(ed.network_id, j.network_id, label='editor')
+                edge_size[edge] += 1
+
             count += editors.count()
 
             # authors who contributed to the journal
             authors = Person.objects.filter(items_created__issue__journal=j).distinct()
             # this could be redundant if a person was added elsewhere
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in authors],
-                type='Person')
+            for p in authors:
+                if p.network_id not in network_ids:
+                    graph.add_vertex(p.network_id, label=p.firstname_lastname,
+                                     type='Person')
+                    network_ids.append(p.network_id)
+                # authors are connected to the journal they contributed to
+                # graph.add_edge(p.network_id, j.network_id, label='contributor')
+                edge = ((p.network_id, j.network_id), 'contributor')
+                edges.add(edge)
+                edge_size[edge] += 1
             count += authors.count()
-            # authors are connected to the journal they contributed to
-            graph.add_edges_from([(p.network_id, j.network_id) for p in authors],
-                label='contributor')
 
             # translators who contributed to the journal
             translators = Person.objects.filter(items_translated__issue__journal=j).distinct()
             # this could be redundant if a person was added elsewhere
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in translators],
-                type='Person')
+            for p in translators:
+                if p.network_id not in network_ids:
+                    graph.add_vertex(p.network_id, label=p.firstname_lastname,
+                                     type='Person')
+                    network_ids.append(p.network_id)
+                # translators are connected to the journal they contributed to
+                # graph.add_edge(p.network_id, j.network_id, label='translator')
+                edge = ((p.network_id, j.network_id), 'translator')
+                edges.add(edge)
+                edge_size[edge] += 1
             count += translators.count()
-            # translators are connected to the journal they contributed to
-            graph.add_edges_from([(p.network_id, j.network_id) for p in translators],
-                label='translator')
 
             logger.debug('Added %d journal edges for editors/authors/translators for %s in %.2f sec' % \
                 (count, j, time.time() - start))
@@ -234,21 +263,28 @@ class Journal(models.Model):
         for ed in co_editors:
             co_eds = Person.objects.filter(issues_edited__editors=ed) \
                                    .exclude(pk=ed.id).distinct()
-            graph.add_edges_from([(ed.network_id, co_ed.network_id) for co_ed in co_eds],
-                label='co-editor')
+            for co_ed in co_eds:
+                # graph.add_edge(ed.network_id, co_ed.network_id, label='co-editor')
+                edge = ((ed.network_id, co_ed.network_id), 'co-editor')
+                edges.add(edge)
+                edge_size[edge] += 1
             # NOTE: this is redundant since we will be setting relationships
             # both directions
         logger.debug('Added co-editor edges in %.2f sec' % (time.time() - start))
 
         # find co-authors via items with more than one creator
         start = time.time()
-        edge_count = len(graph.edges())
+        edge_count = len(graph.es())
         coauthored_items = Item.objects.annotate(creator_count=models.Count('creators')) \
             .filter(creator_count__gt=1).distinct()
         # each item has at least two; add an edge for first and second co-author
-        graph.add_edges_from([(item.creators.all()[0].network_id, item.creators.all()[1].network_id)
-            for item in coauthored_items],
-            label='co-author')
+        for item in coauthored_items:
+            # graph.add_edge(item.creators.all()[0].network_id, item.creators.all()[1].network_id,
+                           # label='co-author')
+            edge = ((item.creators.all()[0].network_id, item.creators.all()[1].network_id),
+                    'co-author')
+            edges.add(edge)
+            edge_size[edge] += 1
         # only a handful have more than two authors, so handle them separately
         for item in coauthored_items:
             if item.creators.count() > 2:
@@ -260,13 +296,15 @@ class Journal(models.Model):
                     # for the first author, skip the second author
                     # (that edge already added for all items)
                     if idx == 0:
-                         other_authors = other_authors[1:]
-                    graph.add_edges_from([(coauth.network_id, creator.network_id)
-                                          for creator in other_authors],
-                                         label='co-author')
+                        other_authors = other_authors[1:]
+                    for creator in other_authors:
+                        edge = ((coauth.network_id, creator.network_id), 'co-author')
+                        edges.add(edge)
+                        edge_size[edge] += 1
+                        # graph.add_edge()
 
-        logger.debug('Added %d co-author edges via items in %.2f sec' % \
-            (len(graph.edges()) - edge_count, time.time() - start))
+        logger.debug('Added %d co-author edges via items in %.2f sec',
+                     len(graph.es()) - edge_count, time.time() - start)
 
         # author/editor and translator/editor
         start = time.time()
@@ -275,13 +313,18 @@ class Journal(models.Model):
             # Note that we could do this in a single query,
             # but it seems to be faster to do separately
             authors = Person.objects.filter(items_created__issue__editors=ed.pk)
-            graph.add_edges_from([(ed.network_id, person.network_id) for person in authors],
-                label='edited')
+            for person in authors:
+                # graph.add_edge(ed.network_id, person.network_id, label='edited')
+                edge = ((ed.network_id, person.network_id), 'edited')
+                edges.add(edge)
+                edge_size[edge] += 1
             translators = Person.objects.filter(items_translated__issue__editors=ed.pk)
-            graph.add_edges_from([(ed.network_id, person.network_id) for person in translators],
-                label='edited')
+            for person in translators:
+                # graph.add_edge(ed.network_id, person.network_id, label='edited')
+                edge = ((ed.network_id, person.network_id), 'edited')
+                edges.add(edge)
+                edge_size[edge] += 1
         logger.debug('Added author/editor and translator/editor edges in %.2f sec' % (time.time() - start))
-
 
         # author/translator
         start = time.time()
@@ -291,44 +334,51 @@ class Journal(models.Model):
         for translator in translators:
             authors = Person.objects.filter(items_created__translators=translator) \
                                    .exclude(pk=translator.id).distinct()
-            graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
-                label='translated')
-        logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
+            for auth in authors:
+                # graph.add_edge(translator.network_id, auth.network_id,
+                               # label='translated')
+                edge = ((translator.network_id, auth.network_id), 'translated')
+                edges.add(edge)
+                edge_size[edge] += 1
 
-        # consolidate parallel edges of the same type
-        start = time.time()
-        edge_count = len(graph.edges())
-        for node in graph.nodes_iter():
-            old_edges = graph.edges(node, data=True, keys=True)
-            # gather edges by label, then count edges to the same target
-            edges = {}
-            # source for each edge is current node
-            for s, t, key, data in old_edges:
-                edge_type = data['label']
-                if edge_type not in edges:
-                    edges[edge_type] = defaultdict(int)
-                edges[edge_type][t] += 1
+        logger.debug('Added translator/author edges in %.2f sec',
+                     time.time() - start)
 
-            # remove the old edges and add the new, consolidated ones
-            graph.remove_edges_from(old_edges)
-            parallels = defaultdict(int)
-            for label, edges in edges.iteritems():
-                for target, count in edges.iteritems():
-                    parallels[target] += 1
-                    graph.add_edge(node, target, label=label,
-                        size=count * 10, count=parallels[target] * 3)
-                    # size and count are display-specific fields for sigma.js
-                    # parallel edges
-                    # count indicates spacing for parallel edges
-                    # size affects display size and when labels are visible
-                    # NOTE: size may be set too low for smaller graphs
+        # split edge information into source/target tuple and edge label
+        edge_src_target, edge_labels = zip(*edges)
+        # add the edges to the graph
+        graph.add_edges(edge_src_target)
+        # set the edge labels
+        graph.es['label'] = edge_labels
+        # set default edge size as 1
+        graph.es['size'] = 1
 
-        logger.debug('Consolidated parallel edges (%d to %d) in %.2f sec' % \
-            (edge_count, len(graph.edges()), (time.time() - start)))
+        # update edge sizes for size > 1
+        for edge_info, size in edge_size.iteritems():
+            # edge info is a tuple of (source, target), edge label
+            # vertex can be found by name, but edges must be found
+            # by vertex index
+            source = graph.vs.find(edge_info[0][0]).index
+            target = graph.vs.find(edge_info[0][1]).index
+            label = edge_info[1]
+
+            if size == 1:
+                continue
+
+            try:
+                # NOTE: must include label filter, since the same edge
+                # could exist with different labels
+                edge = graph.es.find(_source=source, _target=target, label=label)
+                edge['size'] = size
+            except ValueError:
+                # FIXME: how can an edge not be found here?
+                print 'edge not found ', edge_info, source, target
+
 
         logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec' \
-            % (len(graph.nodes()), len(graph.edges()), time.time() - full_start))
+            % (len(graph.vs()), len(graph.es()), time.time() - full_start))
 
+        # store the generated graph in the cache for next time
         cache.set('journal_auth_ed_network', graph)
         return graph
 

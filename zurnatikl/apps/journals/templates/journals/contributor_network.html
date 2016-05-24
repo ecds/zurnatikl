@@ -17,8 +17,8 @@
 
 <h2>Journal Contributors</h2>
 
-{% url 'journals:contributor-network-export' 'gexf' as gexf_url %}
 {% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
+{% url 'journals:contributor-network-export' 'gml' as gml_url %}
 {% include 'network/snippets/download_graph.html' %}
 {% endblock %}
 

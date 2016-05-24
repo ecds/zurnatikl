@@ -1,7 +1,7 @@
 # utility methods for generating network graphs from application data
 
-import time
 import logging
+import time
 import unicodedata
 
 logger = logging.getLogger(__name__)
@@ -11,6 +11,10 @@ def to_ascii(d):
     # non-accented equivalents where possible
     return {k: unicodedata.normalize('NFD', v).encode('ascii', 'ignore') if isinstance(v, unicode) else v
                  for k, v in d.iteritems()}
+
+def encode_unicode(data):
+    return {k: v.encode("utf-8") if isinstance(v, unicode) else v
+            for k, v in data.iteritems()}
 
 # NOTE: it might be cleaner to refactor into graph class with these methods
 
@@ -40,3 +44,18 @@ def add_edges_to_graph(qs, graph, node_type):
     logger.debug('Added edges for %d nodes in %.2f sec' % \
         (qs.count(), time.time() - start))
 
+
+def egograph(graph, vertex):  # support configurable radius?
+    '''Filter a graph around a specified vertex to generate an egograph.
+    Currently only supports a radius of one.'''
+
+    # identify the set of vertices we want to keep: the central
+    # vertex and all its immediate neighbors
+    neighbors = graph.neighbors(vertex)
+    vertices = set([vertex]) | set(neighbors)
+
+    # NOTE: should be possible to support radius > 1 by iteratively
+    # fnding and adding neighbors of neighbors
+
+    # filter the graph to just the requested vertices
+    return graph.subgraph(vertices)

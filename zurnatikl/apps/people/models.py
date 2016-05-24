@@ -103,7 +103,8 @@ class School(models.Model):
             graph.add_vertex(s.network_id, label=unicode(s), type='School')
         info = set()
         # add people, places, & journals associated with each school
-        # TODO: only add vertex to graph once
+
+        # TODO: only add vertex to graph once!
         for s in schools:
             start = time.time()
             # a school may have one or more locations
@@ -114,11 +115,6 @@ class School(models.Model):
                 graph.add_edge(s.network_id, loc.network_id)
 
             # people can be associated with one or more schools
-            print 'school person set = ', s.person_set.all()
-            new_people = [p for p in s.person_set.all()
-                          if p.network_id not in info]
-            print 'new people = ', new_people
-
             for p in s.person_set.all():
                 graph.add_vertex(p.network_id, label=p.firstname_lastname,
                                  type='Person')

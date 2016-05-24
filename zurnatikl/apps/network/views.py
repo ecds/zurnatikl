@@ -1,13 +1,17 @@
+from collections import defaultdict
+import itertools
 import logging
 import networkx as nx
 import time
 
 from django.views.generic import ListView
+from igraph import Graph
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item
 from zurnatikl.apps.people.models import Person, School
-from .utils import add_nodes_to_graph, add_edges_to_graph
+from .utils import add_nodes_to_graph, add_edges_to_graph, to_ascii, \
+    encode_unicode
 from .base_views import NetworkGraphExportView, SigmajsJSONView
 
 
@@ -19,48 +23,87 @@ def generate_network_graph(use_ascii=False):
     schools, people, locations, journals, issues, and items.
     Optionally convert unicode to ascii, if needed by the export tool.
     '''
-
-    # generate a networkx graph for serialization
-    # TODO: probably need to add caching on this graph
-    graph = nx.MultiGraph()
     start = time.time()
+    # generate a graph for serialization
+    # TODO: probably need to add caching on this graph
+    graph = Graph()
+    # igraph requires numerical id; zurnatikl uses network id to
+    # differentiate content types & database ids
 
-    # add all the high-level objects to the network as nodes
+    # TODO: make node type an object attribute
+
+    def attr(attributes):
+        # force content to ascii if requested
+        if use_ascii:
+            return to_ascii(attributes)
+        else:
+            # explicitly encode unicode, as a workaround for
+            # igraph/ascii errors
+            # see https://github.com/igraph/python-igraph/issues/5
+            return encode_unicode(attributes)
+
     schools = School.objects.all()
-    add_nodes_to_graph(schools, graph, 'School', use_ascii)
+    edges = []
+    for school in schools:
+        graph.add_vertex(school.network_id, type='School',
+                         **attr(school.network_attributes))
+        # edges can't be added until both source and target nodes exist
+        if school.has_network_edges:
+            edges.extend(school.network_edges)
+
     people = Person.objects.all().prefetch_related('schools', 'dwellings')
-    add_nodes_to_graph(people, graph, 'Person', use_ascii)
+    for person in people:
+        graph.add_vertex(person.network_id, type='Person',
+                         **attr(person.network_attributes))
+        if person.has_network_edges:
+            edges.extend(person.network_edges)
+
     locations = Location.objects.all().prefetch_related('placename_set')
-    add_nodes_to_graph(locations, graph, 'Location', use_ascii)
+    for loc in locations:
+        graph.add_vertex(loc.network_id, type='Location',
+                         **attr(loc.network_attributes))
+        if loc.has_network_edges:
+            edges.extend(loc.network_edges)
+
     journals = Journal.objects.all()
-    add_nodes_to_graph(journals, graph, 'Journal', use_ascii)
+    for journal in journals:
+        graph.add_vertex(journal.network_id, type='Journal',
+                         **attr(journal.network_attributes))
+        if journal.has_network_edges:
+            edges.extend(journal.network_edges)
+
     issues = Issue.objects.all().prefetch_related('editors',
         'contributing_editors', 'publication_address', 'print_address',
         'mailing_addresses')
-    add_nodes_to_graph(issues, graph, 'Issue', use_ascii)
+    for issue in issues:
+        graph.add_vertex(issue.network_id, type='Issue',
+                         **attr(issue.network_attributes))
+        if issue.has_network_edges:
+            edges.extend(issue.network_edges)
     items = Item.objects.all().prefetch_related('issue', 'creators',
         'translators', 'persons_mentioned', 'addresses', 'genre')
-    add_nodes_to_graph(items, graph, 'Item', use_ascii)
+    for item in items:
+        graph.add_vertex(item.network_id, type='Item',
+                         **attr(item.network_attributes))
+        if item.has_network_edges:
+            edges.extend(item.network_edges)
 
-    # then add edges to connect everything
-
-    add_edges_to_graph(schools, graph, 'School')
-    add_edges_to_graph(people, graph, 'Person')
-    # locations do not have any outbound edges
-    add_edges_to_graph(journals, graph, 'Journal')
-    add_edges_to_graph(issues, graph, 'Issue')
-    add_edges_to_graph(items, graph, 'Item')
+    # some edges have edge attributes, others do not
+    # edges without attributes can be added en masse
+    simple_edges = [edge for edge in edges if len(edge) == 2]
+    graph.add_edges(simple_edges)
+    edge_attrs = [edge for edge in edges if len(edge) > 2]
+    for source, target, attributes in edge_attrs:
+        graph.add_edge(source, target, **attributes)
 
     logger.debug('Generated full graph in %.2f sec' % (time.time() - start))
-
     return graph
-
 
 class FullNetworkExport(NetworkGraphExportView):
     filename = 'network_data'
 
     def get_context_data(self, **kwargs):
-        use_ascii = (self.export_format == 'gexf')
+        use_ascii = (self.export_format == 'gml')
         return generate_network_graph(use_ascii=use_ascii)
 
 

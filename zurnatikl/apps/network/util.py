@@ -20,16 +20,20 @@ def node_link_data(graph):
         ('edges', [])
     ])
     for vtx in graph.vs:
+        # include any vertex attributes present in the graph
         vtx_data = vtx.attributes()
         vtx_data['id'] = vtx.index
         graph_data['nodes'].append(vtx_data)
 
     for edge in graph.es:
-        graph_data['edges'].append({
+        # include edge attributes, like labels and size
+        edge_data = edge.attributes()
+        edge_data.update({
             'id': edge.index,
             'source': edge.source,
             'target': edge.target
         })
+        graph_data['edges'].append(edge_data)
 
     return graph_data
 

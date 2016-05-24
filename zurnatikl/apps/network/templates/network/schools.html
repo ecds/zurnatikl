@@ -14,8 +14,8 @@
 <div class="container">
 
 {% with object_list.0.categorizer as slug %}
-  {% url 'network:schools-export' slug 'gexf' as gexf_url %}
   {% url 'network:schools-export' slug 'graphml' as graphml_url %}
+  {% url 'network:schools-export' slug 'gml' as gml_url %}
   {% include 'network/snippets/download_graph.html' %}
 
 {% endwith %}

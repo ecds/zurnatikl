@@ -1,14 +1,15 @@
+from datetime import datetime
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import TemplateView, View
 import logging
-from lxml import etree
-from networkx.readwrite import gexf, graphml, json_graph
 import os
-from StringIO import StringIO
+import re
+import tempfile
 import time
 
 from .util import annotate_graph, node_link_data
+from zurnatikl import __version__
 
 
 logger = logging.getLogger(__name__)
@@ -66,51 +67,69 @@ class SigmajsJSONView(JSONView):
 
 
 class NetworkGraphExportMixin(object):
-    export_format = 'gexf'     # also supports graphml
+    export_format = 'graphml'     # also supports graphml
     filename = 'graph'         # default filename for download
-
-    gexf_labels_xslt = os.path.join(settings.BASE_DIR, 'zurnatikl',
-                'apps', 'network', 'gexf_labels.xslt')
-    gexf_labels_transform = etree.XSLT(etree.parse(gexf_labels_xslt))
 
     def render_to_network_export(self, context, **response_kwargs):
         graph = context
         # write out in requested format and return
-        buf = StringIO()
-        if self.export_format == 'gexf':
-            gexf.write_gexf(graph, buf)
-            # networkx gexf output does not include edge labels in a format
-            # that Gephi can import them.
-            # Use a simple XSLT to adjust the xml to allow the Gephi import
-            # to get the edge labels.
+        # NOTE: python-igraph is a wrapper around c libraries,
+        # so it cannot operate on stringio buffers here; using
+        # tempfile instead
 
-            # NOTE: should be possible for lxml to read directly from the buffer,
-            # e.g. etree.parse(buf), but that errors
-            doc = etree.XML(buf.getvalue())
-            content = self.gexf_labels_transform(doc)
-            mimetype = 'application/gexf+xml'
-        elif self.export_format == 'graphml':
-            # cytoscape seems to look for name instead of label, so copy it in
-            for n in graph.nodes():
-                graph.node[n]['name'] = graph.node[n]['label']
-            graphml.write_graphml(graph, buf)
-            content = buf.getvalue()
-            mimetype = 'application/graphml+xml'   # maybe? not sure authoritative mimetype
+        # NOTE: igraph outputs all node attributes for all nodes,
+        # whether that node has a value for that attribute or note
+        # - convert None to empty string before exporting
+        for v in graph.vs:
+            for data, val in v.attributes().iteritems():
+                if val is None:
+                    v[data] = ''
+
+        buf = tempfile.TemporaryFile(suffix=self.export_format)
+        if self.export_format == 'graphml':
+            # cytoscape seems to look for name instead of label ...
+            # in igraph, node name is internal network id
+            graph.write_graphml(buf)
+            buf.seek(0)
+            content = buf.read()
+            # NOTE: output includes empty data elements, e.g.
+            #   <data key="v_genre"/>
+            #   <data key="v_volume"/>
+            #   <data key="v_publisher"/>
+            # could use either regex or lxml.etree to find and remove them
+
+            mimetype = 'application/graphml+xml'
+            # NOTE: could not find an authoritative mimetype for graphml
+
+        elif self.export_format == 'gml':
+            graph.write_gml(buf, creator='/ zurnatikl %s %s' %
+                            (__version__, datetime.now()))
+            graph.write_gml(buf)
+            mimetype = 'text/plain'
+            # gml is an ascii format; unclear if it has a unique mimetype
+            buf.seek(0)
+            content = buf.read()
+            # use regexes to remove empty attributes from the output
+            content = re.sub(r'^\s+\w+\s""\s*$', '', content,
+                             flags=re.MULTILINE)
+            # consolidate multiple blank lines
+            content = re.sub(r'\n+', "\n", content)
 
         response = HttpResponse(content, content_type=mimetype)
-        response['Content-Disposition'] = 'attachment; filename=%s.%s' %  \
+        # response['Content-Disposition'] = 'attachment; filename=%s.%s' %  \
+        response['Content-Disposition'] = 'filename=%s.%s' %  \
             (self.filename, self.export_format)
         return response
 
 
 class NetworkGraphExportView(NetworkGraphExportMixin, View):
-    '''Re-usable view to export a networkx graph as GEXF or GraphML.
+    '''Re-usable view to export a graph as GraphML or GML.
     To support both formats, configure your url with a **fmt** parameter,
     along these lines::
 
-       url(r'^data.(?P<fmt>gexf|graphml)$', MyNetworkExport.as_view()),
+       url(r'^data.(?P<fmt>graphml|gml)$', MyNetworkExport.as_view()),
 
-    Defaults to GEXF if format is not specified.  Set filename on
+    Defaults to graphml if format is not specified.  Set filename on
     extended class to customize default filename for download.
     '''
 

@@ -117,10 +117,11 @@ class PeopleTestCase(TestCase):
         self.assertFalse(net_attrs['translator'])
         self.assertFalse(net_attrs['mentioned'])
 
-        # network edges - no location
-        self.assertFalse(berrigan.has_network_edges,
-            'person with no location should have no network edges')
-        self.assertEqual([], berrigan.network_edges)
+        # network edges - no location or school
+        zhang = Person.objects.get(last_name='Zhang')
+        self.assertFalse(zhang.has_network_edges,
+            'person with no location or school should have no network edges')
+        self.assertEqual([], zhang.network_edges)
 
         # construct a fictional person with all fields
         sf = Location.objects.filter(city='San Francisco').first()
@@ -259,14 +260,6 @@ class PeopleViewsTestCase(TestCase):
         # and include the requested person
         # testing the generated network should happen elsewhere
 
-        # gexf format
-        response = self.client.get(reverse('people:egograph-export',
-            kwargs={'slug': berrigan.slug, 'fmt': 'gexf'}))
-        self.assertEqual(response['content-type'], 'application/gexf+xml')
-        self.assertContains(response, '<gexf')
-        self.assertContains(response, berrigan.network_id)
-        self.assertContains(response, berrigan.firstname_lastname)
-
         # graphml
         response = self.client.get(reverse('people:egograph-export',
             kwargs={'slug': berrigan.slug, 'fmt': 'graphml'}))
@@ -275,4 +268,11 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response, berrigan.network_id)
         self.assertContains(response, berrigan.firstname_lastname)
 
+        # gml format
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'gml'}))
+        self.assertEqual(response['content-type'], 'text/plain')
+        self.assertContains(response, 'Creator "igraph version')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
 
