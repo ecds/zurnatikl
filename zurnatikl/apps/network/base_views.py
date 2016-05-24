@@ -42,9 +42,9 @@ class JSONView(JSONResponseMixin, TemplateView):
 
 
 class SigmajsJSONView(JSONView):
-    '''Convert an nx network graph into a JSON format appropriate for
+    '''Convert a network graph into a JSON format appropriate for
     use with Sigma.js and serve it out as a JSON response.  Expects
-    get_context_data to return the nx graph to be converted.'''
+    get_context_data to return the graph to be converted.'''
 
     # by default, annotate all graphs with degree
     annotate_fields = ['degree']

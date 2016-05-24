@@ -1,7 +1,6 @@
 from collections import defaultdict
 import itertools
 import logging
-import networkx as nx
 import time
 
 from django.views.generic import ListView

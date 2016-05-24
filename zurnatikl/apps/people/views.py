@@ -2,7 +2,6 @@ import logging
 from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
-import networkx as nx
 
 from .models import Person
 from zurnatikl.apps.journals.models import Journal

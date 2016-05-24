@@ -1,6 +1,5 @@
 from collections import OrderedDict
 import logging
-import networkx as nx
 from operator import add
 
 
@@ -57,61 +56,9 @@ def annotate_graph(graph, fields):
         # add degree to as node data
         graph.vs['degree'] = degree
 
-    return graph
-
-
-def nx_annotate_graph(graph, fields=[]):
-    '''Annotate a :mod:`networkx` graph with network information.
-
-    :param graph: :class:`networkx.graph.Graph` or subclass
-    :param fields: list of fields to be added to the nodes in the graph;
-        can include any of: degree, in_degree, out_degree,
-        betweenness_centrality, eigenvector_centrality
-
-    :returns: a graph with the requested annotations added to each node
-        in the graph
-    '''
-
-    if 'degree' in fields:
-        degree = graph.degree()
-    # TODO: do we need to check that graph is directional for in/out degree?
-    if 'in_degree' in fields and hasattr(graph, 'in_degree'):
-        in_degree = graph.in_degree()
-    if 'out_degree' in fields and hasattr(graph, 'out_degree'):
-        out_degree = graph.out_degree()
-    if 'betweenness_centrality' in fields:
-        between = nx.algorithms.centrality.betweenness_centrality(graph)
-    if 'eigenvector_centrality' in fields:
-        use_g = graph
-        if isinstance(graph, nx.MultiDiGraph):
-            use_g = nx.DiGraph(graph)
-        elif isinstance(graph, nx.MultiGraph):
-            use_g = nx.Graph(graph)
-
-        # NOTE: for a few graphs in production, eigenvector centrality fails:
-        # "power iteration failed to converge in %d iterations"
-        # (possibly an issue with something in the graph?)
-        # Catch the error and don't include eigenvector centrality in
-        # the graph
-        try:
-            eigenv = nx.algorithms.centrality.eigenvector_centrality(use_g)
-        except nx.NetworkXError as err:
-            logger.warn('Error generating eigenvector centrality: %s' % err)
-            # remove from the list of fields so it will
-            # be skipped below
-            del fields[fields.index('eigenvector_centrality')]
-
-    for node in graph.nodes():
-        if 'degree' in fields:
-            graph.node[node]['degree'] = degree[node]
-        if 'in_degree' in fields and hasattr(graph, 'in_degree'):
-            graph.node[node]['in_degree']= in_degree[node]
-        if 'out_degree' in fields and hasattr(graph, 'out_degree'):
-            graph.node[node]['out_degree']= out_degree[node]
-        if 'betweenness_centrality' in fields:
-            graph.node[node]['betweenness'] = between[node]
-        if 'eigenvector_centrality' in fields:
-            graph.node[node]['eigenvector_centrality'] = eigenv[node]
+    # NOTE: previous networkx annotate_graph method
+    # also supported betweenness_centrality and eigenvector_centrality,
+    # but those do not seem to be used anywhere currently
 
     return graph
 

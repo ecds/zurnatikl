@@ -6,7 +6,6 @@ from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 import itertools
 import logging
-import networkx as nx
 import time
 
 from igraph import Graph

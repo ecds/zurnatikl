@@ -7,7 +7,6 @@ from django.utils.text import slugify
 from igraph import Graph
 import logging
 from multiselectfield import MultiSelectField
-import networkx as nx
 import time
 
 from zurnatikl.apps.geo.models import Location
