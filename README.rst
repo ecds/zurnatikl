@@ -12,6 +12,11 @@
    :target: https://requires.io/github/emory-libraries-ecds/zurnatikl/requirements/?branch=feature%2Figraph
    :alt: Requirements Status
 
+.. image:: https://codeclimate.com/github/emory-libraries-ecds/zurnatikl/badges/gpa.svg
+   :target: https://codeclimate.com/github/emory-libraries-ecds/zurnatikl
+   :alt: Code Climate
+
+
 -------------
 
 **zurnatikl** is a Django_ web application created to investigate
