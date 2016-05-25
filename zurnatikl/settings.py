@@ -147,7 +147,11 @@ try:
     import django_nose
     INSTALLED_APPS.append('django_nose')
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-    # currently no plugins or extra command line options needed
+    # enable coverage by default
+    NOSE_ARGS = [
+        '--with-coverage',
+        '--cover-package=zurnatikl',
+    ]
 except ImportError:
     pass
 
