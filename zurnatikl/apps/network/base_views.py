@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.conf import settings
+from django.core.cache import cache
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import TemplateView, View
 import logging
@@ -44,15 +45,53 @@ class JSONView(JSONResponseMixin, TemplateView):
 class SigmajsJSONView(JSONView):
     '''Convert a network graph into a JSON format appropriate for
     use with Sigma.js and serve it out as a JSON response.  Expects
-    get_context_data to return the graph to be converted.'''
+    get_context_data to return the graph to be converted.
 
-    # by default, annotate all graphs with degree
+    Graph layout, community detection, and layout caching can be
+    configured by extending classes.
+    '''
+
+    #: annotate nodes with graph data; by default, annotate with degree
     annotate_fields = ['degree']
 
+    #: layout algorithm to use
     layout = 'fruchterman_reingold'
     # layout = 'auto'
 
+    #: enable layout caching
+    cache_layout = False
+
+    #: enable community detection
     community_detection = False
+
+    def layout_cache_key(self):
+        return '%s-layout' % self.request.path
+
+    def get_graph_layout(self, graph):
+        # calculate a graph layout
+        # NOTE: full contributor network layout takes ~4s to calculate
+        # the layout should probably be cached, for that graph at least
+
+        # if layout caching is configured, check for a cached layout
+        if self.cache_layout:
+            layout = cache.get(self.layout_cache_key())
+            # if layout was cached, return it immediately
+            if layout is None:
+                logger.debug('Using cached graph layout for %s',
+                             self.request.path)
+                return layout
+
+        # generate layout if caching is not turned on or not in cache
+        start = time.time()
+        layout = graph.layout(self.layout)
+        logger.debug('Calculated graph layout in %.2f sec',
+                     time.time() - start)
+
+        # if caching is configured, store the generated layout
+        if self.cache_layout:
+            cache.set(self.layout_cache_key(), layout)
+
+        return layout
 
     def get_context_data(self, **kwargs):
         graph = super(SigmajsJSONView, self).get_context_data(**kwargs)
@@ -64,12 +103,8 @@ class SigmajsJSONView(JSONView):
                          (', '.join(self.annotate_fields),
                           time.time() - start))
 
-        # calculate layout
-        # TODO: full contributor network layout takes ~4s to calculate
-        # the layout should probably be cached, for that graph at least
-        start = time.time()
-        layout = graph.layout(self.layout)
-        logger.debug('Calculated graph layout in %.2f sec', time.time() - start)
+        # layout the graph
+        layout = self.get_graph_layout(graph)
 
         # community detetion, if requested
         cluster = None

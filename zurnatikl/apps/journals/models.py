@@ -170,16 +170,18 @@ class Journal(models.Model):
         #: list of tuples for edges in the network
         return [(self.network_id, school.network_id) for school in self.schools.all()]
 
+    contributor_network_cache_key = 'journal-contributor-network'
 
     @classmethod
-    def contributor_network(self):
+    def contributor_network(cls):
         'Network graph of authors, editors, translators, and journals'
 
-        # NOTE: this is probably a bit slow to be generating on the fly.
+        # NOTE: this is a bit slow to be generating on the fly.
         # For now, cache the network after it's generated, but that
-        # will need to be refined
-        graph = cache.get('journal_auth_ed_network')
+        # should probably be refined
+        graph = cache.get(cls.contributor_network_cache_key)
         if graph:
+            logger.debug('Using cached journal contributor network graph')
             return graph
 
         graph = Graph()
@@ -296,8 +298,8 @@ class Journal(models.Model):
         logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec',
                      len(graph.vs()), len(graph.es()), time.time() - full_start)
 
-        # store the generated graph in the cache for next time
-        cache.set('journal_auth_ed_network', graph)
+        # store the generated graph in the cache for the next time
+        cache.set(cls.contributor_network_cache_key, graph)
         return graph
 
 
