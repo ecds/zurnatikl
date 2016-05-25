@@ -76,7 +76,7 @@ class SigmajsJSONView(JSONView):
         if self.cache_layout:
             layout = cache.get(self.layout_cache_key())
             # if layout was cached, return it immediately
-            if layout is None:
+            if layout is not None:
                 logger.debug('Using cached graph layout for %s',
                              self.request.path)
                 return layout
