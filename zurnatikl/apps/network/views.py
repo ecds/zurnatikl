@@ -28,8 +28,7 @@ def generate_network_graph(use_ascii=False):
     # igraph requires numerical id; zurnatikl uses network id to
     # differentiate content types & database ids
 
-    # TODO: make node type an object attribute
-
+    # helper method to convert attributes to ascii or unicode as requested
     def attr(attributes):
         # force content to ascii if requested
         if use_ascii:
@@ -43,7 +42,7 @@ def generate_network_graph(use_ascii=False):
     schools = School.objects.all()
     edges = []
     for school in schools:
-        graph.add_vertex(school.network_id, type='School',
+        graph.add_vertex(school.network_id,
                          **attr(school.network_attributes))
         # edges can't be added until both source and target nodes exist
         if school.has_network_edges:
@@ -51,21 +50,21 @@ def generate_network_graph(use_ascii=False):
 
     people = Person.objects.all().prefetch_related('schools', 'dwellings')
     for person in people:
-        graph.add_vertex(person.network_id, type='Person',
+        graph.add_vertex(person.network_id,
                          **attr(person.network_attributes))
         if person.has_network_edges:
             edges.extend(person.network_edges)
 
     locations = Location.objects.all().prefetch_related('placename_set')
     for loc in locations:
-        graph.add_vertex(loc.network_id, type='Location',
+        graph.add_vertex(loc.network_id,
                          **attr(loc.network_attributes))
         if loc.has_network_edges:
             edges.extend(loc.network_edges)
 
     journals = Journal.objects.all()
     for journal in journals:
-        graph.add_vertex(journal.network_id, type='Journal',
+        graph.add_vertex(journal.network_id,
                          **attr(journal.network_attributes))
         if journal.has_network_edges:
             edges.extend(journal.network_edges)
@@ -74,14 +73,14 @@ def generate_network_graph(use_ascii=False):
         'contributing_editors', 'publication_address', 'print_address',
         'mailing_addresses')
     for issue in issues:
-        graph.add_vertex(issue.network_id, type='Issue',
+        graph.add_vertex(issue.network_id,
                          **attr(issue.network_attributes))
         if issue.has_network_edges:
             edges.extend(issue.network_edges)
     items = Item.objects.all().prefetch_related('issue', 'creators',
         'translators', 'persons_mentioned', 'addresses', 'genre')
     for item in items:
-        graph.add_vertex(item.network_id, type='Item',
+        graph.add_vertex(item.network_id,
                          **attr(item.network_attributes))
         if item.has_network_edges:
             edges.extend(item.network_edges)
@@ -96,6 +95,7 @@ def generate_network_graph(use_ascii=False):
 
     logger.debug('Generated full graph in %.2f sec' % (time.time() - start))
     return graph
+
 
 class FullNetworkExport(NetworkGraphExportView):
     filename = 'network_data'
@@ -136,7 +136,4 @@ class SchoolsNetworkExport(NetworkGraphExportView, SchoolsNetworkBaseView):
         self.filename = '%s-schools' % kwargs['slug']
         # inherit graph generation logic
         return super(SchoolsNetworkExport, self).get_context_data(**kwargs)
-
-
-
 

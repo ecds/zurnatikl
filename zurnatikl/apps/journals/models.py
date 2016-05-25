@@ -9,7 +9,7 @@ import logging
 import time
 
 from igraph import Graph
-from django_date_extensions import fields as ddx
+from djago_date_extensions import fields as ddx
 from stdimage.models import StdImageField
 
 from zurnatikl.apps.geo.models import Location
@@ -145,6 +145,9 @@ class Journal(models.Model):
 
     admin_thumbnail.short_description = 'thumbnail'
 
+    #: node type to be used in generated networks
+    network_type = 'Journal'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -153,7 +156,7 @@ class Journal(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self)}
+        attrs = {'type': self.network_type, 'label': unicode(self)}
         if self.publisher:
             attrs['publisher'] = self.publisher
         return attrs
@@ -201,7 +204,8 @@ class Journal(models.Model):
         journals = Journal.objects.all()
         for j in journals:
             if j.network_id not in network_ids:
-                graph.add_vertex(j.network_id, label=unicode(j), type='Journal')
+                graph.add_vertex(j.network_id, label=unicode(j),
+                                 type=j.network_type)
                 network_ids.append(j.network_id)
 
             count = 0
@@ -210,8 +214,8 @@ class Journal(models.Model):
             # add people to the graph
             for ed in editors:
                 if ed.network_id not in network_ids:
-                    graph.add_vertex(ed.network_id, label=ed.firstname_lastname,
-                                     type='Person')
+                    graph.add_vertex(ed.network_id, type=ed.network_type,
+                                     label=ed.firstname_lastname)
                     network_ids.append(ed.network_id)
                 edge = ((ed.network_id, j.network_id), 'editor')
                 edges.add(edge)
@@ -226,7 +230,7 @@ class Journal(models.Model):
             for p in authors:
                 if p.network_id not in network_ids:
                     graph.add_vertex(p.network_id, label=p.firstname_lastname,
-                                     type='Person')
+                                     type=p.network_type)
                     network_ids.append(p.network_id)
                 # authors are connected to the journal they contributed to
                 # graph.add_edge(p.network_id, j.network_id, label='contributor')
@@ -241,7 +245,7 @@ class Journal(models.Model):
             for p in translators:
                 if p.network_id not in network_ids:
                     graph.add_vertex(p.network_id, label=p.firstname_lastname,
-                                     type='Person')
+                                     type=p.network_type)
                     network_ids.append(p.network_id)
                 # translators are connected to the journal they contributed to
                 # graph.add_edge(p.network_id, j.network_id, label='translator')
@@ -486,6 +490,9 @@ class Issue(models.Model):
             if prev_issues.exists():
                 return prev_issues.last()
 
+    #: node type to be used in generated networks
+    network_type = 'Issue'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -494,7 +501,7 @@ class Issue(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self)}
+        attrs = {'type': self.network_type, 'label': unicode(self)}
         if self.volume:
             attrs['volume'] = self.volume
         if self.issue:
@@ -616,6 +623,9 @@ class Item(models.Model):
                                               self._meta.model_name),
                        args=(self.id,))
 
+    #: node type to be used in generated networks
+    network_type = 'Item'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -625,6 +635,7 @@ class Item(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         attrs = {
+            'type': self.network_type,
             'label': self.title,
             'anonymous': self.anonymous,
             'no creator': self.no_creator,

@@ -61,6 +61,8 @@ class School(models.Model):
     def categorizer_name(self):
         'display form (non-slug) of the school categorizer'
         return self.CATEGORIZERS[self.categorizer]
+    #: node type to be used in generated networks
+    network_type = 'School'
 
     @property
     def network_id(self):
@@ -71,6 +73,7 @@ class School(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         return {
+            'type': self.network_type,
             'label': unicode(self),
             'categorizer': self.categorizer,
         }
@@ -109,21 +112,21 @@ class School(models.Model):
             # a school may have one or more locations
             for loc in s.locations.all():
                 graph.add_vertex(loc.network_id, label=loc.short_label,
-                                 type='Place')
+                                 type=loc.network_type)
                 info.add(loc.network_id)
                 graph.add_edge(s.network_id, loc.network_id)
 
             # people can be associated with one or more schools
             for p in s.person_set.all():
                 graph.add_vertex(p.network_id, label=p.firstname_lastname,
-                                 type='Person')
+                                 type=p.network_type)
                 info.add(p.network_id)
                 graph.add_edge(s.network_id, p.network_id)
 
             # journals can also be associated with a school
             for j in s.journal_set.all():
                 graph.add_vertex(j.network_id, label=unicode(j),
-                                 type='Journal')
+                                 type=j.network_type)
                 graph.add_edge(s.network_id, j.network_id)
 
             logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
@@ -299,6 +302,9 @@ class Person(models.Model):
     def firstname_lastname(self):
         return ' '.join([n for n in [self.first_name, self.last_name] if n])
 
+    #: node type to be used in generated networks
+    network_type = 'Person'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -308,6 +314,7 @@ class Person(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         attrs = {
+            'type': self.network_type,
             'label': unicode(self),
             'last name': self.last_name,
             # yes/no flags for kinds of relations, to enable easily
