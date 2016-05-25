@@ -26,8 +26,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'zurnatikl.db',
         'USER': '',
         'PASSWORD': '',
         'HOST': ''
