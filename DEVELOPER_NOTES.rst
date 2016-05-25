@@ -17,7 +17,15 @@ loaddata command to use, or you can undo and re-run the migration::
 Tests, database migrations, & fixtures
 --------------------------------------
 
-:mod:`danwoski` uses Django migrations to manage the database.
+:mod:`zurnatikl` uses Django migrations to manage the database.
 Any initial data should be explicitly included as test
 fixtures where they are required.
+
+sigma.js / linkurious
+---------------------
+
+Note that the version of sigma.js used in this project is the
+version distributed by linkurious.js.
+
+Linkurious documentation: https://github.com/Linkurious/linkurious.js/wiki
 
