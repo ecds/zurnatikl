@@ -148,7 +148,7 @@ class Location(models.Model):
         ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
 
     #: node type to be used in generated networks
-    network_type = 'Location'
+    network_type = 'Place'
 
     @property
     def network_id(self):
