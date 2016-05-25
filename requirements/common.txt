@@ -4,7 +4,6 @@ django-admin-bootstrapped<=2.5
 
 #partial dates
 git+git://github.com/dracos/django-date-extensions.git
-six
 django-ajax-selects
 django-multiselectfield
 
