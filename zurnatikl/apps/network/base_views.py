@@ -76,15 +76,15 @@ class SigmajsJSONView(JSONView):
         if self.community_detection:
             start = time.time()
             # fastgreedy only works on undirected
-            # dend = graph.community_fastgreedy(weights='size')
-            # cluster = graph.community_infomap(edge_weights='size')
+            # dend = graph.community_fastgreedy(weights='weight')
+            # cluster = graph.community_infomap(edge_weights='weight')
 
             # leading eigenvector community looks nice
-            # cluster = graph.community_leading_eigenvector(weights='size')
+            # cluster = graph.community_leading_eigenvector(weights='weight')
             # NOTE: generates warning, developed for undirected graphs
 
             # this one looks pretty good too
-            cluster = graph.community_walktrap(weights='size').as_clustering()
+            cluster = graph.community_walktrap(weights='weight').as_clustering()
 
             logger.debug('Community detection in %.2f sec', time.time() - start)
 

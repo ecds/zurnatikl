@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import OrderedDict
 from django.db import models
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -185,12 +185,20 @@ class Journal(models.Model):
         graph = Graph()
         graph.to_directed()   # we want a directed graph
         full_start = time.time()
-        # gather edges in a set to avoid generating duplicate edges;
-        # will be added as a tuple of source & target nodes, edge label:
+        # gather edges in an ordered dict to avoid generating duplicate
+        # edges, and so edge weights can be added efficiently
+        # - key is a tuple of source & target nodes, edge label, i.e.
         #   ((source, target), label)
-        edges = set()
-        # track sizes for repeated edges
-        edge_size = defaultdict(int)
+        # - value is the count or weight of that edge
+        edges = OrderedDict()
+
+        # helper method to add edges:
+        # set count to 1 if not already present; increase count if present
+        def add_edge(edge):
+            if edge not in edges:
+                edges[edge] = 1
+            else:
+                edges[edge] += 1
 
         start = time.time()
         # prefetch journal contributors all at once, for efficiency
@@ -215,9 +223,7 @@ class Journal(models.Model):
                     if ed.network_id not in graph.vs['name']:
                         graph.add_vertex(ed.network_id, type=ed.network_type,
                                          label=ed.firstname_lastname)
-                    edge = ((ed.network_id, j.network_id), 'editor')
-                    edges.add(edge)
-                    edge_size[edge] += 1
+                    add_edge(((ed.network_id, j.network_id), 'editor'))
 
                 # if an issue has more than one editor, relate them
                 # as co-editors
@@ -225,10 +231,8 @@ class Journal(models.Model):
                     for i, editor in enumerate(editors):
                         # each editor is a co-editor with all other editors
                         for co_editor in editors[i+1:]:
-                            edge = ((editor.network_id, co_editor.network_id),
-                                    'co-editor')
-                            edges.add(edge)
-                            edge_size[edge] += 1
+                            add_edge(((editor.network_id, co_editor.network_id),
+                                    'co-editor'))
 
                 # authors and translators are at the item level
                 for item in issue.item_set.all():
@@ -240,17 +244,13 @@ class Journal(models.Model):
                                              label=author.firstname_lastname,
                                              type=author.network_type)
                         # author is a journal contributor
-                        edge = ((author.network_id, j.network_id), 'contributor')
-                        edges.add(edge)
-                        edge_size[edge] += 1
+                        add_edge(((author.network_id, j.network_id), 'contributor'))
 
                         # each author is connected to the issue editors who
                         # edited their work
                         for editor in editors:
-                            edge = ((editor.network_id, author.network_id),
-                                    'edited')
-                            edges.add(edge)
-                            edge_size[edge] += 1
+                            add_edge(((editor.network_id, author.network_id),
+                                     'edited'))
 
                     # if an item has more than one author, relate them
                     # as co-authors
@@ -258,10 +258,8 @@ class Journal(models.Model):
                         for i, editor in enumerate(authors):
                             # each author is a co-author with all other authors
                             for co_author in authors[i+1:]:
-                                edge = ((author.network_id, co_author.network_id),
-                                        'co-author')
-                                edges.add(edge)
-                                edge_size[edge] += 1
+                                add_edge(((author.network_id, co_author.network_id),
+                                         'co-author'))
 
                     for translator in item.translators.all():
                         # only add person if not already present in the graph
@@ -271,15 +269,12 @@ class Journal(models.Model):
                                              type=translator.network_type)
 
                         # translators are connected to the journal they contributed to
-                        edge = ((translator.network_id, j.network_id), 'translator')
-                        edges.add(edge)
-                        edge_size[edge] += 1
+                        add_edge(((translator.network_id, j.network_id),
+                                 'translator'))
                         # and to the author whose work they translated
                         for author in authors:
-                            edge = ((translator.network_id, author.network_id),
-                                    'translated')
-                            edges.add(edge)
-                            edge_size[edge] += 1
+                            add_edge(((translator.network_id, author.network_id),
+                                     'translated'))
 
             logger.debug('Added %d nodes and %d edges for %s in %.2f sec',
                          len(graph.vs()) - vtx_count, len(edges) - edge_count,
@@ -287,31 +282,13 @@ class Journal(models.Model):
 
         start = time.time()
         # split edge information into source/target tuple and edge label
-        edge_src_target, edge_labels = zip(*edges)
+        edge_src_target, edge_labels = zip(*edges.keys())
         # add the edges to the graph
         graph.add_edges(edge_src_target)
         # set the edge labels
         graph.es['label'] = edge_labels
-        # set default edge size as 1
-        graph.es['size'] = 1
-
-        # update edge sizes for size > 1
-        for edge_info, size in edge_size.iteritems():
-            # if size is one, nothing needs to be done
-            if size == 1:
-                next
-
-            # edge info is a tuple of (source, target), edge label
-            # vertex can be found by name, but edges must be found
-            # by vertex index
-            source = graph.vs.find(edge_info[0][0]).index
-            target = graph.vs.find(edge_info[0][1]).index
-            label = edge_info[1]
-
-            # NOTE: search must include label filter, since the same edge
-            # could exist with different labels
-            edge = graph.es.find(_source=source, _target=target, label=label)
-            edge['size'] = size
+        # set edge weight based on number of occurrences
+        graph.es['weight'] = edges.values()
 
         logger.debug('Added edges and edge sizes in %.2f sec',
                      time.time() - start)
