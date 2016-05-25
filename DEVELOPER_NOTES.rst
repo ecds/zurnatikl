@@ -14,11 +14,10 @@ loaddata command to use, or you can undo and re-run the migration::
   python manage.py migrate danowski_admin 0002
 
 
+Tests, database migrations, & fixtures
+--------------------------------------
 
-Tests, South, & fixtures
-------------------------
-
-:mod:`danwoski` uses Django :mod:`south` to manage and db models.
+:mod:`danwoski` uses Django migrations to manage the database.
 Any initial data should be explicitly included as test
 fixtures where they are required.
 
