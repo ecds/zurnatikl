@@ -98,108 +98,48 @@ class School(models.Model):
         # igraph requires numerical id; zurnatikl uses network id to
         # differentiate content types & database ids
 
+        # prefetch related people and locations for efficiency
+        schools = schools.prefetch_related('person_set', 'locations')
+
         graph_start = time.time()
         graph = Graph()
 
         for s in schools:
-            graph.add_vertex(s.network_id, label=unicode(s), type='School')
-        info = set()
-        # add people, places, & journals associated with each school
+            # add the school itself to the graph
+            graph.add_vertex(s.network_id, label=unicode(s),
+                             type=s.network_type)
 
-        # TODO: only add vertex to graph once!
-        for s in schools:
+            # add people, places, & journals associated with each school
             start = time.time()
             # a school may have one or more locations
             for loc in s.locations.all():
-                graph.add_vertex(loc.network_id, label=loc.short_label,
-                                 type=loc.network_type)
-                info.add(loc.network_id)
+                # only add location if it is not already in the graph
+                if loc.network_id not in graph.vs['name']:
+                    graph.add_vertex(loc.network_id, label=loc.short_label,
+                                     type=loc.network_type)
                 graph.add_edge(s.network_id, loc.network_id)
 
             # people can be associated with one or more schools
             for p in s.person_set.all():
-                graph.add_vertex(p.network_id, label=p.firstname_lastname,
-                                 type=p.network_type)
-                info.add(p.network_id)
+                # only add person if not already in the graph
+                if p.network_id not in graph.vs['name']:
+                    graph.add_vertex(p.network_id, label=p.firstname_lastname,
+                                     type=p.network_type)
                 graph.add_edge(s.network_id, p.network_id)
 
             # journals can also be associated with a school
             for j in s.journal_set.all():
-                graph.add_vertex(j.network_id, label=unicode(j),
-                                 type=j.network_type)
+                if j.network_id not in graph.vs['name']:
+                    graph.add_vertex(j.network_id, label=unicode(j),
+                                     type=j.network_type)
                 graph.add_edge(s.network_id, j.network_id)
 
-            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
-                (s.locations.all().count(), s.person_set.all().count(),
-                 s.journal_set.all().count(), s, time.time() - start))
+            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec',
+                         s.locations.all().count(), s.person_set.all().count(),
+                         s.journal_set.all().count(), s, time.time() - start)
 
-        logger.debug('add_vertex graph generated in %.2f sec' % (time.time() - graph_start, ))
-        return graph
-
-        # NOTE: alternate method for generating igraph
-        # currently disabled; may be faster, but is also less readable
-        # and has a higher likelihood of introducing errors
-        # (in particular, setting attributes on the wrong nodes)
-        # ---
-        # node attributes can be set most effeciently by providing
-        # a list; so contruct a list for each attribute for all nodes
-        graph_start = time.time()
-        info = defaultdict(list)
-
-        # schools
-        info['type'] = ['School'] * schools.count()
-        for sch in schools:
-            start = time.time()
-
-            info['id'].append(sch.network_id)
-            info['label'].append(unicode(sch))
-
-            # a school may have one or more locations
-            # only add a location if not already present,
-            # because otherwise igraph will generate duplicate nodes
-            new_locations = [loc for loc in sch.locations.all()
-                             if loc.network_id not in info['id']]
-            info['id'].extend([loc.network_id for loc in new_locations])
-            info['label'].extend([loc.short_label for loc in new_locations])
-            info['node'].extend(['Place'] * len(new_locations))
-            # add _all_ edges
-            info['edges'].extend([(sch.network_id, loc.network_id)
-                                  for loc in sch.locations.all()])
-
-            # people can be associated with one or more schools
-            # identify people not already added to the list of nodes
-            new_people = [p for p in sch.person_set.all()
-                          if p.network_id not in info['id']]
-            info['id'].extend(p.network_id for p in new_people)
-            info['label'].extend(p.firstname_lastname for p in new_people)
-            info['type'].extend(['Person'] * len(new_people))
-            info['edges'].extend([(sch.network_id, p.network_id)
-                                 for p in sch.person_set.all()])
-
-            # journals can also be associated with a school
-            new_journals = [j for j in sch.journal_set.all()
-                            if j.network_id not in info['id']]
-            info['id'].extend([j.network_id for j in new_journals])
-            info['label'].extend([unicode(j) for j in new_journals])
-            info['type'].extend(['Journal'] * len(new_journals))
-            info['edges'].extend([(sch.network_id, j.network_id)
-                                  for j in sch.journal_set.all()])
-
-            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' %
-                         (len(new_locations), len(new_people),
-                          len(new_journals), sch, time.time() - start))
-
-        # if strings are provided, igraph treats them as names for the nodes
-        start = time.time()
-        graph = Graph()
-        graph.add_vertices(info['id'])
-        graph.vs['label'] = info['label']
-        graph.vs['type'] = info['type']
-        graph.add_edges(info['edges'])
-        logger.debug('Added %d nodes and %d edges in %.2f sec' %
-                     (len(info['id']), len(info['edges']), time.time() - start))
-
-        logger.debug('list-based graph generated in %.2f sec' % (time.time() - graph_start, ))
+        logger.debug('schools network graph generated in %.2f sec',
+                     time.time() - graph_start)
         return graph
 
 
