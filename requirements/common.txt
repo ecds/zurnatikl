@@ -1,4 +1,4 @@
-Django>=1.8
+Django>=1.8,<1.9
 mysql-python
 django-admin-bootstrapped<=2.5
 
