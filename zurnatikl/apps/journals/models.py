@@ -9,7 +9,7 @@ import logging
 import time
 
 from igraph import Graph
-from djago_date_extensions import fields as ddx
+from django_date_extensions import fields as ddx
 from stdimage.models import StdImageField
 
 from zurnatikl.apps.geo.models import Location
