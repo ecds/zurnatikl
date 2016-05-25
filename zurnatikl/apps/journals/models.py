@@ -220,33 +220,31 @@ class Journal(models.Model):
             # journal editors are at the issue level
             for issue in j.issue_set.all():
                 editors = issue.editors.all()
-                for ed in editors:
+                for i, editor in enumerate(editors):
                     # only add if not already present
-                    if ed.network_id not in graph.vs['name']:
-                        graph.add_vertex(ed.network_id, type=ed.network_type,
-                                         label=ed.firstname_lastname)
-                    add_edge(((ed.network_id, j.network_id), 'editor'))
+                    if editor.network_id not in graph.vs['name']:
+                        graph.add_vertex(editor.network_id,
+                                         type=editor.network_type,
+                                         label=editor.firstname_lastname)
+                    add_edge(((editor.network_id, j.network_id), 'editor'))
 
-                # if an issue has more than one editor, relate them
-                # as co-editors
-                if editors.count() > 1:
-                    for i, editor in enumerate(editors):
-                        # each editor is a co-editor with all other editors
-                        for co_editor in editors[i+1:]:
-                            add_edge(((editor.network_id, co_editor.network_id),
-                                    'co-editor'))
+                    # add a co-editor rel to any other editors on this issue
+                    for co_editor in editors[i+1:]:
+                        add_edge(((editor.network_id, co_editor.network_id),
+                                 'co-editor'))
 
                 # authors and translators are at the item level
                 for item in issue.item_set.all():
                     authors = item.creators.all()
-                    for author in authors:
+                    for i, author in enumerate(authors):
                         # only add person if not already present in the graph
                         if author.network_id not in graph.vs['name']:
                             graph.add_vertex(author.network_id,
                                              label=author.firstname_lastname,
                                              type=author.network_type)
                         # author is a journal contributor
-                        add_edge(((author.network_id, j.network_id), 'contributor'))
+                        add_edge(((author.network_id, j.network_id),
+                                 'contributor'))
 
                         # each author is connected to the issue editors who
                         # edited their work
@@ -254,14 +252,10 @@ class Journal(models.Model):
                             add_edge(((editor.network_id, author.network_id),
                                      'edited'))
 
-                    # if an item has more than one author, relate them
-                    # as co-authors
-                    if authors.count() > 1:
-                        for i, editor in enumerate(authors):
-                            # each author is a co-author with all other authors
-                            for co_author in authors[i+1:]:
-                                add_edge(((author.network_id, co_author.network_id),
-                                         'co-author'))
+                        # add a co-author to any other authors on this item
+                        for co_author in authors[i+1:]:
+                            add_edge(((author.network_id, co_author.network_id),
+                                     'co-author'))
 
                     for translator in item.translators.all():
                         # only add person if not already present in the graph
