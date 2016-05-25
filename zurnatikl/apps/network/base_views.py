@@ -9,7 +9,7 @@ import re
 import tempfile
 import time
 
-from .utils import annotate_graph, node_link_data
+from .utils import annotate_graph, node_link_data, to_ascii, encode_unicode
 from zurnatikl import __version__
 
 
@@ -144,10 +144,18 @@ class NetworkGraphExportMixin(object):
         # NOTE: igraph outputs all node attributes for all nodes,
         # whether that node has a value for that attribute or note
         # - convert None to empty string before exporting
-        for v in graph.vs:
-            for data, val in v.attributes().iteritems():
+        # - convert to unicode or ascii based on format
+        for vtx in graph.vs:
+            vtx_attr = vtx.attributes()
+            if self.export_format == 'graphml':
+                vtx_attr = encode_unicode(vtx_attr)
+            elif self.export_format == 'gml':
+                vtx_attr = to_ascii(vtx_attr)
+            for key, val in vtx_attr.iteritems():
                 if val is None:
-                    v[data] = ''
+                    vtx[key] = ''
+                else:
+                    vtx[key] = val
 
         buf = tempfile.TemporaryFile(suffix=self.export_format)
         if self.export_format == 'graphml':
