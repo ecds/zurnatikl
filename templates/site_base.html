@@ -88,6 +88,8 @@ by default; use page_rdf_type to override with a webpage subclass.
       <div class="main-content">
         <!-- HEADER -->
       <div class="header">
+  {# suppress header for now; takes up too much network graph space, and design is being revisited #}
+      {% comment %}
         <div class="logo">
           <a href="{% url 'site-index' %}">
             <picture>
@@ -106,6 +108,7 @@ by default; use page_rdf_type to override with a webpage subclass.
                 title="{{ banner_image.title }}" class="img-responsive">
           </picture>
         </div>
+              {% endcomment %}
       </div>
       <!-- END HEADER -->
     <div class="bootstrap_container">
@@ -117,6 +120,7 @@ by default; use page_rdf_type to override with a webpage subclass.
         </div>
             <div id="defaultmenu" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+             <li class="dropdown w3_megamenu-fw"><a href="{% url 'site-index' %}" class="dropdown-toggle">Home</a></li>
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'about' %}" class="dropdown-toggle">About</a></li>
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'journals:list' %}" class="dropdown-toggle">Journals</a></li>
              <li class="dropdown w3_megamenu-fw"><a href="{% url 'people:list' %}" class="dropdown-toggle">People</a></li>
