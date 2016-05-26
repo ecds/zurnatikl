@@ -21,6 +21,7 @@ class JournalDetail(DetailView):
     'Display details for a single journal'
     model = Journal
 
+
 class IssueDetail(DetailView):
     'Display details for a single issue of a journal'
     model = Issue

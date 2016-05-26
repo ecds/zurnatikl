@@ -55,8 +55,12 @@ class SigmajsJSONView(JSONView):
     annotate_fields = ['degree']
 
     #: layout algorithm to use
-    layout = 'fruchterman_reingold'
-    # layout = 'auto'
+    # layout = 'fruchterman_reingold'
+    layout = 'auto'
+    # auto layout chooses layout based on graph size
+    # > 100 uses Kamada-Kawai force-directed
+    # > 1000 uses Fruchterman-Reingold
+    # graphs larger than that use drl
 
     #: enable layout caching
     cache_layout = False
@@ -74,7 +78,9 @@ class SigmajsJSONView(JSONView):
 
         # if layout caching is configured, check for a cached layout
         if self.cache_layout:
-            layout = cache.get(self.layout_cache_key())
+            # for now, set cache to never timeout; may need to be
+            # more configurable later on
+            layout = cache.get(self.layout_cache_key(), None)
             # if layout was cached, return it immediately
             if layout is not None:
                 logger.debug('Using cached graph layout for %s',

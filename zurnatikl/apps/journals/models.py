@@ -202,13 +202,18 @@ class Journal(models.Model):
             else:
                 edges[edge] += 1
 
-        start = time.time()
+        # start = time.time()
         # prefetch journal contributors all at once, for efficiency
-        journals = list(Journal.objects.all().prefetch_related(
+        journals = Journal.objects.all().prefetch_related(
             'issue_set__editors', 'issue_set__item_set__creators',
-            'issue_set__item_set__translators'))
-        logger.debug('Retrieved journal contributor data from db in %.2f sec',
-                     time.time() - start)
+            'issue_set__item_set__translators')
+        # NOTE: this query is currently the slowest step in generating the
+        # graph, nearly ~4s in dev.  It can only be timed here if it is
+        # forced to evaluate via list or similar, but it is slightly more
+        # efficient not to evaluate it that way
+        # logger.debug('Retrieved journal contributor data from db in %.2f sec',
+                     # time.time() - start)
+
         for j in journals:
             start = time.time()
             # starting count, to easily calculate number of nodes & edges added
@@ -293,7 +298,8 @@ class Journal(models.Model):
                      len(graph.vs()), len(graph.es()), time.time() - full_start)
 
         # store the generated graph in the cache for the next time
-        cache.set(cls.contributor_network_cache_key, graph)
+        # for now, set cached graph to never time out
+        cache.set(cls.contributor_network_cache_key, graph, None)
         return graph
 
 
