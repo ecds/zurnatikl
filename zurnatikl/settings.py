@@ -149,7 +149,7 @@ try:
     TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
     # enable coverage by default
     NOSE_ARGS = [
-        '--with-coverage',
+        # '--with-coverage',
         '--cover-package=zurnatikl',
     ]
 except ImportError:

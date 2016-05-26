@@ -13,7 +13,7 @@ before_script:
   - echo "SECRET_KEY = '`python -c 'import uuid; print uuid.uuid4()'`'" >> zurnatikl/localsettings.py
 
 script:
-  - python manage.py test
+  - fab test
 
 after_success:
   - coveralls
