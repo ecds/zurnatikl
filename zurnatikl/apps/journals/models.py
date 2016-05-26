@@ -80,6 +80,7 @@ class JournalManager(models.Manager):
     def by_author(self, person):
         return self.get_queryset().by_author(person)
 
+
 class Journal(models.Model):
     'A Journal or Magazine'
 
@@ -205,14 +206,14 @@ class Journal(models.Model):
         # start = time.time()
         # prefetch journal contributors all at once, for efficiency
         journals = Journal.objects.all().prefetch_related(
-            'issue_set__editors', 'issue_set__item_set__creators',
+            'schools', 'issue_set__editors', 'issue_set__item_set__creators',
             'issue_set__item_set__translators')
         # NOTE: this query is currently the slowest step in generating the
         # graph, nearly ~4s in dev.  It can only be timed here if it is
         # forced to evaluate via list or similar, but it is slightly more
         # efficient not to evaluate it that way
         # logger.debug('Retrieved journal contributor data from db in %.2f sec',
-                     # time.time() - start)
+                    # time.time() - start)
 
         for j in journals:
             start = time.time()
@@ -220,7 +221,9 @@ class Journal(models.Model):
             vtx_count = len(graph.vs())
             edge_count = len(edges)
             graph.add_vertex(j.network_id, label=unicode(j),
-                             type=j.network_type)
+                             type=j.network_type,
+                             schools=', '.join([s.name
+                                                for s in j.schools.all()]))
 
             # journal editors are at the issue level
             for issue in j.issue_set.all():
@@ -280,6 +283,26 @@ class Journal(models.Model):
             logger.debug('Added %d nodes and %d edges for %s in %.2f sec',
                          len(graph.vs()) - vtx_count, len(edges) - edge_count,
                          j, time.time() - start)
+
+        # add person-school associations
+        # - only a fairly small number of people are associated with
+        # schools, so it should be most efficient to handle separately
+        start = time.time()
+        schooled_people = Person.objects.filter(schools__isnull=False) \
+                                .prefetch_related('schools')
+        for person in schooled_people:
+            try:
+                graph.vs.find(name=person.network_id)['schools'] = ', '.join(
+                    [s.name for s in person.schools.all()]
+                )
+            except ValueError:
+                # it's possible we have people associated with schools
+                # who are not contributors to our journals, so this is
+                # not an error, but providea  warning.
+                logger.warn('School-associated person %s not found in contributor network graph',
+                            person)
+        logger.debug('Added school associations for %d people in %.2f sec',
+                     schooled_people.count(), time.time() - start)
 
         start = time.time()
         # split edge information into source/target tuple and edge label
