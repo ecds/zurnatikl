@@ -222,8 +222,7 @@ class Journal(models.Model):
             edge_count = len(edges)
             graph.add_vertex(j.network_id, label=unicode(j),
                              type=j.network_type,
-                             schools=', '.join([s.name
-                                                for s in j.schools.all()]))
+                             schools=[s.name for s in j.schools.all()])
 
             # journal editors are at the issue level
             for issue in j.issue_set.all():
@@ -292,9 +291,9 @@ class Journal(models.Model):
                                 .prefetch_related('schools')
         for person in schooled_people:
             try:
-                graph.vs.find(name=person.network_id)['schools'] = ', '.join(
+                graph.vs.find(name=person.network_id)['schools'] = \
                     [s.name for s in person.schools.all()]
-                )
+
             except ValueError:
                 # it's possible we have people associated with schools
                 # who are not contributors to our journals, so this is
