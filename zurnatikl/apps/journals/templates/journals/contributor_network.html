@@ -2,11 +2,6 @@
 {% load static %}
 {# display all contributors to all journals #}
 
-{% block javascript %}
-    {{ block.super }}
-    <script src="{% static 'js/sigma/plugins/sigma.statistics.louvain.min.js' %}"></script>
-{% endblock %}
-
 {% block page-subtitle %} | Journals | Contributor Network{% endblock %}
 
 {% block pregraph-content %}
@@ -65,37 +60,31 @@ var s = init_sigma_graph({
 });
 
 
-// community detection should happen either on graph:layout_complete or
-// graph:design_applied, because otherwise design colors override
-// community colors
+// coloring by community must happen after graph:design_applied,
+// because otherwise node-type colors override community colors
 $('#graph-container').on('graph:design_applied', function() {
-    // NOTE: could include in status, but community detection is
-    // so fast that it doesn't actually show up, so it isn't helpful
+    // community detection for the contributer network is now handled
+    // server-side; nodes should include a community number which can
+    // be used to set colors
 
-    // community detection via louvain plugins
-    // console.log('Starting louvain community detection');
-    // var louvain = sigma.plugins.louvain(s.graph);
-    // console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
-
-    // TODO: colors can be set server-side now
+    // TODO: should colors be handled server-side as well?
 
     // placeholder colors for now
     var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
-    // network colors from resonance
+    // network colors from resonance design
     var colors = ["#004052", "#996628", "#e5c951",
       "#bc1626", "#0aa3aa", "#d84f05",
       "#11203d" ,"#872675", "#577469",
       "#0c7549", "#28236b", "#de03a7",
       "#a2d23a", "#ffa700"];
 
-    // TODO: set edges to use source node color (? or gray?)
+    // NOTE: should we set edges to use source node color (or gray?)
+    // when nodes are colored based on community?
 
     // color nodes based on their community
     function color_by_community() {
       console.log('color by community');
       s.graph.nodes().forEach(function(node) {
-        // by default, assigned community number is set to _louvain
-        // node.color = colors[node._louvain];
         // server-side community detection currently set as community attribute
         node.color = colors[node.community];
       });

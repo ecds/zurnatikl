@@ -9,24 +9,17 @@
   <link href="{% static 'css/cornermenu.css' %}" rel="stylesheet"/>
 {% endblock %}
 
-
 {% block javascript %}
     {{ block.super }}
     <script src="{% static 'js/sigma/sigma.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.parsers.json.min.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.layout.forceAtlas2.min.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.layout.forceLink.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.design.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.edgeLabels.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.fullScreen.min.js' %}"></script>
     <script src="{% static 'network/js/initgraph.js' %}"></script>
-    <script type="text/javascript">
-
-    </script>
 {% endblock %}
-
 
 {% block content_full %}
 
