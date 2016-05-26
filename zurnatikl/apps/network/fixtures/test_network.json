@@ -398,7 +398,7 @@
         "journal": 6,
         "publication_address": 4,
         "editors": [
-            1
+            1, 3, 5
         ],
         "volume": "",
         "contributing_editors": [],
@@ -623,6 +623,33 @@
     },
     "model": "journals.creatorname",
     "pk": 3
+},
+{
+    "fields": {
+        "person": 1,
+        "name_used": "",
+        "item": 3
+    },
+    "model": "journals.creatorname",
+    "pk": 4
+},
+{
+    "fields": {
+        "person": 3,
+        "name_used": "",
+        "item": 3
+    },
+    "model": "journals.creatorname",
+    "pk": 5
+},
+{
+    "fields": {
+        "person": 3,
+        "name_used": "",
+        "item": 1
+    },
+    "model": "journals.creatorname",
+    "pk": 6
 },
 {
     "fields": {
