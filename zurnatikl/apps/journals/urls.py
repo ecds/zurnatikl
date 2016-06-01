@@ -8,7 +8,7 @@ urlpatterns = [
     # journal contributor network urls
     url(r'^network/$', views.ContributorNetwork.as_view(), name='contributor-network'),
     url(r'^network.json$', views.ContributorNetworkJSON.as_view(), name='contributor-network-json'),
-    url(r'^contributors.(?P<fmt>gexf|graphml)$', views.ContributorNetworkExport.as_view(),
+    url(r'^contributors.(?P<fmt>graphml|gml)$', views.ContributorNetworkExport.as_view(),
         name='contributor-network-export'),
     # greedier matching url patterns must come last
     url(r'^(?P<slug>[\w-]+)/$', views.JournalDetail.as_view(), name='journal'),

@@ -100,13 +100,9 @@ function init_sigma_graph(opts) {
     console.log('data loaded (' + s.graph.nodes().length + ' nodes, '
                  + s.graph.edges().length + ' edges)');
     $('#graph-container').trigger('graph:data_loaded');
-    // init nodes with random placement
-    $.each(s.graph.nodes(), function(i, node) {
-      node.x = Math.random();
-      node.y = Math.random();
-      // calculate and store degree for each node, to use for size
-      // node.degree = s.graph.degree(node.id);
-    });
+    // layout is now handled server side, and coordinates are included
+    // in the json data
+
     // set curved edges
     $.each(s.graph.edges(), function(i, edge) {
       edge.type = 'curve';
@@ -124,18 +120,10 @@ function init_sigma_graph(opts) {
       design.apply();
     });
 
-
     // update the graph with the added nodes + edges, and design styles
     s.refresh();
 
-    // run forceLink implementation of force atlas2 algorithm
-    status.text('Running force-directed layout');
-    console.log('running force directed layout');
-    var fa = sigma.layouts.startForceLink(s, settings.forceLink);
-    fa.bind('stop', function(event) {
-        $('#graph-status').hide();
-        $('#graph-container').trigger('graph:layout_complete');
-    });
+    $('#graph-status').hide();
   });
 
   // configure fullscreen button

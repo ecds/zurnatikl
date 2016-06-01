@@ -14,11 +14,18 @@ loaddata command to use, or you can undo and re-run the migration::
   python manage.py migrate danowski_admin 0002
 
 
+Tests, database migrations, & fixtures
+--------------------------------------
 
-Tests, South, & fixtures
-------------------------
-
-:mod:`danwoski` uses Django :mod:`south` to manage and db models.
+:mod:`zurnatikl` uses Django migrations to manage the database.
 Any initial data should be explicitly included as test
 fixtures where they are required.
+
+sigma.js / linkurious
+---------------------
+
+Note that the version of sigma.js used in this project is the
+version distributed by linkurious.js.
+
+Linkurious documentation: https://github.com/Linkurious/linkurious.js/wiki
 

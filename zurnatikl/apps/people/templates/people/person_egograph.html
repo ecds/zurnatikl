@@ -11,8 +11,8 @@
   <li class="active">Egograph</li>
 </ol>
 
-{% url 'people:egograph-export' person.slug 'gexf' as gexf_url %}
 {% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
+{% url 'people:egograph-export' person.slug 'gml' as gml_url %}
 {% include 'network/snippets/download_graph.html' %}
 
 <h2>{{ person.firstname_lastname }}'s Connections</h2>
@@ -23,11 +23,9 @@
 <script>
 var s = init_sigma_graph({
   json_url: "{% url 'people:egograph-json' person.slug %}",
-  forceLink:  {
-      autoStop: true,
-      maxIterations: 100,
-      iterationsPerRender: 10,
-      {# may want to enable strongGravityMode for smaller graphs? #}
+  sigma: {
+    labelThreshold: 6,
+    edgeLabelThreshold: 2
   }
 });
 </script>

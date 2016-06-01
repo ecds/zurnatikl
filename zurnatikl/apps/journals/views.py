@@ -2,8 +2,9 @@ import re
 
 from django.db.models import Q
 from django.http import Http404
-from django.views.generic import View, ListView, DetailView, TemplateView
 from django.shortcuts import render
+from django.views.generic import View, ListView, DetailView, TemplateView
+
 
 from zurnatikl.apps.network.base_views import NetworkGraphExportView, \
     SigmajsJSONView
@@ -19,6 +20,7 @@ class JournalList(ListView):
 class JournalDetail(DetailView):
     'Display details for a single journal'
     model = Journal
+
 
 class IssueDetail(DetailView):
     'Display details for a single issue of a journal'
@@ -70,6 +72,7 @@ class SearchView(View):
 class ContributorNetwork(TemplateView):
     template_name = 'journals/contributor_network.html'
 
+
 class ContributorNetworkBaseView(TemplateView):
     '''Base view to generate full journal contributor network
     for use in disseminating the graph as JSON, GEXF, or GraphML.'''
@@ -83,6 +86,12 @@ class ContributorNetworkJSON(SigmajsJSONView, ContributorNetworkBaseView):
     '''Journal contributor network in a JSON format appropriate for use
     with Sigma.js'''
 
+    community_detection = True
+    # full network graph layout takes ~4s to calculate, so cache it
+    cache_layout = True
+    # FIXME: how do we make sure the cached graph layout stays in sync
+    # with the cached graph?
+
 
 class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseView):
     '''Downloadable eggograph for
@@ -91,4 +100,3 @@ class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseVie
     contributors (authors, editors, and translators) as GEXF or GraphML.'''
 
     filename = 'journals-contributors'
-

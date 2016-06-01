@@ -1,5 +1,7 @@
-from django.test import TestCase
+from collections import defaultdict
+from django.db.models import Q, Count
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item, \
@@ -7,6 +9,7 @@ from zurnatikl.apps.journals.models import Journal, Issue, Item, \
 from zurnatikl.apps.journals.templatetags.journal_extras import \
     readable_list, all_except
 from zurnatikl.apps.people.models import School, Person
+
 
 class JournalTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -53,6 +56,128 @@ class JournalTestCase(TestCase):
         self.assertEqual(beat.schools.count(), len(edges))
         # target element of the first edge should be the id of the first school
         self.assertEqual(beat.schools.first().network_id, edges[0][1])
+
+    def test_contributor_network(self):
+        graph = Journal.contributor_network()
+
+        # graph should include all journals and any person who
+        # contributed to a journal as editor, author, or translator
+        journals = Journal.objects.all()
+        people = Person.objects.filter(
+            Q(items_created__isnull=False) |
+            Q(items_translated__isnull=False) |
+            Q(issues_edited__isnull=False)
+        ).distinct()
+        expected_node_count = people.count() + journals.count()
+        self.assertEqual(expected_node_count, len(graph.vs),
+            '# of nodes should be total of journals & journal contributors ' +
+            'expected %d, got %d' % (expected_node_count, len(graph.vs)))
+
+        for journal in journals:
+            node = graph.vs.find(name=journal.network_id)
+            self.assertEqual(journal.network_type, node['type'])
+            self.assertEqual(unicode(journal), node['label'])
+            # school association, if any, should be present
+            for sch in journal.schools.all():
+                self.assert_(sch.name in node['schools'])
+
+        for person in people:
+            # node should only be included once
+            self.assertEqual(1, len(graph.vs.select(name=person.network_id)))
+            node = graph.vs.find(name=person.network_id)
+            self.assertEqual(person.network_type, node['type'])
+            self.assertEqual(person.firstname_lastname, node['label'])
+            # school association, if any, should be present
+            for sch in person.schools.all():
+                self.assert_(sch.name in node['schools'])
+
+            # test that edges have been added as expected
+            # collect journal & editor counts to check against edges
+            journal_ids = defaultdict(int)
+            editor_ids = defaultdict(int)
+            for item in person.items_created.all():
+                journal_ids[item.issue.journal.network_id] += 1
+                for editor in item.issue.editors.all():
+                    editor_ids[editor.network_id] += 1
+            # author -> journal
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='contributor')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+            # author-> editor
+            for editor, count in editor_ids.iteritems():
+                editor_node = graph.vs.find(editor)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=editor_node.index,
+                                     _target=node.index,
+                                     label='edited')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # editor -> journal
+            journal_ids = defaultdict(int)
+            for issue in person.issues_edited.all():
+                journal_ids[issue.journal.network_id] += 1
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='editor')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # translator -> journal
+            journal_ids = defaultdict(int)
+            author_ids = defaultdict(int)
+            for item in person.items_translated.all():
+                journal_ids[item.issue.journal.network_id] += 1
+                for author in item.authors.all():
+                    author_ids[author.network_id] += 1
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='translator')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # translator -> author
+            for author, count in author_ids.iteritems():
+                author_node = graph.vs.find(author)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=author_node.index,
+                                     label='translated')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+        # co-editors & co-authors
+        co_editors = 0  # count of expected # of edges
+        for issue in Issue.objects.all():
+            if issue.editors.count() > 1:
+                for i, editor in enumerate(issue.editors.all()):
+                    co_editors += len(issue.editors.all()[i+1:])
+        graph_co_ed_count = len(graph.es.select(label='co-editor'))
+        self.assertEqual(co_editors, graph_co_ed_count,
+                         'expected %d co-editor edges, found %d' %
+                         (co_editors, graph_co_ed_count))
+
+        co_authors = 0   # count of expected # of edges
+        for item in Item.objects.all():
+            if item.creators.count() > 1:
+                for i, creator in enumerate(item.creators.all()):
+                    co_authors += len(item.creators.all()[i+1:])
+        graph_co_auth_count = len(graph.es.select(label='co-author'))
+        self.assertEqual(co_authors, graph_co_auth_count,
+                         'expected %d co-author edges, found %d' %
+                         (co_authors, graph_co_auth_count))
+
 
 class IssueTestCase(TestCase):
     fixtures = ['test_network.json']
