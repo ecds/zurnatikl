@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+Release 1.5.2 - Upgrade to Django 1.9
+-------------------------------------
+* Tests were changed to call `save` on some test objects due to `new behavior for related objects <https://docs.djangoproject.com/en/1.9/releases/1.9/#bulk-behavior-of-add-method-of-related-managers>`_.
+* Updated url files to make them plain lists. `django.conf.urls.patterns()` `will be removed in 1.10 <https://docs.djangoproject.com/en/1.9/ref/urls/>`_.
+* `SortedDict` `was moved <https://docs.djangoproject.com/en/1.8/ref/utils/#django.utils.datastructures.SortedDict>`_ from `django.utils.datastructures.SortedDict` to `collections.OrderedDict`.
+* Template settings were changed to `the new template api <https://docs.djangoproject.com/en/1.9/releases/1.8/#multiple-template-engines>`_.
+
 Release 1.5.1
 -------------
 
