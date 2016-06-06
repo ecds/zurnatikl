@@ -2,6 +2,10 @@ The following instructions can be ignored when deploying to a staging
 or production environment, but may be helpful to a developer working
 on the project or running automated tests.
 
+Django 1.10 Incompatibility Notes
+---------------------------------
+There are still two depreciation warnings for 1.10. `SubfieldBase` will be removed in 1.10. It is called by `MultiSelectField` in `People.Models` and by `django_date_extensions` in `Jounrals.Models`. 
+
 Data Entry Group and DB migrations
 ----------------------------------
 
@@ -28,4 +32,3 @@ Note that the version of sigma.js used in this project is the
 version distributed by linkurious.js.
 
 Linkurious documentation: https://github.com/Linkurious/linkurious.js/wiki
-
