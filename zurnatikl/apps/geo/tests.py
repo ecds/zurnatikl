@@ -97,6 +97,7 @@ class LocationTestCase(TestCase):
         # test placename inclusion
         pn = PlaceName(name='somewhere out there')
         pn.item = Item.objects.first()
+        pn.save()
         self.maz.placename_set.add(pn)
         net_attrs = self.maz.network_attributes
         self.assertEqual(pn.name, net_attrs['placenames'])
@@ -169,4 +170,3 @@ class LocationAdminViewsTestCase(TestCase):
         for i in loc.item_set.all():
             self.assertContains(resp, unicode(i))
             self.assertContains(resp, reverse('admin:journals_item_change', args=[i.pk]))
-
