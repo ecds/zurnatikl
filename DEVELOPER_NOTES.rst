@@ -4,7 +4,7 @@ on the project or running automated tests.
 
 Django 1.10 Incompatibility Notes
 ---------------------------------
-There are still two depreciation warnings for 1.10. `SubfieldBase` will be removed in 1.10. It is called by `MultiSelectField` in `People.Models` and by `django_date_extensions` in `Jounrals.Models`. 
+There are still two depreciation warnings for 1.10. `SubfieldBase` will be removed in 1.10. It is called by `MultiSelectField` in `People.Models` and by `django_date_extensions` in `Journals.Models`.
 
 Data Entry Group and DB migrations
 ----------------------------------
