@@ -43,23 +43,35 @@ INSTALLED_APPS = [
     #'fixture_magic',
 ]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    # Default processors##############################
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    ##################################################
-    "django.core.context_processors.request",
-    "eultheme.context_processors.template_settings",
-    ### local context processors
-    "zurnatikl.version_context",
-    "zurnatikl.apps.journals.context_processors.search",
-    "zurnatikl.apps.content.context_processors.banner_image",
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [
+                os.path.join(BASE_DIR, 'templates')
+            ],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors' :[
+                    # Default processors##############################
+                    "django.contrib.auth.context_processors.auth",
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.i18n",
+                    "django.template.context_processors.media",
+                    "django.template.context_processors.static",
+                    "django.template.context_processors.tz",
+                    "django.contrib.messages.context_processors.messages",
+                    ##################################################
+                    "django.template.context_processors.request",
+                    "eultheme.context_processors.template_settings",
+                    ### local context processors
+                    "zurnatikl.version_context",
+                    "zurnatikl.apps.journals.context_processors.search",
+                    "zurnatikl.apps.content.context_processors.banner_image",
+                ],
+                'debug': True,
+            }
+        }
+]
 
 
 MIDDLEWARE_CLASSES = (
@@ -67,11 +79,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 ROOT_URLCONF = 'zurnatikl.urls'
 
@@ -154,4 +165,3 @@ try:
     ]
 except ImportError:
     pass
-

@@ -1,4 +1,4 @@
-Django>=1.8,<1.9
+Django>=1.9,<1.10
 mysql-python
 django-admin-bootstrapped<=2.5
 
@@ -13,4 +13,3 @@ lxml
 -e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
 django-widget-tweaks
 django-stdimage
-

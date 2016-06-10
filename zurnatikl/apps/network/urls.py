@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from zurnatikl.apps.network import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name="network/index.html"),
         name='index'),
 
@@ -15,4 +15,4 @@ urlpatterns = patterns('',
         name='schools-json'),
     url(r'^schools/(?P<slug>[\w-]+).(?P<fmt>gml|graphml)$',
         views.SchoolsNetworkExport.as_view(), name='schools-export'),
-)
+]

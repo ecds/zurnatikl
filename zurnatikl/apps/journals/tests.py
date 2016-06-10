@@ -262,13 +262,19 @@ class ItemTestCase(TestCase):
         # add places mentioned for testing purposes
         pn = PlaceName(name='somewhere over the rainbow')
         pn.location = Location.objects.first()
+        pn.item_id = item.id
+        pn.save()
         item.placename_set.add(pn)
         pn2 = PlaceName(name='the world\'s end')
         pn2.location = Location.objects.all()[1]
+        pn2.item_id = item.id
+        pn2.save()
         item.placename_set.add(pn2)
         # placenames can apparently have an empty location?
         # placename without location can't contribute a network edge
         pn3 = PlaceName(name='Xanadu')
+        pn3.item_id = item.id
+        pn3.save()
         item.placename_set.add(pn3)
 
         # network id
