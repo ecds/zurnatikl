@@ -19,6 +19,18 @@
 
 {% block graph-controls %}
 <div>
+    <h4>Filter by School</h4>
+    <div class="radio" id="school-radio">
+        <label>
+            <input type="radio" name="school-filter" id="all-schools" value="" checked="checked"/>
+            All Schools
+        </label>
+    </div>
+    <!-- <select id="node-school">
+        <option value="" selected>All schools</option>
+    </select> -->
+</div>
+<div>
   <h4>Color by:</h4>
   <div class="radio">
     <label>
@@ -125,8 +137,8 @@ $('#graph-container').on('graph:design_applied', function() {
       });
         color_edges_by_source();
       // hide color keys since they aren't relevant
-      $("#graph-color-key").hide();
-      $("#school-color-key").hide();
+      $("#graph-color-key").slideUp();
+      $("#school-color-key").slideUp();
       // refresh sigma renderer
       s.refresh({skipIndexation: true});
     }
@@ -142,9 +154,9 @@ $('#graph-container').on('graph:design_applied', function() {
         }
       });
       color_edges_by_source();
-      $("#school-color-key").show();
+      $("#school-color-key").slideDown();
       // hide color key since it isn't relevant
-      $("#graph-color-key").hide();
+      $("#graph-color-key").slideUp();
       // refresh sigma renderer
       s.refresh({skipIndexation: true});
     }
@@ -152,12 +164,59 @@ $('#graph-container').on('graph:design_applied', function() {
     // add triggers to switch to color by community or school
     $('#graph-container').on('graph:color_by_community', color_by_community);
     $('#graph-container').on('graph:color_by_school', color_by_school);
+
+    /* Set up the filter nodes by school. I put it here instead of in an `on graph:data_loaded`
+       so I could use the array of schools that exists here. If we start adding more filters,
+       we might want to refactor to build the array of schools in a scope that both
+       can user without createing it multiple times.
+    */
+
+    var filter = sigma.plugins.filter(s);
+
+    // node school
+    var nodeSchoolElt = document.getElementById("node-school");
+    var schoolFilterElm = document.getElementById("school-radio");
+    schools.forEach(function(school) {
+        // Create the radio buttons.
+        var label = document.createElement("label"),
+            radio = document.createElement("input");
+        radio.setAttribute('type', 'radio');
+        radio.setAttribute('name', 'school-filter');
+        radio.setAttribute('id', school.toLowerCase().replace(/[^\w-]+/g,'-') + '-filter');
+        radio.setAttribute('value', school);
+
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(school));
+        schoolFilterElm.appendChild(label);
+    });
+
+    function applySchoolFilter(selection){
+        var selectedSchool = selection.target.value;
+        if (!selectedSchool) {
+            filter.undo('schools').apply();
+        } else{
+                filter
+                .undo('schools')
+                .nodesBy(function(node){
+                    if (node.schools){
+                        // `indexOf` retuns `-1` if the string isn't found in the array.
+                        return node.schools.indexOf(selectedSchool, 0) != -1;
+                    } else {
+                        return false;
+                    }
+            }, 'schools')
+            .apply();}
+
+    }
+
+    schoolFilterElm.addEventListener("change", applySchoolFilter);
+
 });
 
 $('#color-by-type').on("click", function() {
     $('#graph-container').trigger('graph:reapply_design');
-    $("#graph-color-key").show();
-    $("#school-color-key").hide();
+    $("#graph-color-key").slideDown();
+    $("#school-color-key").slideUp();
     s.refresh({skipIndexation: true});
 });
 
@@ -169,7 +228,5 @@ $('#color-by-school').on("click", function() {
     $('#graph-container').trigger('graph:color_by_school');
 });
 
-
 </script>
 {% endblock %}
-
