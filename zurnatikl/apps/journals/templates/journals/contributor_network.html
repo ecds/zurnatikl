@@ -146,7 +146,7 @@ $('#graph-container').on('graph:design_applied', function() {
 
     function color_by_school() {
       s.graph.nodes().forEach(function(node) {
-        if (node.school_index) {
+        if (!isNaN(node.school_index)) {
           node.color = colors[node.school_index];
         } else {
           // node.color = "#ABABAB";
