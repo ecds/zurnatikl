@@ -6,17 +6,21 @@ from zurnatikl.apps.people.models import Person
 from zurnatikl.apps.journals.models import Journal, Item, Issue, Genre
 
 def people_csv(request):
+    '''Export person data in CSV'''
     qs = Person.objects.all().values('last_name', 'first_name', 'schools__name', 'items_created__title')
     return render_to_csv_response(qs)
 
 def journal_csv(request):
+    '''Export journal data in CSV'''
     return True
 
 def genre_csv(request):
+    '''Export genre data in CSV'''
     qs = Genre.objects.all().values('name')
     return render_to_csv_response(qs)
 
 def item_csv(request):
+    '''Export item data in CSV'''
     return True
 
 class SiteIndex(TemplateView):
