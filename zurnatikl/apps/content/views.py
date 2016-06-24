@@ -1,7 +1,23 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-
+from djqscsv import render_to_csv_response
 from .models import Image
+from zurnatikl.apps.people.models import Person
+from zurnatikl.apps.journals.models import Journal, Item, Issue, Genre
+
+def people_csv(request):
+    qs = Person.objects.all().values('last_name', 'first_name', 'schools__name', 'items_created__title')
+    return render_to_csv_response(qs)
+
+def journal_csv(request):
+    return True
+
+def genre_csv(request):
+    qs = Genre.objects.all().values('name')
+    return render_to_csv_response(qs)
+
+def item_csv(request):
+    return True
 
 class SiteIndex(TemplateView):
     # TODO: move template under content app

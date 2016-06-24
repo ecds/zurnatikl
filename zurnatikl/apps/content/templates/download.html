@@ -1,0 +1,28 @@
+{% extends 'site_base.html' %}
+
+{% block page-subtitle %} | Data Download{% endblock %}
+
+{% block content %}
+  <h2>Some Title for the Data</h2>
+  <p>Some description here about the data. Raw denim fashion axe etsy, narwhal fixie kickstarter affogato. +1 kickstarter literally celiac bushwick, jean shorts schlitz trust fund artisan cray. Everyday carry kombucha kitsch, ramps squid seitan meggings chambray disrupt offal williamsburg shoreditch skateboard. XOXO tacos artisan pinterest fashion axe tousled, VHS cornhole meggings. Master cleanse cardigan whatever put a bird on it, trust fund street art ramps banh mi man bun quinoa wolf organic salvia. YOLO sriracha disrupt pop-up man bun. Mumblecore mustache put a bird on it tattooed.
+
+  <h3>Download Data</h3>
+  <p>
+      <ul>
+          <li>
+              <a href="{% url 'people_csv' %}">People Data</a>
+          </li>
+          <li>
+              <a href="{% url 'journal_csv' %}">Journal Data</a>
+          </li>
+          <li>
+              <a href="{% url 'item_csv' %}">Item Data</a>
+          </li>
+          <li>
+              <a href="{% url 'genre_csv' %}">Genre Data</a>
+          </li>
+
+      </ul>
+  </p>
+
+{% endblock %}
