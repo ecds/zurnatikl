@@ -368,7 +368,7 @@ class Issue(models.Model):
         help_text="address where issue was printed",
         related_name='issues_printed_at', null=True)
     #: mailing addresses, many-to-many relation to :class:`~zurnatikl.apps.geo.models.Location`
-    mailing_addresses  = models.ManyToManyField(Location, blank=True,
+    mailing_addresses = models.ManyToManyField(Location, blank=True,
         help_text="addresses where issue was mailed",
         related_name='issues_mailed_to')
     #: physical description
