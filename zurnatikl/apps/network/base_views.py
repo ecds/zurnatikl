@@ -251,13 +251,13 @@ class CsvResponseMixin(object):
         '''Returns a CSV response, with context output as CSV data.'''
         response = StreamingHttpResponse(
             self.get_data(context),
-            # content_type="text/csv; charset=utf-8",
-            content_type="text/plain; charset=utf-8",
+            content_type="text/csv; charset=utf-8",
+            # content_type="text/plain; charset=utf-8",
             **response_kwargs
         )
 
-        # response['Content-Disposition'] = 'attachment; filename="%s.csv"' % \
-            # self.filename
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % \
+            self.filename
         return response
 
     def get_data(self, context):
