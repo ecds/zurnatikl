@@ -1,25 +1,71 @@
 {% extends 'site_base.html' %}
 
-{% block page-subtitle %} | Data Download{% endblock %}
+{% block page-subtitle %} | Download Data{% endblock %}
 
 {% block content %}
-  <h2>Some Title for the Data</h2>
-  <p>Some description here about the data. Raw denim fashion axe etsy, narwhal fixie kickstarter affogato. +1 kickstarter literally celiac bushwick, jean shorts schlitz trust fund artisan cray. Everyday carry kombucha kitsch, ramps squid seitan meggings chambray disrupt offal williamsburg shoreditch skateboard. XOXO tacos artisan pinterest fashion axe tousled, VHS cornhole meggings. Master cleanse cardigan whatever put a bird on it, trust fund street art ramps banh mi man bun quinoa wolf organic salvia. YOLO sriracha disrupt pop-up man bun. Mumblecore mustache put a bird on it tattooed.
+  <h2>Download Data</h2>
 
-  <h3>Download Data</h3>
+  <p>Brief description of the data and how it was collected here - link to
+  Rose Library, Danowski Poetry Library; reference number of items/journals/people
+  included? what else?</p>
+
+  <h3>CSV Data</h3>
   <p>
       <ul>
           <li>
-              <a href="{% url 'people_csv' %}">People Data</a>
+              <a href="{% url 'people:csv' %}">People</a>
           </li>
           <li>
-              <a href="{% url 'journal_csv' %}">Journal Data</a>
+              <a href="{% url 'journals:csv-issues' %}">Journal Issues</a>
           </li>
           <li>
-              <a href="{% url 'item_csv' %}">Item Data</a>
+              <a href="{% url 'journals:csv-items' %}">Journal Items</a>
           </li>
 
       </ul>
   </p>
+
+  <h3>Network Graphs</h3>
+  <p>
+    <ul>
+      <li>Schools categorized by Donald Allen:
+        <a href="{% url 'network:schools-export' 'donald-allen' 'graphml' %}">GraphML</a> |
+        <a href="{% url 'network:schools-export' 'donald-allen' 'gml' %}">GML</a>
+        </li>
+      <li>Journal contributor network:
+        <a href="{% url 'journals:contributor-network-export' 'graphml' %}">GraphML</a> |
+        <a href="{% url 'journals:contributor-network-export' 'gml' %}">GML</a>
+      </li>
+      <li>All journal data in network form:
+        <a href="{% url 'network:data' 'graphml' %}">GraphML</a> |
+        <a href="{% url 'network:data' 'gml' %}">GML</a>
+      </li>
+    </ul>
+  </p>
+
+<h3>Preferred Citation</h3>
+
+<p>TODO</p>
+
+<h3>Data Summary</h3>
+
+<h4>Format</h4>
+
+<p>Data is currently available as CSV files generated from the database,
+and as network graph files.  (More detail here - fields, which are multiple,
+which are optional, etc?  How the separate csv files can be related?)  TODO: also describe
+the various network graphs and how they are generated.</p>
+
+<h4>Data Quality</h4>
+
+<p>data quality statement here?  manually entered rather than OCR;
+reference fields that are incomplete or inconsistently filled out across
+the dataset.</p>
+
+<h3>Acknowledgements</h3>
+
+<p>Data description prepared by ... </p>
+
+<p>TODO: repeat data-specific information from site credits page.  data collection and relevant software development for setting up the database and generating the exports?</p>
 
 {% endblock %}

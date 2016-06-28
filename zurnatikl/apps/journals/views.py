@@ -7,7 +7,7 @@ from django.views.generic import View, ListView, DetailView, TemplateView
 
 
 from zurnatikl.apps.network.base_views import NetworkGraphExportView, \
-    SigmajsJSONView
+    SigmajsJSONView, CsvView
 from .models import Journal, Issue, Item
 from .forms import SearchForm
 
@@ -37,6 +37,7 @@ class IssueDetail(DetailView):
                                 pk=self.kwargs['id'])
         except Issue.DoesNotExist:
             raise Http404
+
 
 class SearchView(View):
     'Search items by title or creator name'
@@ -100,3 +101,40 @@ class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseVie
     contributors (authors, editors, and translators) as GEXF or GraphML.'''
 
     filename = 'journals-contributors'
+
+
+class JournalIssuesCSV(CsvView):
+    '''Export journal issue data as CSV'''
+    filename = 'journal_issues'
+    header_row = ['Journal', 'Volume', 'Issue', 'Publication Date',
+                  'Editors', 'Contributing Editors', 'Publication Address',
+                  'Print Address', 'Mailing Addresses']
+
+    def get_context_data(self, **kwargs):
+        for issue in Issue.objects.all():
+            yield [
+                issue.journal.title, issue.volume, issue.issue,
+                issue.publication_date,
+                u', '.join(unicode(ed) for ed in issue.editors.all()),
+                u', '.join(unicode(ed) for ed in issue.contributing_editors.all()),
+                issue.publication_address, issue.print_address,
+                u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all())
+            ]
+
+
+class JournalItemsCSV(CsvView):
+    '''Export journal issue item data as CSV'''
+    filename = 'journal_items'
+    header_row = ['Journal', 'Volume', 'Issue', 'Title', 'No Creator Listed',
+                  'Genre', 'Creator Names', 'Persons Mentioned']
+
+    def get_context_data(self, **kwargs):
+        for item in Item.objects.all():
+            yield [
+                item.issue.journal.title, item.issue.volume, item.issue.issue,
+                item.title,
+                item.no_creator,
+                u', '.join(g.name for g in item.genre.all()),
+                u', '.join(unicode(p) for p in item.creators.all()),
+                u', '.join(unicode(p) for p in item.persons_mentioned.all()),
+            ]

@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 from .models import Person
 from zurnatikl.apps.journals.models import Journal
 from zurnatikl.apps.network.base_views import SigmajsJSONView, \
-   NetworkGraphExportView
+   NetworkGraphExportView, CsvView
 from zurnatikl.apps.network.utils import egograph
 
 
@@ -88,3 +88,14 @@ class EgographExport(NetworkGraphExportView, EgographBaseView):
         return super(EgographExport, self).get_context_data(**kwargs)
 
 
+class PeopleCSV(CsvView):
+    '''Export person data as CSV'''
+    filename = 'people'
+    header_row = ['Last Name', 'First Name', 'Associated Schools']
+
+    def get_context_data(self, **kwargs):
+        # todo: filter on journal contributors only?
+        # additional fields?
+        for person in Person.objects.all():
+            yield [person.last_name, person.first_name,
+                   ', '.join(sch.name for sch in person.schools.all())]
