@@ -1,13 +1,17 @@
+import codecs
+from cStringIO import StringIO
 from datetime import datetime
 from django.conf import settings
 from django.core.cache import cache
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.views.generic import TemplateView, View
 import logging
+import itertools
 import os
 import re
 import tempfile
 import time
+import unicodecsv
 
 from .utils import annotate_graph, node_link_data, to_ascii, encode_unicode
 from zurnatikl import __version__
@@ -221,3 +225,54 @@ class NetworkGraphExportView(NetworkGraphExportMixin, View):
             self.export_format = kwargs['fmt']
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+class EchoBuffer(object):
+    """An object that implements just the write method of the file-like
+    interface.  Used for streaming CSV output, taken from
+    https://docs.djangoproject.com/en/1.9/howto/outputting-csv/#streaming-large-csv-files
+    """
+
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+class CsvResponseMixin(object):
+    '''A mixin that can be used to render CSV output.  Override filename
+    to customize default download name.  If header_row is defined, it will
+    be output first.  To take advantage of streaming downloads,
+    get_context_data should return a generator of rows to be output
+    as CSV.  Uses unicodecsv for output and sets content as UTF-8.'''
+    filename = 'data'
+    header_row = []
+
+    def render_to_csv_response(self, context, **response_kwargs):
+        '''Returns a CSV response, with context output as CSV data.'''
+        response = StreamingHttpResponse(
+            self.get_data(context),
+            # content_type="text/csv; charset=utf-8",
+            content_type="text/plain; charset=utf-8",
+            **response_kwargs
+        )
+
+        # response['Content-Disposition'] = 'attachment; filename="%s.csv"' % \
+            # self.filename
+        return response
+
+    def get_data(self, context):
+        '''Returns a generator of CSV data rows.'''
+        writer = unicodecsv.writer(EchoBuffer())
+        # add byte-order mark so programs like Excel know to open as UTF-8
+        header = [codecs.BOM_UTF8]
+        if self.header_row:
+            header.append(writer.writerow(self.header_row))
+        return itertools.chain(
+            header,
+            (writer.writerow(row) for row in context)
+        )
+
+
+class CsvView(CsvResponseMixin, TemplateView):
+    def render_to_response(self, context, **response_kwargs):
+        return self.render_to_csv_response(context, **response_kwargs)

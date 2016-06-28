@@ -14,4 +14,4 @@ lxml
 django-widget-tweaks
 django-stdimage
 
-django-queryset-csv
+unicodecsv
