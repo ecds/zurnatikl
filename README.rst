@@ -1,15 +1,15 @@
 .. _README:
 
-.. image:: https://travis-ci.org/emory-libraries-ecds/zurnatikl.svg?branch=feature%2Figraph
+.. image:: https://travis-ci.org/emory-libraries-ecds/zurnatikl.svg?branch=develop
    :target: https://travis-ci.org/emory-libraries-ecds/zurnatikl
    :alt: travis-ci build
 
-.. image:: https://coveralls.io/repos/github/emory-libraries-ecds/zurnatikl/badge.svg?branch=master
-   :target: https://coveralls.io/github/emory-libraries-ecds/zurnatikl?branch=master
+.. image:: https://coveralls.io/repos/github/emory-libraries-ecds/zurnatikl/badge.svg?branch=develop
+   :target: https://coveralls.io/github/emory-libraries-ecds/zurnatikl?branch=develop
    :alt: Code Coverage
 
-.. image:: https://requires.io/github/emory-libraries-ecds/zurnatikl/requirements.svg?branch=feature%2Figraph
-   :target: https://requires.io/github/emory-libraries-ecds/zurnatikl/requirements/?branch=feature%2Figraph
+.. image:: https://requires.io/github/emory-libraries-ecds/zurnatikl/requirements.svg?branch=develop
+   :target: https://requires.io/github/emory-libraries-ecds/zurnatikl/requirements/?branch=develop
    :alt: Requirements Status
 
 .. image:: https://codeclimate.com/github/emory-libraries-ecds/zurnatikl/badges/gpa.svg
