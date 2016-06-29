@@ -148,6 +148,20 @@ class PersonManager(models.Manager):
     def get_by_natural_key(self, first_name, last_name):
         return self.get(first_name=first_name, last_name=last_name)
 
+    def journal_contributors(self):
+        '''Return a queryset of
+        :class:`~zurnatikl.apps.people.models.Person` objects who have
+        edited at least one :class:`~zurnatikl.apps.journals.models.Issue',
+        authored one :class:`~zurnatikl.apps.journals.models.Item`,
+        or translated one :class:`~zurnatikl.apps.journals.models.Item`.
+        '''
+        return super(PersonManager, self).get_queryset().filter(
+            models.Q(issues_edited__isnull=False) |
+            models.Q(items_created__isnull=False) |
+            models.Q(items_translated__isnull=False)
+        ).distinct()
+
+
 class Person(models.Model):
     'A person associated with a school of poetry, journal issue, item, etc.'
 
