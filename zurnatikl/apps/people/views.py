@@ -45,6 +45,21 @@ class PersonDetail(DetailView):
     model = Person
     # NOTE: could override get_object to 404 for non-editor/non-authors
 
+    def get_queryset(self):
+        '''Extend default queryset to add prefetching, so that details for
+        items authored and issues edited can be displayed more efficiently.
+        '''
+        qs = super(PersonDetail, self).get_queryset()
+        return qs.prefetch_related(
+            'items_created', 'items_created__issue',
+            'items_created__issue__editors',
+            'items_created__issue__journal', 'items_created__creatorname_set',
+            'items_created__creatorname_set__person',
+            'items_created__translators',
+            'issues_edited', 'issues_edited__journal',
+            'issues_edited__editors'
+        )
+
 
 class Egograph(DetailView):
     '''Display an egograph for a single
