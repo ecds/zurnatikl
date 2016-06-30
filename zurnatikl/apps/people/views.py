@@ -89,7 +89,8 @@ class PeopleCSV(CsvView):
     filename = 'people'
     header_row = ['Last Name', 'First Name', 'Race',
                   'Racial self-description', 'Gender',
-                  'Associated Schools', 'URI', 'Dwellings', 'Notes']
+                  'Associated Schools', 'URI', 'Dwellings', 'Notes',
+                  'Site URL']
 
     def get_context_data(self, **kwargs):
         for person in Person.objects.journal_contributors():
@@ -100,5 +101,6 @@ class PeopleCSV(CsvView):
                    ', '.join(sch.name for sch in person.schools.all()),
                    person.uri,
                    u'; '.join(unicode(loc) for loc in person.dwellings.all()),
-                   person.notes.replace('\n', ' ').replace('\r', ' ')
+                   person.notes.replace('\n', ' ').replace('\r', ' '),
+                   self.request.build_absolute_uri(person.get_absolute_url())
                 ]

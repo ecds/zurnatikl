@@ -109,7 +109,7 @@ class JournalIssuesCSV(CsvView):
     header_row = ['Journal', 'Volume', 'Issue', 'Publication Date',
                   'Editors', 'Contributing Editors', 'Publication Address',
                   'Print Address', 'Mailing Addresses', 'Physical Description',
-                  'Numbered Pages', 'Price', 'Sort Order']
+                  'Numbered Pages', 'Price', 'Sort Order', 'Notes', 'Site URL']
 
     def get_context_data(self, **kwargs):
         for issue in Issue.objects.all():
@@ -121,9 +121,9 @@ class JournalIssuesCSV(CsvView):
                 issue.publication_address, issue.print_address,
                 u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all()),
                 issue.physical_description, issue.numbered_pages,
-                issue.price,
+                issue.price, issue.sort_order,
                 issue.notes.replace('\n', ' ').replace('\r', ' '),
-                issue.sort_order
+                self.request.build_absolute_uri(issue.get_absolute_url())
             ]
 
 
@@ -135,7 +135,7 @@ class JournalItemsCSV(CsvView):
                   'Genre', 'Creators', 'Translators',
                   'Persons Mentioned', 'Addresses',
                   'Abbreviated Text', 'Literary Advertisement',
-                  'Notes']
+                  'Notes', 'Site URL']
 
     def get_context_data(self, **kwargs):
         for item in Item.objects.all():
@@ -149,7 +149,8 @@ class JournalItemsCSV(CsvView):
                 u', '.join(unicode(p) for p in item.persons_mentioned.all()),
                 u', '.join(unicode(loc) for loc in item.addresses.all()),
                 item.abbreviated_text, item.literary_advertisement,
-                item.notes.replace('\n', ' ').replace('\r', ' ')
+                item.notes.replace('\n', ' ').replace('\r', ' '),
+                self.request.build_absolute_uri(item.get_absolute_url())
             ]
 
     # FIXME: need to remove line breaks from notes field ?
