@@ -105,10 +105,11 @@ class ContributorNetworkExport(NetworkGraphExportView, ContributorNetworkBaseVie
 
 class JournalIssuesCSV(CsvView):
     '''Export journal issue data as CSV'''
-    filename = 'journal_issues'
+    filename = 'journal-issues'
     header_row = ['Journal', 'Volume', 'Issue', 'Publication Date',
                   'Editors', 'Contributing Editors', 'Publication Address',
-                  'Print Address', 'Mailing Addresses']
+                  'Print Address', 'Mailing Addresses', 'Physical Description',
+                  'Numbered Pages', 'Price', 'Sort Order']
 
     def get_context_data(self, **kwargs):
         for issue in Issue.objects.all():
@@ -118,23 +119,37 @@ class JournalIssuesCSV(CsvView):
                 u', '.join(unicode(ed) for ed in issue.editors.all()),
                 u', '.join(unicode(ed) for ed in issue.contributing_editors.all()),
                 issue.publication_address, issue.print_address,
-                u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all())
+                u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all()),
+                issue.physical_description, issue.numbered_pages,
+                issue.price,
+                issue.notes.replace('\n', ' ').replace('\r', ' '),
+                issue.sort_order
             ]
 
 
 class JournalItemsCSV(CsvView):
     '''Export journal issue item data as CSV'''
-    filename = 'journal_items'
-    header_row = ['Journal', 'Volume', 'Issue', 'Title', 'No Creator Listed',
-                  'Genre', 'Creator Names', 'Persons Mentioned']
+    filename = 'journal-items'
+    header_row = ['Journal', 'Volume', 'Issue', 'Title', 'Anonymous',
+                  'No Creator Listed', 'Start Page', 'End Page',
+                  'Genre', 'Creators', 'Translators',
+                  'Persons Mentioned', 'Addresses',
+                  'Abbreviated Text', 'Literary Advertisement',
+                  'Notes']
 
     def get_context_data(self, **kwargs):
         for item in Item.objects.all():
             yield [
                 item.issue.journal.title, item.issue.volume, item.issue.issue,
-                item.title,
-                item.no_creator,
+                item.title, item.anonymous, item.no_creator,
+                item.start_page, item.end_page,
                 u', '.join(g.name for g in item.genre.all()),
                 u', '.join(unicode(p) for p in item.creators.all()),
+                u', '.join(unicode(p) for p in item.translators.all()),
                 u', '.join(unicode(p) for p in item.persons_mentioned.all()),
+                u', '.join(unicode(loc) for loc in item.addresses.all()),
+                item.abbreviated_text, item.literary_advertisement,
+                item.notes.replace('\n', ' ').replace('\r', ' ')
             ]
+
+    # FIXME: need to remove line breaks from notes field ?
