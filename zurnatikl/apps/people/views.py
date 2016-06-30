@@ -98,13 +98,13 @@ class PeopleCSV(CsvView):
         for person in people:
             yield [
                 person.last_name, person.first_name,
-               ', '.join(person.race or []),
-               person.racial_self_description,
-               person.gender,
-               ', '.join(sch.name for sch in person.schools.all()),
-               person.uri,
-               u'; '.join(unicode(loc) for loc in person.dwellings.all()),
-               # remove line breaks from notes to avoid generating broken CSV
-               person.notes.replace('\n', ' ').replace('\r', ' '),
-               self.request.build_absolute_uri(person.get_absolute_url())
+                ', '.join(person.race or []),
+                person.racial_self_description,
+                person.gender,
+                ', '.join(sch.name for sch in person.schools.all()),
+                person.uri,
+                u'; '.join(unicode(loc) for loc in person.dwellings.all()),
+                # remove line breaks from notes to avoid generating broken CSV
+                person.notes.replace('\n', ' ').replace('\r', ' '),
+                self.request.build_absolute_uri(person.get_absolute_url())
             ]

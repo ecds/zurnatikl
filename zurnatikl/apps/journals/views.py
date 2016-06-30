@@ -120,8 +120,8 @@ class JournalIssuesCSV(CsvView):
             yield [
                 issue.journal.title, issue.volume, issue.issue,
                 issue.publication_date,
-                u', '.join(unicode(ed) for ed in issue.editors.all()),
-                u', '.join(unicode(ed) for ed in issue.contributing_editors.all()),
+                u'; '.join(unicode(ed) for ed in issue.editors.all()),
+                u'; '.join(unicode(ed) for ed in issue.contributing_editors.all()),
                 issue.publication_address, issue.print_address,
                 u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all()),
                 issue.physical_description, issue.numbered_pages,
@@ -143,6 +143,7 @@ class JournalItemsCSV(CsvView):
 
     def get_context_data(self, **kwargs):
         items = Item.objects.all() \
+                    .select_related('issue', 'issue__journal') \
                     .prefetch_related('genre', 'creators', 'translators',
                                       'persons_mentioned', 'addresses')
         for item in items:
