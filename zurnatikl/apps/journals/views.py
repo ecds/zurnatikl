@@ -112,7 +112,11 @@ class JournalIssuesCSV(CsvView):
                   'Numbered Pages', 'Price', 'Sort Order', 'Notes', 'Site URL']
 
     def get_context_data(self, **kwargs):
-        for issue in Issue.objects.all():
+        issues = Issue.objects.all() \
+                      .prefetch_related('editors', 'contributing_editors',
+                                        'publication_address', 'print_address',
+                                        'mailing_addresses')
+        for issue in issues:
             yield [
                 issue.journal.title, issue.volume, issue.issue,
                 issue.publication_date,
@@ -135,10 +139,13 @@ class JournalItemsCSV(CsvView):
                   'Genre', 'Creators', 'Translators',
                   'Persons Mentioned', 'Addresses',
                   'Abbreviated Text', 'Literary Advertisement',
-                  'Notes', 'Site URL']
+                  'Notes']
 
     def get_context_data(self, **kwargs):
-        for item in Item.objects.all():
+        items = Item.objects.all() \
+                    .prefetch_related('genre', 'creators', 'translators',
+                                      'persons_mentioned', 'addresses')
+        for item in items:
             yield [
                 item.issue.journal.title, item.issue.volume, item.issue.issue,
                 item.title, item.anonymous, item.no_creator,
@@ -149,8 +156,6 @@ class JournalItemsCSV(CsvView):
                 u', '.join(unicode(p) for p in item.persons_mentioned.all()),
                 u', '.join(unicode(loc) for loc in item.addresses.all()),
                 item.abbreviated_text, item.literary_advertisement,
-                item.notes.replace('\n', ' ').replace('\r', ' '),
-                self.request.build_absolute_uri(item.get_absolute_url())
+                # remove line breaks from notes to avoid generating broken CSV
+                item.notes.replace('\n', ' ').replace('\r', ' ')
             ]
-
-    # FIXME: need to remove line breaks from notes field ?

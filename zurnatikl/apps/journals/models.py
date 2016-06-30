@@ -613,6 +613,7 @@ class Item(models.Model):
         return edges
 
 
+
 class CreatorNameManager(models.Manager):
     def get_by_natural_key(self, name_used):
         return self.get(name_used=name_used)
