@@ -62,10 +62,10 @@
     <li>{{ item.end_page }}</li>
     <li>{{ item.title }}{% if item.creators.count or item.translators.count %},{% endif %}
       {% if item.creators.count %}
-      {% for creator in item.creators.all %}
- <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
-  {% endfor %}
-     {% endif %}
+      {% for cn in item.creatorname_set.all %}
+        <a href="{{ cn.person.get_absolute_url }}">{{ cn.person.firstname_lastname }}</a>{% if cn.name_used %} (as {{ cn.name_used }}){% endif %}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+      {% endif %}
       {% if item.translators.count %}
        trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
       {% endif %}
