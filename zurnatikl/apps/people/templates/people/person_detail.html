@@ -56,6 +56,25 @@
                     <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
                     {% endfor %}
                     {% endif %}
+                    {# display person's name used for this piece if set #}
+                    {% for cn in item.creatorname_set.all %}
+                        {% if cn.person == person and cn.name_used %}
+                        <i>(as {{ cn.name_used }})</i>
+                        {% endif %}
+                    {% endfor %}
+                    {# display co-authors if any #}
+                    {% if item.creatorname_set.count > 1 %}
+                        <p>With
+                        {% for cn in item.creatorname_set.all %}
+                            {% if cn.person != person %}
+                                <a href="{{ cn.person.get_absolute_url }}">
+                                    {{ cn.person.firstname_lastname }}
+                                </a>{% if cn.name %} (as {{ cn.name }}){% endif %}{% if not forloop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        </p>
+                    {% endif %}
+
                     </li>
                     {% endfor %}
                 </ul>
