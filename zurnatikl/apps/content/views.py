@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-
 from .models import Image
+from zurnatikl.apps.people.models import Person
+from zurnatikl.apps.journals.models import Journal, Item, Issue, Genre
+
+
 
 class SiteIndex(TemplateView):
     # TODO: move template under content app

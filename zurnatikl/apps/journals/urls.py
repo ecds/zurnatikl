@@ -13,5 +13,8 @@ urlpatterns = [
     # greedier matching url patterns must come last
     url(r'^(?P<slug>[\w-]+)/$', views.JournalDetail.as_view(), name='journal'),
     url(r'^(?P<journal_slug>[\w-]+)/(?P<id>\d+)/$', views.IssueDetail.as_view(), name='issue'),
+    url(r'^data/issues.csv$', views.JournalIssuesCSV.as_view(),
+        name='csv-issues'),
+    url(r'^data/items.csv$', views.JournalItemsCSV.as_view(), name='csv-items')
 
 ]

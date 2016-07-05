@@ -4,11 +4,11 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
-from zurnatikl.apps.journals.models import Journal, Issue, Item, \
-    PlaceName
-from zurnatikl.apps.journals.templatetags.journal_extras import \
-    readable_list, all_except
 from zurnatikl.apps.people.models import School, Person
+
+from .models import Journal, Issue, Item, PlaceName
+from .templatetags.journal_extras import readable_list, all_except
+from .views import JournalIssuesCSV, JournalItemsCSV
 
 
 class JournalTestCase(TestCase):
@@ -467,6 +467,77 @@ class JournalViewsTestCase(TestCase):
                 kwargs={'journal_slug': item.issue.journal.slug,
                         'id': item.issue.id}),
             msg_prefix='search results should link to issue the item belongs to')
+
+    def test_issue_csv_export(self):
+        response = self.client.get(reverse('journals:csv-issues'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(JournalIssuesCSV.header_row) in response_content)
+
+        for issue in Issue.objects.all():
+            self.assert_(issue.journal.title in response_content)
+            self.assert_(issue.volume in response_content)
+            self.assert_(issue.issue in response_content)
+            self.assert_(unicode(issue.publication_date) in response_content)
+            self.assert_(u'; '.join(unicode(ed) for ed in issue.editors.all())
+                         in response_content)
+            self.assert_(u'; '.join(unicode(ed) for ed in issue.contributing_editors.all())
+                         in response_content)
+            self.assert_(unicode(issue.publication_address) in response_content)
+            if issue.print_address is not None:
+                self.assert_(unicode(issue.print_address) in response_content)
+            self.assert_(u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all())
+                         in response_content)
+            self.assert_(issue.physical_description in response_content)
+            self.assert_(unicode(issue.numbered_pages) in response_content)
+            if issue.price is not None:
+                self.assert_(unicode(issue.price) in response_content)
+            if issue.sort_order is not None:
+                self.assert_(unicode(issue.sort_order) in response_content)
+            self.assert_(issue.notes.replace('\n', ' ').replace('\r', ' ')
+                         in response_content)
+            self.assert_(issue.get_absolute_url() in response_content)
+
+    def test_item_csv_export(self):
+        response = self.client.get(reverse('journals:csv-items'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(JournalItemsCSV.header_row) in response_content)
+
+        for item in Item.objects.all():
+            self.assert_(item.issue.journal.title in response_content)
+            self.assert_(item.issue.volume in response_content)
+            self.assert_(item.issue.issue in response_content)
+            self.assert_(item.title in response_content)
+            self.assert_(unicode(item.anonymous) in response_content)
+            self.assert_(unicode(item.no_creator) in response_content)
+            self.assert_(unicode(item.start_page) in response_content)
+            self.assert_(unicode(item.end_page) in response_content)
+            self.assert_(u', '.join(g.name for g in item.genre.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(cn.person) for cn in item.creatorname_set.all())
+                         in response_content)
+            self.assert_(u', '.join(cn.name_used for cn in item.creatorname_set.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(p) for p in item.translators.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(p) for p in item.persons_mentioned.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(loc) for loc in item.addresses.all())
+                         in response_content)
+            self.assert_(unicode(item.abbreviated_text) in response_content)
+            self.assert_(unicode(item.literary_advertisement)
+                         in response_content)
+            self.assert_(item.notes.replace('\n', ' ').replace('\r', ' ')
+                         in response_content)
 
 
 ## test custom template tags

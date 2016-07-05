@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal
-from zurnatikl.apps.people.models import Person, School
+from .models import Person, School
+from .views import PeopleCSV
 
 
 class SchoolTestCase(TestCase):
@@ -148,6 +150,27 @@ class PeopleTestCase(TestCase):
         self.assert_(sf.network_id in edge_targets)
         self.assert_(fifthschool.network_id in edge_targets)
 
+    def test_journal_contributor(self):
+        contributors = Person.objects.journal_contributors()
+
+        editors = Person.objects.filter(issues_edited__isnull=False)
+        for ed in editors:
+            self.assert_(ed in contributors,
+                'editors should be included in journal contributors')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(auth in contributors,
+                'authors should be included in journal contributors')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(mensch not in contributors,
+                'mentioned non-author/editor people should not contributors')
+
 
 class PeopleViewsTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -253,7 +276,6 @@ class PeopleViewsTestCase(TestCase):
         self.assert_('edges' in response.content)
         self.assert_('nodes' in response.content)
 
-
     def test_egograph_export(self):
         berrigan = Person.objects.get(last_name='Berrigan')
         # basic testing that the export formats are correct
@@ -275,4 +297,52 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response, 'Creator "igraph version')
         self.assertContains(response, berrigan.network_id)
         self.assertContains(response, berrigan.firstname_lastname)
+
+    def test_csv_export(self):
+        response = self.client.get(reverse('people:csv'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(PeopleCSV.header_row) in response_content)
+
+        def person_fields(p):
+            return ','.join([
+                ', '.join(p.race or []), p.racial_self_description, p.gender,
+                ', '.join(sch.name for sch in p.schools.all()),
+                p.uri,
+                '; '.join([unicode(loc) for loc in p.dwellings.all()])
+                # p.notes.replace('\n', ' ').replace('\r', ' ')
+            ])
+
+        editors = Person.objects.filter(
+            Q(issues_edited__isnull=False) |
+            Q(issues_contrib_edited__isnull=False))
+        for ed in editors:
+            self.assert_(
+                u'%s,%s' % (ed.last_name, ed.first_name) in response_content,
+                'editors should be included in person CSV export')
+
+            self.assert_(person_fields(ed) in response_content)
+            self.assert_(ed.get_absolute_url() in response_content)
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(
+                u"%s,%s" % (auth.last_name, auth.first_name) in response_content,
+                'authors should be included in person CSV export')
+            self.assert_(person_fields(auth) in response_content)
+            self.assert_(auth.get_absolute_url() in response_content)
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(issues_contrib_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(
+                u'%s,%s' % (mensch.last_name, mensch.first_name) not in response_content,
+                'mentioned people should not be included in CSV export')
 

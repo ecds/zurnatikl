@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 from .models import Person
 from zurnatikl.apps.journals.models import Journal
 from zurnatikl.apps.network.base_views import SigmajsJSONView, \
-   NetworkGraphExportView
+   NetworkGraphExportView, CsvView
 from zurnatikl.apps.network.utils import egograph
 
 
@@ -22,11 +22,7 @@ class PeopleList(ListView):
     '''
     model = Person
 
-    queryset = Person.objects.filter(
-            Q(issues_edited__isnull=False) |
-            Q(items_created__isnull=False) |
-            Q(items_translated__isnull=False)
-        ).distinct()
+    queryset = Person.objects.journal_contributors()
 
     def get_context_data(self, **kwargs):
         context = super(PeopleList, self).get_context_data(**kwargs)
@@ -88,3 +84,27 @@ class EgographExport(NetworkGraphExportView, EgographBaseView):
         return super(EgographExport, self).get_context_data(**kwargs)
 
 
+class PeopleCSV(CsvView):
+    '''Export journal contributor person data as CSV'''
+    filename = 'people'
+    header_row = ['Last Name', 'First Name', 'Race',
+                  'Racial self-description', 'Gender',
+                  'Associated Schools', 'URI', 'Dwellings', 'Notes',
+                  'Site URL']
+
+    def get_context_data(self, **kwargs):
+        people = Person.objects.journal_contributors() \
+                       .prefetch_related('schools', 'dwellings')
+        for person in people:
+            yield [
+                person.last_name, person.first_name,
+                ', '.join(person.race or []),
+                person.racial_self_description,
+                person.gender,
+                ', '.join(sch.name for sch in person.schools.all()),
+                person.uri,
+                u'; '.join(unicode(loc) for loc in person.dwellings.all()),
+                # remove line breaks from notes to avoid generating broken CSV
+                person.notes.replace('\n', ' ').replace('\r', ' '),
+                self.request.build_absolute_uri(person.get_absolute_url())
+            ]
