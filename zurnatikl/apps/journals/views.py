@@ -136,7 +136,7 @@ class JournalItemsCSV(CsvView):
     filename = 'journal-items'
     header_row = ['Journal', 'Volume', 'Issue', 'Title', 'Anonymous',
                   'No Creator Listed', 'Start Page', 'End Page',
-                  'Genre', 'Creators', 'Translators',
+                  'Genre', 'Creators', 'Creators - Name Used', 'Translators',
                   'Persons Mentioned', 'Addresses',
                   'Abbreviated Text', 'Literary Advertisement',
                   'Notes']
@@ -152,7 +152,13 @@ class JournalItemsCSV(CsvView):
                 item.title, item.anonymous, item.no_creator,
                 item.start_page, item.end_page,
                 u', '.join(g.name for g in item.genre.all()),
-                u', '.join(unicode(p) for p in item.creators.all()),
+                # NOTE: using creatorname_set instead of item.creators
+                # for both creator name and name used to ensure that
+                # order of people and names matches
+                u', '.join(unicode(cn.person)
+                           for cn in item.creatorname_set.all()),
+                u', '.join(cn.name_used
+                           for cn in item.creatorname_set.all()),
                 u', '.join(unicode(p) for p in item.translators.all()),
                 u', '.join(unicode(p) for p in item.persons_mentioned.all()),
                 u', '.join(unicode(loc) for loc in item.addresses.all()),
