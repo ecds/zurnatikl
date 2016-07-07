@@ -26,6 +26,19 @@ class IssueDetail(DetailView):
     'Display details for a single issue of a journal'
     model = Issue
 
+    def get_queryset(self):
+        '''Extend default queryset to add prefetching, so that item
+        authors and translators can be displayed more efficently
+        '''
+        qs = super(IssueDetail, self).get_queryset()
+        return qs.prefetch_related(
+            'item_set', 'item_set__creatorname_set',
+            'item_set__creatorname_set__person',
+            'item_set__translators',
+            'journal__issue_set',
+            'publication_address'
+        )
+
     def get_object(self, queryset=None):
         # override default get object to lookup issue by
         # journal slug + item id
