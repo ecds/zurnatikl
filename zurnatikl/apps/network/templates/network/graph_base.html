@@ -18,6 +18,7 @@
     <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.fullScreen.min.js' %}"></script>
+    <script src="{% static 'js/sigma/plugins/sigma.plugins.filter.min.js' %}"></script>
     <script src="{% static 'network/js/initgraph.js' %}"></script>
 {% endblock %}
 
@@ -43,6 +44,7 @@
 <div class="menu-wrap">
         <nav class="menu">
          {# allow extending template to add controls #}
+
         {% block graph-controls %}{% endblock %}
          <div id="graph-color-key">
            <h4>Colors</h4>
@@ -56,11 +58,10 @@
               <dl class="graph-colors" id="edge-colors"></dl>
           </dl>
         </div>
-        <hr/>
         </nav>
       </div>
       <button class="menu-button" id="open-button"><i class="fa fa-fw fa-cog"></i><span>Open Menu</span></button>
-
+      <!-- <button class="menu-button" id="open-filter-button"><i class="fa fa-fw fa-filter"></i><span>Open Filters</span></button> -->
       <button class="menu-button" id="graph-fullscreen" title="view fullscreen"><i class="fa fa-arrows-alt"></i> </button>
 </div>
 {% block postgraph-content %}{% endblock %}
@@ -68,7 +69,6 @@
 {% block graph-init %} {# extend to override config options #}
 <script>
 var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
-var filter = sigma.plugins.filter(s);
 
 </script>
 {% endblock %}

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+import codecs
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.http import StreamingHttpResponse
+from mock import patch
 
 from zurnatikl.apps.network.views import generate_network_graph
+from zurnatikl.apps.network.base_views import CsvResponseMixin
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal, Issue, Item
 from zurnatikl.apps.people.models import Person, School
@@ -127,3 +131,47 @@ class NetworkViewsTestCase(TestCase):
         self.assertContains(response, 'Creator "igraph version')
 
 
+class CsvResponseMixinTest(TestCase):
+
+    def test_get_data(self):
+        csvresponse = CsvResponseMixin()
+        testcsv = [
+            ['title', 'note', 'etc'],
+            ['title two', 'blah', 'foo']
+        ]
+
+        data = csvresponse.get_data(testcsv)
+        # data should be an iterator; generator type test fails
+        self.assert_(hasattr(data, 'next'),
+            'csv data should be returned as a generator for streaming')
+        data = ''.join(data)
+        self.assert_(data.startswith(codecs.BOM_UTF8),
+                    'data should start with UTF-8 byte order mark')
+        # basic testing of that data is converted to csv
+        for line in testcsv:
+            self.assert_(','.join(line) in data)
+
+        # with header row set
+        csvresponse.header_row = ['title', 'author', 'date']
+        data = ''.join(csvresponse.get_data(testcsv))
+        self.assert_(','.join(csvresponse.header_row) in data,
+            'csv output should include headings if set')
+
+    def test_render_to_csv_response(self):
+        csvresponse = CsvResponseMixin()
+        with patch.object(csvresponse, 'get_data') as mockget_data:
+            mockget_data.return_value = 'some test data'
+            response = csvresponse.render_to_csv_response('')
+            self.assert_(isinstance(response, StreamingHttpResponse))
+            self.assertEqual(''.join(response.streaming_content),
+                             mockget_data.return_value)
+            self.assertEqual(response['content-type'],
+                             'text/csv; charset=utf-8')
+            self.assertEqual(response['content-disposition'],
+                             'attachment; filename="data.csv"')
+
+            # custom filename
+            csvresponse.filename = 'my-data-file'
+            response = csvresponse.render_to_csv_response('')
+            self.assertEqual(response['content-disposition'],
+                 'attachment; filename="my-data-file.csv"')
