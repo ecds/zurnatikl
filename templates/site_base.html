@@ -7,15 +7,11 @@ by default; use page_rdf_type to override with a webpage subclass.
 <!DOCTYPE html>
 <html lang="en" xmlns:schema="http://schema.org/" xmlns:og="http://ogp.me/ns#">
   <head>
-    <title>{% block page-title %}Schooling Donald Allen{% block page-subtitle %}{% endblock %}{% endblock %}</title>
+    <title>{% block page-title %}Networking the New American Poetry{% block page-subtitle %}{% endblock %}{% endblock %}</title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
-    {% comment %}
-    <meta name="description" content="">
-    <meta name="author" content="">
-    {% endcomment %}
 
     <!-- Latest compiled and minified CSS will probably want to change it to local -->
     <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:400,300,700' rel='stylesheet' type='text/css'>
@@ -44,8 +40,8 @@ by default; use page_rdf_type to override with a webpage subclass.
 
     <!-- Bootstrap -->
     {# <link href="{% static 'eultheme/css/selectize.css' %}" rel="stylesheet"/> #}
-    {# FIXME: eultheme navbar styles conflict with resonance navbar styling #}
-    {# <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/> #}
+    {# TODO: make sure eultheme styles don't conflict with new design #}
+    <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/>
     {# local styles (pre-resonance, graphs) #}
     <link href="{% static 'css/local.css' %}" rel="stylesheet"/>
 
@@ -68,8 +64,10 @@ by default; use page_rdf_type to override with a webpage subclass.
 
     {# downtime banner from eultheme; TODO: move logic into snippet so it can just be included #}
     {% block mx_banner %}
+      {# TODO: downpage template probably should be customized to match site design #}
+      {# TODO: downtime warning banner styles need to be adjusted #}
       {% if banner %}
-      {% include 'mx/banner.html' %}
+        {% include 'mx/banner.html' %}
       {% endif %}
     {% endblock %}
 
@@ -217,10 +215,10 @@ by default; use page_rdf_type to override with a webpage subclass.
       {% else %}
       <script src="https://code.jquery.com/jquery.min.js"></script>
       {% endif %}
-      {# TODO: check version #}
+      {# TODO: check version
       <script src="https://code.jquery.com/jquery-3.1.0.min.js"
         integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>#}
       <!-- Latest compiled and minified JavaScript will probably want to change to local-->
       {# // <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> #}
       <!-- Menu Toggle Script -->

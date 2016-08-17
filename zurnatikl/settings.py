@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     #### local dependencies
     'ajax_select',
     'eultheme',
@@ -63,6 +64,7 @@ TEMPLATES = [
                     ##################################################
                     "django.template.context_processors.request",
                     "eultheme.context_processors.template_settings",
+                    "eultheme.context_processors.downtime_context",
                     ### local context processors
                     "zurnatikl.version_context",
                     "zurnatikl.apps.journals.context_processors.search",
@@ -82,6 +84,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'eultheme.middleware.DownpageMiddleware',
 )
 
 ROOT_URLCONF = 'zurnatikl.urls'
@@ -147,7 +150,8 @@ except ImportError:
 # enable django-debug-toolbar if installed
 try:
     import debug_toolbar
-    INSTALLED_APPS.append('debug_toolbar')
+    # FIXME: not working at the moment, ignoring for now
+    # INSTALLED_APPS.append('debug_toolbar')
 except ImportError:
     pass
 
