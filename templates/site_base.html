@@ -9,58 +9,48 @@ by default; use page_rdf_type to override with a webpage subclass.
   <head>
     <title>{% block page-title %}Schooling Donald Allen{% block page-subtitle %}{% endblock %}{% endblock %}</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {# design includes this, do we care? #}
-    {#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> #}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+    {% comment %}
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {% endcomment %}
+
+    <!-- Latest compiled and minified CSS will probably want to change it to local -->
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    {# todo: check version #}
+    <link href="{% static 'eultheme/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <!-- Font Awesome -->
+    <link href="{% static 'eultheme/css/font-awesome.min.css' %}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link href="{% static 'css/site.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- old -->
+
     {% block metadata %}{% endblock %}
 
-    {% block favicon %}
+    {% block favicon %} {# old design; updated favicon still todo #}
     <link rel='shortcut icon' type='image/x-icon' href="{% static 'images/favicon.ico' %}" />
     {% endblock %}
 
     <!-- Bootstrap -->
-    <link href="{% static 'eultheme/css/bootstrap.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'eultheme/css/font-awesome.min.css' %}" rel="stylesheet"/>
     {# <link href="{% static 'eultheme/css/selectize.css' %}" rel="stylesheet"/> #}
     {# FIXME: eultheme navbar styles conflict with resonance navbar styling #}
-    <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/>
-    {# resonance styles #}
-    <link href="{% static 'css/menu.css' %}" rel="stylesheet" type="text/css"/>
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {# <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/> #}
     {# local styles (pre-resonance, graphs) #}
     <link href="{% static 'css/local.css' %}" rel="stylesheet"/>
 
     {% block css %}{% endblock %} {# add per-page css here #}
 
-    {% comment %}
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-    {% endcomment %}
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    {% if EULTHEME_NO_EXTERNAL_JS %}  {# use local copy when requested #}
-    <script src="{% static 'eultheme/js/jquery.min.js' %}"></script>
-    {% else %}
-    <script src="https://code.jquery.com/jquery.min.js"></script>
-    {% endif %}
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{% static 'eultheme/js/bootstrap.min.js' %}"></script>
-    {#<script src="{% static 'eultheme/js/selectize.js' %}"></script> #}
-    <script src="{% static 'eultheme/js/eultheme.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/local.js' %}"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
-    <script>
-    $(document).ready(function(){
-        $('.search-form input').tooltip();
-    });
-    </script>
-
-    {% block javascript %}{% endblock %} {# add any additional javascript here #}
     {% block head_extras %}{% endblock %}  {# any header metadata, etc #}
   </head>
   <body class="{% block body_class %}{% endblock %}"{% block body_attrs %}{% endblock %}>
@@ -83,11 +73,29 @@ by default; use page_rdf_type to override with a webpage subclass.
       {% endif %}
     {% endblock %}
 
+    <div id="wrapper">
+      {% include 'snippets/nav-sidebar.html' %}
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <a href="#menu-toggle" id="menu-toggle"><span class="fa fa-bars"></span></a>
+            <div class="container-fluid fill">
+            {% block content %}{% endblock %}
+            </div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+
+{% comment %}   old design
+
     {# header #}
     <div class="container">
       <div class="main-content">
         <!-- HEADER -->
       <div class="header">
+{% endcomment %}
   {# suppress header for now; takes up too much network graph space, and design is being revisited #}
       {% comment %}
         <div class="logo">
@@ -109,6 +117,8 @@ by default; use page_rdf_type to override with a webpage subclass.
           </picture>
         </div>
               {% endcomment %}
+
+{% comment %}   more old design
       </div>
       <!-- END HEADER -->
     <div class="bootstrap_container">
@@ -148,6 +158,7 @@ by default; use page_rdf_type to override with a webpage subclass.
         </nav>
       <!-- END MENU -->
   </div>
+  {% endcomment %}
   {# FIXME: sr-only nav in eultheme, none in resonance design? #}
   {# TODO: admin link in eultheme, where to add in resonance design ? #}
   {% comment %}
@@ -155,6 +166,8 @@ by default; use page_rdf_type to override with a webpage subclass.
       <li><a href="{% block admin-url %}{% url 'admin:index' %}{% endblock %}">Admin</a></li>
     {% endif %}
   {% endcomment %}
+
+
 
   {# FIXME: do we have/expect any messages in front-end of this site? #}
   {% block message %}
@@ -167,6 +180,7 @@ by default; use page_rdf_type to override with a webpage subclass.
     {% endif %}
   {% endblock %}
 
+{% comment %}   more old design
   <div class="main-secondary main "> {# needed for all pages except site index (?) #}
    <div class="container">
     <div class="col-centered">
@@ -176,7 +190,10 @@ by default; use page_rdf_type to override with a webpage subclass.
   {% block content_full %}{% endblock %}
   </div>
 
-  {# resonance design doesn't include a footer; sticking with existing eultheme footer #}
+{% endcomment %}
+
+{% comment %}
+  {# new design doesn't include a footer; can we adapt eultheme footer ? #}
     <div class="container footer">
       <hr/>
       <div class="col-xs-12 col-sm-10">
@@ -190,5 +207,44 @@ by default; use page_rdf_type to override with a webpage subclass.
       </div>
     </div>
     </div>
-  </body>
+
+{% endcomment %}
+
+      <!-- jQuery -->
+      <!-- jQuery  -->
+      {% if EULTHEME_NO_EXTERNAL_JS %}  {# use local copy when requested #}
+      <script src="{% static 'eultheme/js/jquery.min.js' %}"></script>
+      {% else %}
+      <script src="https://code.jquery.com/jquery.min.js"></script>
+      {% endif %}
+      {# TODO: check version #}
+      <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+        crossorigin="anonymous"></script>
+      <!-- Latest compiled and minified JavaScript will probably want to change to local-->
+      {# // <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> #}
+      <!-- Menu Toggle Script -->
+      <script>
+      $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      });
+      </script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'eultheme/js/bootstrap.min.js' %}"></script>
+    {#<script src="{% static 'eultheme/js/selectize.js' %}"></script> #}
+    <script src="{% static 'eultheme/js/eultheme.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/local.js' %}"></script>
+    {% comment %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $('.search-form input').tooltip();
+    });
+    </script>
+    {% endcomment %}
+    {% block javascript %}{% endblock %} {# add any additional javascript here #}
+
+    </body>
 </html>
