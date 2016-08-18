@@ -33,6 +33,7 @@ by default; use page_rdf_type to override with a webpage subclass.
     {% endblock %}
 
     <!-- Bootstrap -->
+    {# TODO: what is selectize used for? do we need it? #}
     {# <link href="{% static 'eultheme/css/selectize.css' %}" rel="stylesheet"/> #}
     {# TODO: make sure eultheme styles don't conflict with new design #}
     <link href="{% static 'eultheme/css/eultheme.css' %}" rel="stylesheet"/>
@@ -79,88 +80,7 @@ by default; use page_rdf_type to override with a webpage subclass.
     </div>
     <!-- /#wrapper -->
 
-
-{% comment %}   old design
-
-    {# header #}
-    <div class="container">
-      <div class="main-content">
-        <!-- HEADER -->
-      <div class="header">
-{% endcomment %}
-  {# suppress header for now; takes up too much network graph space, and design is being revisited #}
-      {% comment %}
-        <div class="logo">
-          <a href="{% url 'site-index' %}">
-            <picture>
-            {# FIXME: this picture tag use is useless, right? #}
-                <source srcset="{% static 'images/SDAlogo.png' %}" class="img-responsive">
-                <img srcset="{% static 'images/SDAlogo.png' %}" alt="" class="img-responsive">
-            </picture>
-          </a>
-        </div>
-        <div class="banner-image">
-        {# randomized banner image set via context processor #}
-          <picture>
-              <source srcset="{{ banner_image.image.banner_sm.url }}" media="(max-width: 320px)" class="img-responsive">
-              <source srcset="{{ banner_image.image.banner.url }}" class="img-responsive">
-              <img srcset="{{ banner_image.image.banner.url }}" alt="{{ banner_image.alt_text|default:'' }}"
-                title="{{ banner_image.title }}" class="img-responsive">
-          </picture>
-        </div>
-              {% endcomment %}
-
-{% comment %}   more old design
-      </div>
-      <!-- END HEADER -->
-    <div class="bootstrap_container">
-
-    <!-- MENU -->
-      <nav class="navbar navbar-default w3_megamenu" role="navigation">
-                <div class="navbar-header">
-                <button type="button" data-toggle="collapse" data-target="#defaultmenu" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="index.html" class="navbar-brand"></a>
-        </div>
-            <div id="defaultmenu" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-             <li class="dropdown w3_megamenu-fw"><a href="{% url 'site-index' %}" class="dropdown-toggle">Home</a></li>
-             <li class="dropdown w3_megamenu-fw"><a href="{% url 'about' %}" class="dropdown-toggle">About</a></li>
-             <li class="dropdown w3_megamenu-fw"><a href="{% url 'journals:list' %}" class="dropdown-toggle">Journals</a></li>
-             <li class="dropdown w3_megamenu-fw"><a href="{% url 'people:list' %}" class="dropdown-toggle">People</a></li>
-            <li class="dropdown w3_megamenu-fw"><a href="{% url 'network:index' %}" class="dropdown-toggle">Networks</a></li>
-            <li class="dropdown w3_megamenu-fw"><a href="{% url 'about' %}#DigitalDanowski" class="dropdown-toggle">Digital Danowski</a></li>
-            <li class="dropdown w3_megamenu-fw"><a href="{% url 'download' %}" class="dropdown-toggle">Download</a></li>
-
-            {% if user.is_staff %} {# admin link for logged-in staff #}
-               <li><a href="{% url 'admin:index' %}" title="Admin"><i class="fa fa-cog"></i></a></li>
-            {% endif %}
-
-            <li class="dropdown w3_megamenu-fw">
-            {% if search_form %}
-            <form class="form-search navbar-search pull-right" role="form" method="GET" action="{% url 'journals:search' %}">
-                <label class="sr-only" for="{{ search_form.keyword.name }}">{{ search_form.keyword.label }}</label>
-                {% render_field search_form.keyword class+="searchform" placeholder='Search' data-toggle="tooltip" data-placement="bottom" data-animation="true" autocomplete="off" data-original-title=search_form.keyword.help_text %}
-                  <button type="submit" class="btn btn-search">
-                    <span><i class="fa fa-search"></i></span>
-                 </button>
-            </form>
-           {% endif %} {# search form #}
-           </li>
-          </ul>
-        </div>
-        </nav>
-      <!-- END MENU -->
-  </div>
-  {% endcomment %}
-  {# FIXME: sr-only nav in eultheme, none in resonance design? #}
-  {# TODO: admin link in eultheme, where to add in resonance design ? #}
-  {% comment %}
-    {% if user.is_staff %}
-      <li><a href="{% block admin-url %}{% url 'admin:index' %}{% endblock %}">Admin</a></li>
-    {% endif %}
-  {% endcomment %}
-
-
-
+  {# FIXME: sr-only nav in eultheme, check in new design #}
   {# FIXME: do we have/expect any messages in front-end of this site? #}
   {% block message %}
     {% if messages %} {# default display of django messages, when present #}
@@ -171,18 +91,6 @@ by default; use page_rdf_type to override with a webpage subclass.
     </div>
     {% endif %}
   {% endblock %}
-
-{% comment %}   more old design
-  <div class="main-secondary main "> {# needed for all pages except site index (?) #}
-   <div class="container">
-    <div class="col-centered">
-    {% block content %}{% endblock %}
-    </div>
-    </div>
-  {% block content_full %}{% endblock %}
-  </div>
-
-{% endcomment %}
 
 {% comment %}
   {# new design doesn't include a footer; can we adapt eultheme footer ? #}
