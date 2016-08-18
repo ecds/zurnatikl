@@ -1,49 +1,61 @@
 {% extends 'site_base.html' %}
 {# list authors and editors #}
 
-{% block page-subtitle %} | People {% endblock %}
+{% block page-subtitle %} | Journal Contributors {% endblock %}
 
 {% block content %}
-<div class="container" id="lovely-things-list">
-<div class="col-md-12">
-<div class="col-md-2">
-<h2>People</h2></div>
-<div class="col-md-10"><ul class="filter" id="filtering">
- 			<li class="btn btn-default active" role="button" id="filter-none">All</li>
-            <li class="btn btn-default" role="button" id="filter-author">Authors</li>
-            <li class="btn btn-default" role="button" id="filter-editor">Editors</li>
-            <li class="btn btn-default" role="button" id="filter-translator">Translators</li>
- </ul></div>
-<div class="col-md-12">
-	<p>
-	Track {{ object_list.count }} people as authors, editors, and translators.
 
-</p>
+{# TODO: use page_base ? #}
+<section class="row">
+    <div class="col-sm-12">  {# why col-sm-12 vs col-lg-12 in content pages? #}
+        <div class="content">
+            <h1>Journal Contributors</h1>
+            <p class="lead">Track {{ object_list.count }} people as authors, editors, and translators.</p>
 
-</div>
+            <div id="authors">
+                <div class="col-sm-8 filter-list">
+            {# FIXME: eultheme filter class is interfering with styles here #}
+                    <a class="filter" data="all">All</a>
+                    <a class="filter" data="author">Author</a>
+                    <a class="filter" data="editor">Editor</a>
+                    <a class="filter" data="translate">Translator</a>
+                </div>
+                <div class="input-group col-md-4">
+                    <input type="text" class="search" placeholder="Search People" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info" type="button">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
 
-</div>
-<div class="col-md-12">
-<div class="columns" >
-<ul class="list" style="list-style-type: none;">
-{% for person in object_list %}
+                </div>
 
-    <li>
+                <div class="columns">
+                    <ul class="list col-sm-12">
+                    {% for person in object_list %}
+                    <li>
+                        <a class="tile" href="{% url 'people:person' person.slug %}">
+                            <div class="count">
+                                {% if person.num_created %}
+                                    <div class="author">{{ person.num_created }}</div>
+                                {% endif %}
+                                {% if person.num_edited %}
+                                    <div class="editor">{{ person.num_edited }}</div>
+                                {% endif %}
+                                {% if person.num_translated %}
+                                    <div class="translate">{{ person.num_translated }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="title">{{ person }}</div>
+                        </a>
+                    </li>
+                    {% endfor %}
 
-    <span class="categoryeditor" style="display: none;">{% if person.id in editors_ids %}editor{% endif %}</span>
-    <span class="categoryauthor" style="display: none;">{% if person.id in authors_ids %}author{% endif %}</span>
-    <span class="categorytranslator" style="display: none;">{% if person.id in translators_ids %}translator{% endif %}</span>
-    <p>
-    	 <a href="{% url 'people:person' person.slug %}">{{ person }}</a>
-    </p>
+            </div>
 
+        </div>
+    </div>
+</section>
 
-    </li>
-
-{% endfor %}
-</ul>
-</div>
-</div>
-</div>
 {% endblock %}
 
