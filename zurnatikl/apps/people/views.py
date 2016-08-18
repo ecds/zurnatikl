@@ -1,5 +1,5 @@
 import logging
-from django.db.models import Q
+from django.db.models import Count
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 
@@ -19,20 +19,13 @@ class PeopleList(ListView):
     at least one :class:`~zurnatikl.apps.journals.models.Issue',
     authored one :class:`~zurnatikl.apps.journals.models.Item`,
     or translated one :class:`~zurnatikl.apps.journals.models.Item`.
+    Queryset is annotated with counts for the number of items created,
+    items translated, and issues edited so that the totals can
+    be displayed.
     '''
     model = Person
 
-    queryset = Person.objects.journal_contributors()
-
-    def get_context_data(self, **kwargs):
-        context = super(PeopleList, self).get_context_data(**kwargs)
-        authors = Person.objects.filter(Q(items_created__isnull=False)).distinct()
-        context['authors_ids'] = [author.id for author in authors]
-        editors = Person.objects.filter(Q(issues_edited__isnull=False) | Q(issues_contrib_edited__isnull=False)).distinct()
-        context['editors_ids'] = [editor.id for editor in editors]
-        translators = Person.objects.filter(Q(items_translated__isnull=False)).distinct()
-        context['translators_ids'] = [translator.id for translator in translators]
-        return context
+    queryset = Person.objects.journal_contributors_with_counts()
 
 
 class PersonDetail(DetailView):

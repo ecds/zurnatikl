@@ -171,6 +171,38 @@ class PeopleTestCase(TestCase):
             self.assert_(mensch not in contributors,
                 'mentioned non-author/editor people should not contributors')
 
+    def test_journal_contributors_with_counts(self):
+        contributors = Person.objects.journal_contributors_with_counts()
+
+        # same tests as above, did we include and exclude the right
+        # people?
+        editors = Person.objects.filter(issues_edited__isnull=False)
+        for ed in editors:
+            self.assert_(ed in contributors,
+                'editors should be included in journal contributors')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(auth in contributors,
+                'authors should be included in journal contributors')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(mensch not in contributors,
+                'mentioned non-author/editor people should not contributors')
+
+        # test counts
+        for contrib in contributors:
+            self.assertEqual(contrib.num_created,
+                             contrib.items_created.all().count())
+            self.assertEqual(contrib.num_edited,
+                             contrib.issues_edited.all().count())
+            self.assertEqual(contrib.num_translated,
+                             contrib.items_translated.all().count())
+
 
 class PeopleViewsTestCase(TestCase):
     fixtures = ['test_network.json']

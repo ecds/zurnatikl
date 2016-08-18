@@ -161,6 +161,25 @@ class PersonManager(models.Manager):
             models.Q(items_translated__isnull=False)
         ).distinct()
 
+    def journal_contributors_with_counts(self):
+        '''Return a queryset of
+        :class:`~zurnatikl.apps.people.models.Person` objects who have
+        edited at least one :class:`~zurnatikl.apps.journals.models.Issue',
+        authored one :class:`~zurnatikl.apps.journals.models.Item`,
+        or translated one :class:`~zurnatikl.apps.journals.models.Item`, with
+        total counts of the number of items created, items translated,
+        or issues edited as `num_created`, `num_translated`, and `num_edited`.
+        '''
+        return super(PersonManager, self).get_queryset() \
+            .annotate(num_created=models.Count('items_created', distinct=True),
+                      num_translated=models.Count('items_translated', distinct=True),
+                      num_edited=models.Count('issues_edited', distinct=True)) \
+            .filter(models.Q(num_created__gt=0) |
+                    models.Q(num_edited__gt=0) |
+                    models.Q(num_translated__gt=0)) \
+            .distinct()
+
+
 
 class Person(models.Model):
     'A person associated with a school of poetry, journal issue, item, etc.'
