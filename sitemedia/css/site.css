@@ -167,7 +167,7 @@ section {
           margin-top: -50%; }
   section.intro {
     background-attachment: fixed;
-    background-image: url("images/network-graph-01.svg");
+    background-image: url("images/network-graph.svg");
     background-position: top right;
     background-repeat: no-repeat;
     background-size: cover; }
