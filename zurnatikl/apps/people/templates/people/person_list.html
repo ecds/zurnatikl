@@ -1,5 +1,6 @@
 {% extends 'site_base.html' %}
-{# list authors and editors #}
+{# list journal contributors (authors, editors, translators) #}
+{% load static %}
 
 {% block page-subtitle %} | Journal Contributors {% endblock %}
 
@@ -56,5 +57,10 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block javascript %}
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js"></script>
+    <script src="{% static 'js/people.js' %}"></script>
 {% endblock %}
 
