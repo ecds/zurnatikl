@@ -1,0 +1,16 @@
+{% extends 'site_base.html' %}
+
+{% comment %}
+Template for content pages like about, credits, etc.
+{% endcomment %}
+
+{% block content %}
+    <section class="row">
+        <div class="col-lg-12">
+            <div class="content">
+                <h1>{% block content-title %}{% endblock %}</h1>
+                {% block page-content %}{% endblock %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
