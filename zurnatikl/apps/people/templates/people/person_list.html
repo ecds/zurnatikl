@@ -30,26 +30,25 @@
 
                 </div>
 
-                <div class="columns">
-                    <ul class="list col-sm-12">
-                    {% for person in object_list %}
-                    <li>
-                        <a class="tile" href="{% url 'people:person' person.slug %}">
-                            <div class="count">
-                                {% if person.num_created %}
-                                    <div class="author">{{ person.num_created }}</div>
-                                {% endif %}
-                                {% if person.num_edited %}
-                                    <div class="editor">{{ person.num_edited }}</div>
-                                {% endif %}
-                                {% if person.num_translated %}
-                                    <div class="translate">{{ person.num_translated }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="title">{{ person }}</div>
-                        </a>
-                    </li>
-                    {% endfor %}
+                <ul class="list col-sm-12">
+                {% for person in object_list %}
+                <li class="col-lg-3 col-md-4 col-sm-6">
+                    <a class="tile" href="{% url 'people:person' person.slug %}">
+                        <div class="count">
+                            {% if person.num_created %}
+                                <div class="author">{{ person.num_created }}</div>
+                            {% endif %}
+                            {% if person.num_edited %}
+                                <div class="editor">{{ person.num_edited }}</div>
+                            {% endif %}
+                            {% if person.num_translated %}
+                                <div class="translate">{{ person.num_translated }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="title">{{ person }}</div>
+                    </a>
+                </li>
+                {% endfor %}
 
             </div>
 
