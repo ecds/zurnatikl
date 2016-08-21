@@ -77,6 +77,17 @@
     #authors ul .count .author {
       background-color: #de03a7; }
 
+.breadcrumb {
+  padding-left: 4em;
+  padding-top: 1em;
+  background-color: transparent; }
+  .breadcrumb li + li:before {
+    content: ">"; }
+  .breadcrumb li a {
+    color: #CBD0D8; }
+    .breadcrumb li a.active {
+      color: #5d6a74; }
+
 html, body {
   height: 100%; }
 
