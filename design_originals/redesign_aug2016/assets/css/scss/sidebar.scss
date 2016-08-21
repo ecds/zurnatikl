@@ -103,7 +103,7 @@ body {
             display: block;
             text-decoration: none;
             color: $white;
-            &:hover {
+            &:hover, &.current {
                 text-decoration: none;
                 color: lighten($blue, 40%);
             }
