@@ -15,6 +15,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
                 +-- sidebar.scss            #Sidebar Navigation SCSS
                 +-- site.scss               #Sitewide and Basic Compilation  
                 +-- variables.scss          #Sitewide Variables, Imported in each SCSS  
+                +-- breadcrumbs.scss        #Breadcrumbs Design
         +-- js
             +-- ie                          #Necessary files to make IE responsive
                 +-- html5shiv.js
