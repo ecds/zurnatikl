@@ -102,10 +102,17 @@
   list-style: none;
   padding-left: 0;
   font-size: 1em;
-  margin-top: 1em; }
+  margin-top: 1em;
+  text-transform: uppercase; }
   #authors ul .title {
     font-size: 1em;
     padding-top: 1em; }
+  #authors ul .alternate {
+    font-size: .75em;
+    text-align: center;
+    color: #748490; }
+    #authors ul .alternate:before {
+      content: 'ed: '; }
   #authors ul .count {
     position: absolute;
     top: -.75em;

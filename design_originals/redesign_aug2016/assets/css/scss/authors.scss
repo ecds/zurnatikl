@@ -153,10 +153,18 @@
 		padding-left: 0;
 		font-size: 1em;
 		margin-top: 1em;
-
+		text-transform: uppercase;
 		.title {
 			font-size: 1em;
 			padding-top: 1em;
+		}
+		.alternate {
+			font-size: .75em;
+			text-align: center;
+			color: lighten($blue, 10%);
+			&:before {
+				content: 'ed: ';
+			}
 		}
 		.count {
 		    	position: absolute;

@@ -104,6 +104,7 @@
                                                     <div class="editor">1</div>
                                                 </div>
                                                 <div class="title">Cid Corman</div>
+                                                <div class="alternate">Alternate, Alias</div>
                                             </a>
                                         </li>
                                         <li class="col-lg-3 col-md-4 col-sm-6">
@@ -149,7 +150,6 @@
             $(".filter").removeClass("active");
             $(this).toggleClass("active");
             var thisData = $(this).attr("data");
-            console.log(thisData)
             if (thisData !== "all") {
                 $(".list li").hide();
                 $("."+thisData).closest("li").show();
@@ -160,12 +160,12 @@
         })
         $( document ).ready(function() {
             var options = {
-            valueNames: [ 'title']
+            valueNames: [ 'title', 'alternate']
             };
             var authorList = new List('authors', options);
         });
-        
-        
+    
+
         </script>
     </body>
 </html>
