@@ -76,6 +76,15 @@ section {
 
 				}
 			}
+			&.btn-secondary {
+				background-color: $gray;
+				color: $blue;
+				border: solid 1px $blue;
+				&:hover {
+					background-color: $blue;
+					color: $white;
+				}
+			}
 		}
 		h1 {
 			text-transform: uppercase;

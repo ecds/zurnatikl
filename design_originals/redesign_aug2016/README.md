@@ -11,7 +11,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
             +-- images
                 +-- network-graph.svg       #SVG used as background image for first section on homepage
             +-- scss  
-                +-- authors.scss            #Author's Filter Page SCSS  
+                +-- authors.scss            #Author's Filter and Individual Page SCSS  
                 +-- sidebar.scss            #Sidebar Navigation SCSS
                 +-- site.scss               #Sitewide and Basic Compilation  
                 +-- variables.scss          #Sitewide Variables, Imported in each SCSS  
@@ -31,6 +31,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
     authors.html                            #Authors filtered page
     index.html                              #Homepage
     journals.html                           #Journals Listing Page
+    cid-corman.html                         #Example of person detail page
 
 ##Dependencies
     Boostrap  
@@ -40,5 +41,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
     FontAwesome  
         v. 4.6.3  
     JQuery  
-        v 3.1.0  
+        v 3.1.0 
+    List.js
+        v 1.2.0     
     
