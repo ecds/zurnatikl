@@ -84,7 +84,8 @@ body {
     .sidebar-nav .input-group input {
       border: #465058;
       background: #748490;
-      color: #FFFFFF; }
+      color: #FFFFFF;
+      width: 80%; }
     .sidebar-nav .input-group .btn {
       background: #748490;
       color: #FFFFFF;
