@@ -30,6 +30,11 @@ section {
 			font-size: 18px;
 			line-height: 1.75em;
 		}
+		figure {
+			img.img-responsive {
+				width: 100%;
+			}
+		}
 		figcaption {
 			padding-top: .5em;
 			text-align: right;

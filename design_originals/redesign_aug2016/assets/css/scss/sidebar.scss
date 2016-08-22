@@ -42,6 +42,33 @@ body {
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    .footer {
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        color: lighten($blue, 40%);
+        width: 100%;
+        nav {
+            ul {
+                padding-left: 0;
+                list-style: none;
+                li {
+                    display: inline-block;
+                    &:last-child {
+                        &:after {
+                            content: "";
+                        }
+                    }
+                    &:after {
+                        content: "  |  ";
+                    }
+                }
+            }
+        }
+        a {
+            color: lighten($blue, 50%);;
+        }
+    }
 }
 #page-content-wrapper {
     width: 100%;

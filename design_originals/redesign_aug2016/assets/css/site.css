@@ -165,6 +165,8 @@ section {
     section .content p, section .content ul {
       font-size: 18px;
       line-height: 1.75em; }
+    section .content figure img.img-responsive {
+      width: 100%; }
     section .content figcaption {
       padding-top: .5em;
       text-align: right; }
