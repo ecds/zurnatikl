@@ -99,6 +99,20 @@ body {
     list-style: none;
     text-transform: uppercase;
     font-weight: 300;
+    ::-webkit-input-placeholder { /* Chrome */
+        color: $white;
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+      color: $white;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+      color: $white;
+      opacity: .9;
+    }
+    :-moz-placeholder { /* Firefox 4 - 18 */
+      color: $white;
+      opacity: .9;
+    }
     .input-group {
         margin-top: .5em;
         width: 90%;
@@ -187,4 +201,26 @@ body {
                 }
     }
 
+}
+
+
+@media(max-height:600px) { 
+    .sidebar-nav {
+        li {
+            padding: 1em;
+            line-height: 1em;
+        }
+    }
+}
+
+@media(max-height:500px) { 
+    .sidebar-nav {
+        li {
+            padding: 1em;
+            line-height: 1em;
+        }
+        > .sidebar-brand {
+            padding: .5em 1em;
+        }
+    }
 }
