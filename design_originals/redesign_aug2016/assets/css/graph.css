@@ -11,7 +11,7 @@
   .filter-container .btn.btn-default.settings-btn.active {
     background-color: #919bac;
     color: #cc3700;
-    border: #cc3700; }
+    border: solid 1px #CBD0D8; }
   .filter-container .settings-menu {
     display: none;
     position: absolute;
