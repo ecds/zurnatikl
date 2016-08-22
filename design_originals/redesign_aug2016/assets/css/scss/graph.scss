@@ -1,0 +1,57 @@
+
+#graph-container {
+	overflow: hidden; 
+	max-height: 100%;
+	position: relative;
+	text-align: center;
+}
+.filter-container {
+	position: absolute;
+	right: 0;
+	top: 0;
+	.btn.btn-default.settings-btn {
+		&.active {
+			background-color: darken(#CBD0D8, 20%);
+			color: #cc3700;
+			border: #cc3700;
+		}
+	}
+	.settings-menu {
+		display: none;
+		position: absolute;
+			margin-top: 1em;
+		right: 0;
+		text-align: left;
+		min-width: 200px;
+		padding: 1em;
+		.menu {
+			> div {
+			border: solid 1px #CCC;
+			padding: 1em;
+			&#graph-color-key {
+				background-color: #F1F1F1;
+				margin-top: 1em;
+			}
+		}
+		}
+		.graph-colors {
+
+			dt {
+		    margin: 5px 5px 0 0;
+		    float: left;
+		    clear: left;
+		    width: 100px;
+		    display: inline-block;
+		    width: 1em;
+		    height: 1em;
+		}
+		dd {
+			text-transform: capitalize;
+			} 
+		}
+	}
+	> div {
+		display: inline-block;
+		margin-left: .5em;
+	}
+}

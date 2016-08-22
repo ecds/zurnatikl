@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Simple Sidebar - Start Bootstrap Template</title>
+        <!-- Latest compiled and minified CSS will probably want to change it to local -->
+        <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:400,300,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Font Awesome -->
+        <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="assets/css/site.css" rel="stylesheet">
+        <link href="assets/css/sidebar.css" rel="stylesheet">
+        <link href="assets/css/graph.css" rel="stylesheet">
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div id="wrapper">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav">
+                    <div class="input-group col-md-12">
+                        <input type="text" class="  search-query form-control" placeholder="Search" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger" type="button">
+                            <span class=" glyphicon glyphicon-search"></span>
+                            </button>
+                        </span>
+                    </div>
+                    <li class="sidebar-brand">
+                        <a href="#">
+                            Networking the <strong>New American Poetry</strong>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.html" class="current">Home</a>
+                    </li>
+                    <li>
+                        <a href="about.html">Learn About the Project</a>
+                    </li>
+                    <li>
+                        <a href="journals.html" >Browse the Journals</a></li>
+                        <li><a href="authors.html">Meet the Authors</a>
+                    </li>
+                    <li>
+                        <a href="graph.html">View the Connections</a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <!-- /#sidebar-wrapper -->
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <a href="#menu-toggle" id="menu-toggle"><span class="fa fa-bars"></span></a>
+                <ol class="breadcrumb">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="connections.html">Connections</a></li>
+                    <li><a href="#" class="active">Journal Contributors</a></li>
+                </ol>
+                <div class="container-fluid">
+                    
+                    <section class="row">
+                        <div class="col-sm-12">
+                            <div class="content">
+                                <h1>Journal Contributors</h1>
+                                
+                                <div id="sigma-container">
+                                    <div id="graph-container" style="overflow: hidden; max-height: 100%;">
+                                        <!-- Placeholder Only -->
+                                        <img src="images/graph-screenshot.png" style="width:80%"/>
+                                        <div class="filter-container">
+                                            <div class="dropdown">
+                                                <a class="btn btn-secondary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><span class="fa fa-download"></span><a>
+                                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1">
+                                                    <li role="presentation"><a role="menuitem" href="#">Download as GEXF</a></li>
+                                                    <li role="presentation"><a role="menuitem" href="#">Download as GraphML</a></li>
+                                                    
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-secondary" ><span class="fa fa-arrows-alt"></span></a>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-default settings-btn" onclick="toggler('graphMenu')"><span class="fa fa-cogs"></span><span class="caret"></span></a>
+                                                <div id="graphMenu" class='settings-menu'>
+                                                    <nav class="menu">
+                                                        <div>
+                                                            <h4>Color by:</h4>
+                                                            <div class="radio">
+                                                                <label>
+                                                                    <input type="radio" name="graph-colors" id="color-by-community" value="community" checked="checked">
+                                                                    detected communities
+                                                                </label>
+                                                            </div>
+                                                            <div class="radio">
+                                                                <label>
+                                                                    <input type="radio" name="graph-colors" id="color-by-type" value="type">
+                                                                    node/edge type
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div id="graph-color-key" >
+                                                            <h4>Color Guide</h4>
+                                                            <div id="type">
+                                                                <h5>Nodes</h5>
+                                                                <dl class="graph-colors" id="node-colors"><dt style="background-color:#bc1626"></dt><dd>Person</dd><dt style="background-color:#004052"></dt><dd>Journal</dd><dt style="background-color:#e5c951"></dt><dd>Place</dd><dt style="background-color:#996628"></dt><dd>School</dd></dl>
+                                                                
+                                                                <h5>Edges</h5>
+                                                                <dl class="graph-colors" id="edge-colors"><dt style="background-color:#577469"></dt><dd>edited</dd><dt style="background-color:#d84f05"></dt><dd>editor</dd><dt style="background-color:#11203d"></dt><dd>contributor</dd><dt style="background-color:#872675"></dt><dd>co-editor</dd><dt style="background-color:#de03a7"></dt><dd>co-author</dd><dt style="background-color:#0aa3aa"></dt><dd>translator</dd><dt style="background-color:#a2d23a"></dt><dd>translated</dd></dl>
+                                                            </div>
+                                                            <div id="community">
+                                                                <h5>Community</h5>
+                                                                * I feel like if we have a color guide for the type we should have one for community but not sure what the data represents or if colors are representative of anything  
+                                                            </div>
+                                                        </div>
+                                                    </nav>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                </div>
+                
+            </div>
+            <!-- /#page-content-wrapper -->
+        </div>
+        <!-- /#wrapper -->
+        <!-- jQuery -->
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+        <!-- Latest compiled and minified JavaScript will probably want to change to local-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- Menu Toggle Script -->
+        <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+        function toggler(divId) {
+            $("#" + divId).toggle();
+            $(".settings-btn").toggleClass('active')
+        }
+        $(document).ready(function(){
+            $("#graph-color-key").children('div').hide();
+            $("#graph-color-key #community").show();
+            $("input[name$='graph-colors']").click(function() {
+                $("#graph-color-key").show();
+                $("#graph-color-key").children('div').hide();
+                    if ($(this).val() == "type") {
+                        $("#graph-color-key #type").show();
+                    }
+                    else {
+                        $("#graph-color-key #community").show();
+                    }
+            });
+        });
+        
+        </script>
+    </body>
+</html>

@@ -8,6 +8,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
             +-- font-awesome.min.css        #FontAwesome 4.6.3
             +-- sidebar.css                 #Seperate CSS for Sidebar
             +-- site.css                    #CSS compiled from site.scss
+            +-- graph.css                   #Temporary css file to show design for graph wireframe
             +-- images
                 +-- network-graph.svg       #SVG used as background image for first section on homepage
             +-- scss  
@@ -16,6 +17,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
                 +-- site.scss               #Sitewide and Basic Compilation  
                 +-- variables.scss          #Sitewide Variables, Imported in each SCSS  
                 +-- breadcrumbs.scss        #Breadcrumbs Design
+                +-- graph.scss              #Temporary SCSS file for Graph Wireframe
         +-- js
             +-- ie                          #Necessary files to make IE responsive
                 +-- html5shiv.js
@@ -32,6 +34,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
     index.html                              #Homepage
     journals.html                           #Journals Listing Page
     cid-corman.html                         #Example of person detail page
+    graph.html                              #Graph wireframe
 
 ##Dependencies
     Boostrap  
