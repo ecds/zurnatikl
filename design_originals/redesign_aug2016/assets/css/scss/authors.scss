@@ -83,6 +83,7 @@
 				text-transform: uppercase;
 				margin: .25em .25em .25em 0;
 				display: inline-block;
+				width: auto;
 				border-radius: 25px;
 				&.active {
 					background-color: $white !important;
