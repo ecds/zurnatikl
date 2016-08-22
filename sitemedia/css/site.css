@@ -1,3 +1,51 @@
+.content dl {
+  padding-left: 1em; }
+  .content dl a {
+    color: inherit;
+    text-decoration: underline; }
+  .content dl dt {
+    padding-top: .5em; }
+  .content dl dd {
+    padding-left: 1em; }
+.content h2.count > span {
+  margin-left: .75em;
+  font-size: .5em;
+  padding-top: .25em; }
+.content h2.author:after {
+  border-bottom: solid 3px #de03a7; }
+.content h2.editor:after {
+  border-bottom: solid 3px #d84f05; }
+.content h2.translate:after {
+  border-bottom: solid 3px #0aa3aa; }
+.content .top-bar {
+  display: normal;
+  text-align: center; }
+  .content .top-bar h1 {
+    text-align: center; }
+  .content .top-bar .btn-connect {
+    display: inline-block;
+    padding: .75em; }
+    .content .top-bar .btn-connect:after {
+      font: normal normal normal 20px/1 FontAwesome;
+      content: '\f1e0';
+      padding-left: .5em; }
+.content .count {
+  position: relative; }
+  .content .count > div, .content .count > span {
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    margin: .05em;
+    display: inline-block;
+    color: #FFFFFF;
+    border-radius: 50%;
+    font-size: .75em; }
+  .content .count .translate {
+    background-color: #0aa3aa; }
+  .content .count .editor {
+    background-color: #d84f05; }
+  .content .count .author {
+    background-color: #de03a7; }
 .content .filter-list {
   text-align: center; }
   .content .filter-list .filter {
@@ -6,7 +54,6 @@
     text-transform: uppercase;
     margin: .25em .25em .25em 0;
     display: inline-block;
-    width: auto;
     border-radius: 25px; }
     .content .filter-list .filter.active {
       background-color: #FFFFFF !important; }
@@ -43,7 +90,8 @@
 
 #authors .input-group input {
   width: 100%;
-  height: 45px; }
+  height: 45px;
+  padding-left: 1em; }
 #authors .input-group .btn {
   height: 45px;
   padding: .75em;
@@ -54,29 +102,47 @@
   list-style: none;
   padding-left: 0;
   font-size: 1em;
-  margin-top: 1em; }
+  margin-top: 1em;
+  text-transform: uppercase; }
   #authors ul .title {
     font-size: 1em;
     padding-top: 1em; }
+  #authors ul .alternate {
+    font-size: .75em;
+    text-align: center;
+    color: #748490; }
+    #authors ul .alternate:before {
+      content: 'ed: '; }
   #authors ul .count {
     position: absolute;
     top: -.75em;
     right: -.75em; }
-    #authors ul .count > div {
-      height: 20px;
-      width: 20px;
-      text-align: center;
-      margin: .05em;
+
+@media (min-width: 768px) {
+  .content .top-bar {
+    display: flex;
+    align-items: center; }
+    .content .top-bar h1 {
+      margin: 0;
+      margin-right: 1em;
+      margin-top: .25em; }
+    .content .top-bar .btn-connect {
       display: inline-block;
-      color: #FFFFFF;
-      border-radius: 50%;
-      font-size: .75em; }
-    #authors ul .count .translate {
-      background-color: #0aa3aa; }
-    #authors ul .count .editor {
-      background-color: #d84f05; }
-    #authors ul .count .author {
-      background-color: #de03a7; }
+      padding: .75em; }
+      .content .top-bar .btn-connect:after {
+        font: normal normal normal 20px/1 FontAwesome;
+        content: '\f1e0';
+        padding-left: .5em; } }
+.breadcrumb {
+  padding-left: 4em;
+  padding-top: 1em;
+  background-color: transparent; }
+  .breadcrumb li + li:before {
+    content: ">"; }
+  .breadcrumb li a {
+    color: #CBD0D8; }
+    .breadcrumb li a.active {
+      color: #5d6a74; }
 
 html, body {
   height: 100%; }
@@ -135,6 +201,13 @@ section {
         section .content .btn.btn-default:hover {
           background-color: #FFFFFF;
           color: #cc3700; }
+      section .content .btn.btn-secondary {
+        background-color: #CBD0D8;
+        color: #5d6a74;
+        border: solid 1px #5d6a74; }
+        section .content .btn.btn-secondary:hover {
+          background-color: #5d6a74;
+          color: #FFFFFF; }
     section .content h1 {
       text-transform: uppercase;
       font-size: 3em;
