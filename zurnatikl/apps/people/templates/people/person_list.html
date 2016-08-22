@@ -4,8 +4,14 @@
 
 {% block page-subtitle %} | Journal Contributors {% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'site-index' %}">Home</a></li>
+  <li><a href="{% url 'people:list' %}" class="active">Journal Contributors</a></li>
+</ol>
+{% endblock %}
 
+{% block content %}
 {# TODO: use page_base ? #}
 <section class="row">
     <div class="col-sm-12">  {# why col-sm-12 vs col-lg-12 in content pages? #}

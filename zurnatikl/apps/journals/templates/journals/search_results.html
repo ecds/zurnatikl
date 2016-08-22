@@ -3,15 +3,18 @@
 
 {% block page-subtitle %} | Journals | Search Results{% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
 <ol class="breadcrumb">
+  <li><a href="{% url 'site-index' %}">Home</a></li>
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Search</li>
 </ol>
+{% endblock %}
 
+{% block content %}
 <div class="container">
 
-<h2>Search Results</h2>
+<h1>Search Results</h1>
 
 {% if not form.is_valid %}
 <div class="text-warning">
