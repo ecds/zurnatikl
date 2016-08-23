@@ -15,16 +15,6 @@
             </form>
            {% endif %} {# search form #}
            </div>
-{% comment %}
-                <div class="input-group col-md-12">
-                                <input type="text" class="  search-query form-control" placeholder="Search" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="button">
-                                        <span class=" glyphicon glyphicon-search"></span>
-                                    </button>
-                                </span>
-                            </div>
-{% endcomment %}
                 <li class="sidebar-brand">
                     <a href="{% url 'site-index' %}">
                         Networking the <strong>New American Poetry</strong>
@@ -46,12 +36,24 @@
                     <li>
                         <a href="{% url 'download' %}">Download the Data</a>
                     </li>
-                    {% if user.is_staff %} {# admin link for logged-in staff #}
-                    <li>
-                      <a href="{% url 'admin:index' %}" title="Admin">Admin <i class="fa fa-cog"></i></a>
-                    </li>
-                    {% endif %}
                 </ul>
             </ul>
+
+            <div class="footer">
+                <p>A <a href="https://danowski.digitalscholarship.emory.edu/">Digital Danowski</a> Initiative</p>
+                <nav>
+                    <ul>
+                    <li><a href="{% url 'credits' %}">Credits</a></li>
+                    <li><a href="#">Legal</a></li>
+                    {% if user.is_staff %} {# admin link for logged-in staff #}
+                    <li>
+                      <a href="{% url 'admin:index' %}" title="Admin">Admin{# <i class="fa fa-cog"></i>#}</a>
+                    </li>
+                    {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+
         </div>
         <!-- /#sidebar-wrapper -->
