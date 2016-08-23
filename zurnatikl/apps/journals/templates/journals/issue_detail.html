@@ -4,18 +4,22 @@
 
 {% block page-subtitle %} | Journals | {{ issue.journal.title }} | {{ issue.label }}{% endblock %}
 
-{% block content %}
+{% block breadcrumbs %}
 <ol class="breadcrumb">
+  <li><a href="{% url 'site-index' %}">Home</a></li>
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></li>
   <li class="active">{{ issue.label }}</li>
 </ol>
+{% endblock %}
 
-<h2><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h2>
+
+{% block content %}
+<h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
 
 <div class="j-issues">
 
-<h3>{{ issue.label }} ({{ issue.date }})</h3>
+<h2>{{ issue.label }} ({{ issue.date }})</h2>
 
 {# editors #}
 {% with editors=issue.editors.all %}

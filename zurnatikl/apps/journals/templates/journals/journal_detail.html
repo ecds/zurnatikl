@@ -3,17 +3,16 @@
 
 {% block page-subtitle %} | Journals | {{ journal.title }}{% endblock %}
 
-{% block content %}
-
-{# FIXME: design doesn't use bootstrap breadcrumbs? #}
-{# <div class="bread"><a href="/journals.html">Journals</a> / Beatitude</div> #}
-{# FIXME2: breadcrumb comes before main-secondary container? #}
+{% block breadcrumbs %}
 <ol class="breadcrumb">
+  <li><a href="{% url 'site-index' %}">Home</a></li>
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">{{ journal.title }}</li>
 </ol>
+{% endblock %}
 
-<h2>{{ journal.title }}</h2>
+{% block content %}
+<h1>{{ journal.title }}</h1>
 {# Not currently displayed, but publisher, URI and ISSN available for some journals #}
 <div class="col-md-6">
     <div class="j-issues">
