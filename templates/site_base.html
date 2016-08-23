@@ -72,7 +72,12 @@ by default; use page_rdf_type to override with a webpage subclass.
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <a href="#menu-toggle" id="menu-toggle"><span class="fa fa-bars"></span></a>
-            {% block breadcrumbs %}{% endblock %}
+            {% block breadcrumbs %}
+            <ol class="breadcrumb">
+              <li><a href="{% url 'site-index' %}">Home</a></li>
+              {% block breadcrumb-links %}{% endblock %}
+            </ol>
+            {% endblock %}
             <div class="container-fluid {% block content-class %}{% endblock %}">
             {% block content %}{% endblock %}
             </div>

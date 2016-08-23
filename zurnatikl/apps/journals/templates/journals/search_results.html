@@ -3,12 +3,9 @@
 
 {% block page-subtitle %} | Journals | Search Results{% endblock %}
 
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-  <li><a href="{% url 'site-index' %}">Home</a></li>
+{% block breadcrumb-links %}
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Search</li>
-</ol>
 {% endblock %}
 
 {% block content %}

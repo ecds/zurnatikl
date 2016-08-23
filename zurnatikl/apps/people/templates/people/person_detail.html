@@ -4,13 +4,9 @@
 
 {% block page-subtitle %} | People | {{ person.firstname_lastname }}{% endblock %}
 
-
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-  <li><a href="{% url 'site-index' %}">Home</a></li>
+{% block breadcrumb-links %}
   <li><a href="{% url 'people:list' %}">People</a></li>
   <li class="active">{{ person.firstname_lastname }}</li>
-</ol>
 {% endblock %}
 
 {% block content %}

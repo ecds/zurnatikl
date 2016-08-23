@@ -5,6 +5,10 @@
 
 {% block content-title %}Networks{% endblock %}
 
+{% block breadcrumb-links %}
+  <li class="active">Networks</li>
+{% endblock %}
+
 {% block page-content %}
 <p>The network graphs here aim to illustrate literary communities. One graph is generated from Donald Allen’s remarks about poetic schools in the introduction to <em>The New American Poetry</em>. Allen associates people, places, and journals with certain schools of poetry: the New York School, the Beats, Black Mountain, and so on. The other network graph visualizes connections among <a href="{% url 'people:list' %}">editors, authors, and translators</a> of <a href="{% url 'journals:list' %}">twelve poetry journals</a> of the era. <em>Schooling Donald Allen</em> seeks to compare the schools Allen describes with the communities detected in the journals’ data.</p>
 

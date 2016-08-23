@@ -4,11 +4,8 @@
 
 {% block page-subtitle %} | Journal Contributors {% endblock %}
 
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-  <li><a href="{% url 'site-index' %}">Home</a></li>
+{% block breadcrumb-links %}
   <li><a href="{% url 'people:list' %}" class="active">Journal Contributors</a></li>
-</ol>
 {% endblock %}
 
 {% block content %}
