@@ -20,9 +20,15 @@
     <script src="{% static 'js/sigma/plugins/sigma.plugins.fullScreen.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.filter.min.js' %}"></script>
     <script src="{% static 'network/js/initgraph.js' %}"></script>
+    {% block graph-init %} {# extend to override config options #}
+    <script>
+    var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
+
+    </script>
+    {% endblock %}
 {% endblock %}
 
-{% block content_full %}
+{% block content %}
 
 <div class="container"> {# FIXME: without this, graphs don't display; may need to drop main/secondary-main ? #}
 
@@ -66,11 +72,6 @@
 </div>
 {% block postgraph-content %}{% endblock %}
 
-{% block graph-init %} {# extend to override config options #}
-<script>
-var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
 
-</script>
-{% endblock %}
 </div>
 {% endblock %} {# content #}

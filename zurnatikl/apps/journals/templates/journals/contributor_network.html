@@ -4,13 +4,13 @@
 
 {% block page-subtitle %} | Journals | Contributor Network{% endblock %}
 
-{% block pregraph-content %}
-<ol class="breadcrumb">
+{% block breadcrumb-links %}
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Contributor Network</li>
-</ol>
+{% endblock %}
 
-<h2>Journal Contributors</h2>
+{% block pregraph-content %}
+<h1>Journal Contributors</h1>
 
 {% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
 {% url 'journals:contributor-network-export' 'gml' as gml_url %}
