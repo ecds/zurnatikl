@@ -51,10 +51,10 @@ Amiri Baraka, Leroi Jones
 
 {# group by journal then by issue for nested list of items by journal/issue #}
 {% regroup person.items_created.all by issue.journal as items_by_journal %}
-<ul>
 {% for item_group in items_by_journal %}
     {% with journal=item_group.grouper %}
     <h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+        <dl>
         {% regroup item_group.list by issue as items_by_issue %}
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
@@ -93,7 +93,6 @@ Amiri Baraka, Leroi Jones
     </dl> {# end journal group #}
     {% endwith %}
 {% endfor %}
-</ul>
 {% endif %}
 
 {% if person.issues_edited.all.exists %}

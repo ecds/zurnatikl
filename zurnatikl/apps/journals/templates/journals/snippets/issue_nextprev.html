@@ -1,4 +1,5 @@
 {# issue detail next/previous navigation #}
+{% if issue.previous_issue or issue.next_issue %}
 <nav>
   <ul class="pager">
     {% if issue.previous_issue %}
@@ -9,3 +10,4 @@
     {% endif %}
   </ul>
 </nav>
+{% endif %}
