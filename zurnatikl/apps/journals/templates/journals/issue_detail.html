@@ -13,11 +13,11 @@
 {% block content %}
 <h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
 
+{% include 'journals/snippets/issue_nextprev.html' %}
+
 <div class="j-issues">
 
 <h2>{{ issue.label }} ({{ issue.date }})</h2>
-
-{% include 'journals/snippets/issue_nextprev.html' %}
 
 {# editors #}
 {% with editors=issue.editors.all %}
