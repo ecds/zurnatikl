@@ -231,7 +231,9 @@ section {
         overflow: hidden; }
         section .content .tile figure img {
           width: 100%;
-          height: 100%; }
+          height: 100%;
+          object-fit: cover;
+          object-position: 50%; }
       section .content .tile .title {
         text-align: center;
         font-size: 1.25em;
