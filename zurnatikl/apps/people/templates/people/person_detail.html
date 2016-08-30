@@ -75,12 +75,11 @@ Amiri Baraka, Leroi Jones
                 {% endfor %}
                 {# display co-authors if any #}
                 {% if item.creatorname_set.count > 1 %}
-                    <p>With
+                    <p class="co-authors">With
                     {% for cn in item.creatorname_set.all %}
-                        {% if cn.person != person %}
-                            <a href="{{ cn.person.get_absolute_url }}">
-                                {{ cn.person.firstname_lastname }}
-                            </a>{% if cn.name %} (as {{ cn.name }}){% endif %}{% if not forloop.last %}, {% endif %}
+                        {% if cn.person != person %} {# don't display current person #}
+                            <span class="name"><a href="{{ cn.person.get_absolute_url }}">
+                                {{ cn.person.firstname_lastname }}</a>{% if cn.name %} (as {{ cn.name }}){% endif %}</span>
                         {% endif %}
                     {% endfor %}
                     </p>
