@@ -128,9 +128,10 @@ Amiri Baraka, Leroi Jones
                 {% for item in issue_items.list %}
                 <dd>{{ item }}{% if item.creators.all %}, by
                     {% for creator in item.creators.all %}
-                    <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}</dd>
+                    <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
                     {% endfor %}
                 {% endif %}
+                </dd>
                 {% endfor %}
             {% endwith %} {# end issue group #}
         {% endfor %}
