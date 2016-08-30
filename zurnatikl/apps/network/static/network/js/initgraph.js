@@ -142,6 +142,28 @@ adapted from http://tympanus.net/Development/OffCanvasMenuEffects/cornermorph.ht
 */
 $(document).ready(function() {
 
+    // on fullscreen change event, add or remove fullscreen class
+    // to enable custom styling fullscreen graph element
+    var screen_change_events = "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange";
+    $(document).on(screen_change_events, function () {
+        var fullscreen_el;
+        if (document.fullscreenEnabled) {
+          fullscreen_el = document.fullscreenElement;
+        } else if (document.mozFullScreenEnabled) {
+          fullscreen_el = document.mozFullScreenElement;
+        } else if (document.msFullscreenEnabled) {
+          fullscreen_el = document.msFullscreenElement;
+        } else if (document.webkitFullscreenEnabled) {
+            fullscreen_el = document.webkitFullscreenElement;
+        }
+
+        if (fullscreen_el != undefined) {
+            $(fullscreen_el).addClass('fullscreen');
+        } else {
+            $('.fullscreen').removeClass('fullscreen');
+        }
+    });
+
     var menu_openbtn = $('#open-button'),
         menu_isopen = false,
         filter_openbtn = $('#open-filter-button');

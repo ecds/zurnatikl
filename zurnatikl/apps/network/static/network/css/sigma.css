@@ -14,9 +14,16 @@
   text-align: center;
 }
 
-/* FIXME: may need to use js to set a class here... not working*/
-#graph-container:fullscreen, #graph-container:-webkit-full-screen, #graph-container:-moz-full-screen {
+/* NOTE: using js to set fullscreen class because vendor prefixes are not working */
+/*#graph-container.fullscreen, #graph-container:fullscreen,
+#graph-container:-webkit-full-screen, #graph-container:-moz-full-screen,
+#graph-container:-ms-fullscreen, { */
+#graph-container.fullscreen {
   position: relative;
+}
+
+#graph-container.fullscreen .filter-container {
+  padding-top: 15px;
 }
 
 #graph-status {
