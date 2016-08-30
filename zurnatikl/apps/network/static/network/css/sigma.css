@@ -47,12 +47,15 @@
   background: rgba(255, 255, 255, .5);
 }
 
+#graphMenu nav {
+  background-color: white;
+}
 
 .filter-container {
   position: absolute;
   right: 0;
   top: 0;
-  z-index: 5;
+  z-index: 50;
   }
   .filter-container .btn.btn-default.settings-btn.active {
     background-color: #919bac;

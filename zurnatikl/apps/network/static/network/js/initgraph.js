@@ -136,7 +136,6 @@ function init_sigma_graph(opts) {
 }
 
 
-
 /* off-canvas menu for graph control panel & color key
 adapted from http://tympanus.net/Development/OffCanvasMenuEffects/cornermorph.html
 */
@@ -164,22 +163,11 @@ $(document).ready(function() {
         }
     });
 
-    var menu_openbtn = $('#open-button'),
-        menu_isopen = false,
-        filter_openbtn = $('#open-filter-button');
-
-
+    // control panel toggle
+    var menu_openbtn = $('.menu-button');
     function toggleMenu() {
-        // console.log(this.id);
-        if (menu_isopen) {
-            $(document.body).removeClass('show-menu');
-        } else {
-            $(document.body).addClass('show-menu');
-        }
-        menu_isopen = !menu_isopen;
+        $("#graphMenu").toggle();
+        $(this).toggleClass('active')
     }
-
     menu_openbtn.on("click", toggleMenu);
-    filter_openbtn.on("click", toggleMenu);
-
 });

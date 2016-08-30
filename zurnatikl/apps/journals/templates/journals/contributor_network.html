@@ -21,19 +21,7 @@
 {% endblock %}
 
 {% block graph-controls %}
-<div>
-    <h4>Filter by School</h4>
-    <div class="radio" id="school-radio">
-        <label>
-            <input type="radio" name="school-filter" id="all-schools" value="" checked="checked"/>
-            All Schools
-        </label>
-    </div>
-    <!-- <select id="node-school">
-        <option value="" selected>All schools</option>
-    </select> -->
-</div>
-<div>
+<div id="graph-mode">
   <h4>Color by:</h4>
   <div class="radio">
     <label>
@@ -53,6 +41,32 @@
       School
   </label>
   </div>
+</div>
+
+<div>
+    <h4>Filter by School</h4>
+    <div class="radio" id="school-radio">
+        <label>
+            <input type="radio" name="school-filter" id="all-schools" value="" checked="checked"/>
+            All Schools
+        </label>
+    </div>
+    <!-- <select id="node-school">
+        <option value="" selected>All schools</option>
+    </select> -->
+</div>
+{% endblock %}
+
+{% block graph-color-keys %}
+
+<div id="graph-school-colors" class="color-key">
+  <h4>Schools</h4>
+  <dl class="graph-colors" id="school-colors"></dl>
+</div>
+
+<div id="graph-community-colors" class="color-key">
+  <h4>Communities</h4>
+  <dl class="graph-colors" id="community-colors"></dl>
 </div>
 {% endblock %}
 
@@ -116,20 +130,33 @@ $('#graph-container').on('graph:design_applied', function() {
           });
         }
       });
-      // create color key menu
-      var school_key = $('<div/>').attr('id', 'school-color-key');
-      school_key.append($('<h4>Schools</h4>'));
-      var school_key_dl = $('<dl class="graph-colors" id="school-colors"/>');
+      // add school colors to color key menu
+      var school_key_dl = $('#school-colors');
       schools.forEach(function(school) {
         var idx = schools.indexOf(school);
         school_key_dl.append($('<dt style="background-color:' + colors[idx] + '"/>'));
         school_key_dl.append($('<dd>' + school + '</dd>'));
       })
-      school_key.append(school_key_dl);
-      var menu = $('#graph-color-key').parent();
-      menu.append(school_key);
     }
     init_schools();
+
+
+    function init_communities() {
+      // determine number of communities
+      var community_max = 0;
+      s.graph.nodes().forEach(function(node) {
+        community_max = Math.max(community_max, node.community);
+      })
+
+      // add communities to color key menu
+      var community_key_dl = $('#community-colors');
+      for(var i=0; i <= community_max; i++){
+        community_key_dl.append($('<dt style="background-color:' + colors[i] + '"/>'));
+        // display with 1-based numbers
+        community_key_dl.append($('<dd>Community ' + (i + 1) + '</dd>'));
+      }
+    }
+    init_communities();
 
     // color nodes based on their community
     function color_by_community() {
@@ -139,9 +166,10 @@ $('#graph-container').on('graph:design_applied', function() {
         node.color = colors[node.community];
       });
         color_edges_by_source();
-      // hide color keys since they aren't relevant
-      $("#graph-color-key").slideUp();
-      $("#school-color-key").slideUp();
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      // show community color key
+      $("#graph-community-colors").show();
       // refresh sigma renderer
       s.refresh({skipIndexation: true});
     }
@@ -157,9 +185,10 @@ $('#graph-container').on('graph:design_applied', function() {
         }
       });
       color_edges_by_source();
-      $("#school-color-key").slideDown();
-      // hide color key since it isn't relevant
-      $("#graph-color-key").slideUp();
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      // show school color key
+      $("#graph-school-colors").show();
       // refresh sigma renderer
       s.refresh({skipIndexation: true});
     }
@@ -218,8 +247,10 @@ $('#graph-container').on('graph:design_applied', function() {
 
 $('#color-by-type').on("click", function() {
     $('#graph-container').trigger('graph:reapply_design');
-    $("#graph-color-key").slideDown();
-    $("#school-color-key").slideUp();
+    // hide irrelevant color keys
+    $('.color-key').hide();
+    //show node/edge type color key
+    $("#graph-type-colors").show();
     s.refresh({skipIndexation: true});
 });
 
