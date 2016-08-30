@@ -22,19 +22,25 @@
 {# editors #}
 {% with editors=issue.editors.all %}
 {% if editors %}
+<div class="editors">
+  <div class="title">Editors:</div>
 {% for editor in editors %}
- <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>
   {% endfor %}
+</div>
 {% endif %}
 {% endwith %}
 
 {# contributing editors #}
 {% with editors=issue.contributing_editors.all %}
 {% if editors %}
+<div class="editors">
+  <div class="title">Contributing Editors:</div>
 {% for editor in editors %}
- <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>
   {% endfor %}
 {% endif %}
+</div>
 {% endwith %}
 
 {# publication address #}
@@ -52,16 +58,14 @@
 <p>Price per issue: ${{ issue.price }}</p>
 {% endif %}
 
+
 <div class="toc">
-    <div class="toc-header">
-      <span>Start Page</span>
-      <span>End Page</span>
-      <span>Contents</span>
-    </div>
+    <ul class="toc-header">
+      <li>Contents</li>
+      <li>Pages</li>
+    </ul>
 {% for item in issue.item_set.all %}
   <ul>
-    <li>{{ item.start_page }}</li>
-    <li>{{ item.end_page }}</li>
     <li>{{ item.title }}{% if item.creatorname_set.exists or item.translators.exists %},{% endif %}
       {% if item.creatorname_set.exists %}
       {% for cn in item.creatorname_set.all %}
@@ -69,9 +73,11 @@
       {% endfor %}
       {% endif %}
       {% if item.translators.exists %}
-       trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
+       trans. {% for tn in item.translators.all %}<a href="{{ tn.get_absolute_url }}">{{ tn.firstname_lastname }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
       {% endif %}
     </li>
+
+    <li>{{ item.start_page }}{% if item.start_page != item.end_page %} - {{ item.end_page }}{% endif %}</li>
   </ul>
 
 {% endfor %}
