@@ -9,12 +9,15 @@
   <li class="active">Contributor Network</li>
 {% endblock %}
 
+{% block download-graph %}
+  {% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
+  {% url 'journals:contributor-network-export' 'gml' as gml_url %}
+  {% include 'network/snippets/download_graph.html' %}
+{% endblock %}
+
 {% block pregraph-content %}
 <h1>Journal Contributors</h1>
 
-{% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
-{% url 'journals:contributor-network-export' 'gml' as gml_url %}
-{% include 'network/snippets/download_graph.html' %}
 {% endblock %}
 
 {% block graph-controls %}

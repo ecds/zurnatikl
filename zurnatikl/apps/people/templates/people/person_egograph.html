@@ -10,10 +10,14 @@
   <li class="active">Egograph</li>
 {% endblock %}
 
+{% block download-graph %}
+    {% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
+    {% url 'people:egograph-export' person.slug 'gml' as gml_url %}
+    {% include 'network/snippets/download_graph.html' %}
+{% endblock %}
+
 {% block pregraph-content %}
-{% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
-{% url 'people:egograph-export' person.slug 'gml' as gml_url %}
-{% include 'network/snippets/download_graph.html' %}
+
 
 <h1>{{ person.firstname_lastname }}'s Connections</h1>
 

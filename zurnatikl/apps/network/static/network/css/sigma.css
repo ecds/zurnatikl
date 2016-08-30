@@ -4,20 +4,24 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 85vh;
-  background: #efefef;
+  height: 75vh;
 }
+
 #graph-container {
-  top: 0;
-  bottom: 0;
-  left: 35px;
-  right: 35px;
   position: absolute;
-  background: #fff;
+  width: 100%;
+  height: 100%;
+  text-align: center;
 }
+
+/* FIXME: may need to use js to set a class here... not working*/
+#graph-container:fullscreen, #graph-container:-webkit-full-screen, #graph-container:-moz-full-screen {
+  position: relative;
+}
+
 #graph-status {
   font-size: 35px;
-  position: fixed;
+  position: absolute;
   line-height: 300px;
   vertical-align: middle;
   z-index: 3;
@@ -25,7 +29,52 @@
   text-align: center;
 }
 
+#graph-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 #graph-status .status {
   background: rgb(255, 255, 255); /* Fall-back for browsers that don't support rgba */
   background: rgba(255, 255, 255, .5);
 }
+
+
+.filter-container {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  }
+  .filter-container .btn.btn-default.settings-btn.active {
+    background-color: #919bac;
+    color: #cc3700;
+    border: solid 1px #CBD0D8; }
+  .filter-container .settings-menu {
+    display: none;
+    position: absolute;
+    margin-top: 1em;
+    right: 0;
+    text-align: left;
+    min-width: 200px;
+    padding: 1em; }
+    .filter-container .settings-menu .menu > div {
+      border: solid 1px #CCC;
+      padding: 1em; }
+      .filter-container .settings-menu .menu > div#graph-color-key {
+        background-color: #F1F1F1;
+        margin-top: 1em; }
+    .filter-container .settings-menu .graph-colors dt {
+      margin: 5px 5px 0 0;
+      float: left;
+      clear: left;
+      width: 100px;
+      display: inline-block;
+      width: 1em;
+      height: 1em; }
+    .filter-container .settings-menu .graph-colors dd {
+      text-transform: capitalize; }
+  .filter-container > div {
+    display: inline-block;
+    margin-left: .5em; }

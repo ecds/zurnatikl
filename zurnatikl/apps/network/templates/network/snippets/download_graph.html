@@ -1,17 +1,10 @@
 {% comment %} menu to download graph data as graphml or gml;
 expects graphml_url and gml_url variables to be set. {% endcomment %}
-<ul class="nav navbar-nav" id="download-menu">
-	<li>
-		<div class="dropdown">
-		  <button class="btn btn-default dropdown-toggle" type="button" id="download-menu-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-		    <i class="fa fa-download"></i> Download <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" aria-labelledby="download-menu-dropdown">
-		  {% if graphml_url %}<li><a href="{{ graphml_url }}">Download as GraphML</a></li>{% endif %}
-		  {% if gml_url %}<li><a href="{{ gml_url }}">Download as GML</a></li>{% endif %}
-		  </ul>
-		</div>
-
-	</li>
-</ul>
+<div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><span class="fa fa-download"></span><a>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="menu1">
+        <li role="presentation"><a role="menuitem" href="{{ gml_url }}">Download as GML</a></li>
+        <li role="presentation"><a role="menuitem" href="{{ graphml_url }}">Download as GraphML</a></li>
+    </ul>
+</div>
 
