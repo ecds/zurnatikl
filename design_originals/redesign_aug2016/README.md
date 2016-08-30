@@ -23,6 +23,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
             +-- ie                          #Necessary files to make IE responsive
                 +-- html5shiv.js
                 +-- respond.min.js
+            +-- jquery.matchHeight-min.js   #jQuery plugin that set equal heights for journal page    
         +-- fonts                           #FontAwesome 4.6.3 Suite
             +-- fontawesome-webfont.eot
             +-- fontawesome-webfont.svg
@@ -47,6 +48,8 @@ This folder is the directory of the live HTML prototypes for the redesign.
         v. 4.6.3  
     JQuery  
         v 3.1.0 
+    jQuery MatchHeight
+        v 0.7.0    
     List.js
         v 1.2.0     
     
