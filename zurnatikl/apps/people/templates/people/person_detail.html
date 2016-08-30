@@ -59,8 +59,9 @@ Amiri Baraka, Leroi Jones
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
             <dt>{% include 'journals/snippets/issue_link.html' %}</dt>
-            <dd>
+
                 {% for item in issue_items.list %}
+                <dd>
                 {{ item }}{% if item.translators.all %}, trans.
                 {% for translator in item.translators.all %}
                 <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
@@ -84,9 +85,7 @@ Amiri Baraka, Leroi Jones
                     {% endfor %}
                     </p>
                 {% endif %}
-
             </dd>
-
             {% endfor %}
             {% endwith %} {# end issue group #}
         {% endfor %}
