@@ -19,4 +19,13 @@ $( document ).ready(function() {
             });
         }
     })
+
+     authorList.on("updated", function() {
+        // update tile heights after a filter is applied or removed
+        // or a search is completed
+        $('.tile').matchHeight();
+     })
+
+   // set person name tiles to match
+   $('.tile').matchHeight();
 });
