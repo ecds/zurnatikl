@@ -9,15 +9,17 @@
   <li class="active">Categorized by {{ object_list.0.categorizer_name }}</li>
 {% endblock %}
 
+{% block download-graph %}
+  {% with object_list.0.categorizer as slug %}
+    {% url 'network:schools-export' slug 'graphml' as graphml_url %}
+    {% url 'network:schools-export' slug 'gml' as gml_url %}
+    {% include 'network/snippets/download_graph.html' %}
+  {% endwith %}
+{% endblock %}
+
 {% block pregraph-content %}
 <div class="container">
 
-{% with object_list.0.categorizer as slug %}
-  {% url 'network:schools-export' slug 'graphml' as graphml_url %}
-  {% url 'network:schools-export' slug 'gml' as gml_url %}
-  {% include 'network/snippets/download_graph.html' %}
-
-{% endwith %}
 
 <h1>Schools categorized by {{ object_list.0.categorizer_name }}</h1>
 <p>People, journals, and locations associated with schools as
