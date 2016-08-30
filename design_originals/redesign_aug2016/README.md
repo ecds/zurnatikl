@@ -18,6 +18,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
                 +-- variables.scss          #Sitewide Variables, Imported in each SCSS  
                 +-- breadcrumbs.scss        #Breadcrumbs Design
                 +-- graph.scss              #Temporary SCSS file for Graph Wireframe
+                +-- toc.scss                #SCSS for Journal Table of Contents
         +-- js
             +-- ie                          #Necessary files to make IE responsive
                 +-- html5shiv.js
@@ -35,6 +36,7 @@ This folder is the directory of the live HTML prototypes for the redesign.
     journals.html                           #Journals Listing Page
     cid-corman.html                         #Example of person detail page
     graph.html                              #Graph wireframe
+    table-of-content.html                   #Sample Journal Table of Contents
 
 ##Dependencies
     Boostrap  
