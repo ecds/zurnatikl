@@ -39,8 +39,8 @@
 {% for editor in editors %}
  <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>
   {% endfor %}
-{% endif %}
 </div>
+{% endif %}
 {% endwith %}
 
 {# publication address #}
@@ -81,20 +81,10 @@
   </ul>
 
 {% endfor %}
-</div> {# j-issues #}
-
-
-  <div class="j-image">
-
-{% comment %}   <picture>
-      <source srcset="beatitude-issue-9-img.png" media="(max-width: 320px)" class="img-responsive">
-      <source srcset="beatitude-issue-9-img.png" class="img-responsive">
-      <img srcset="beatitude-issue-9-img.png" alt="My default image" class="img-responsive">
-    </picture>{% endcomment %}
-  </div>
+</div> {# toc #}
 
 {% include 'journals/snippets/issue_nextprev.html' %}
 
-</div>
+</div> {# j-issues #}
 {% endblock %}
 
