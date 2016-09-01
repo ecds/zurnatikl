@@ -369,6 +369,6 @@ section {
   -webkit-transition: none !important;
   -moz-transition: none !important;
   -ms-transition: none !important;
-  -o-transition: none !important; }
+  -o-transition: all 0 none !important; }
 
 /*# sourceMappingURL=site.css.map */

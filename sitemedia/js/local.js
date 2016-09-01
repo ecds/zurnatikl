@@ -3,10 +3,12 @@
 if (window.sessionStorage && sessionStorage.getItem('nav') == 'hide') {
   $("#wrapper").addClass('toggled');
 }
-// remove preload class after nav status is checked/updated
-$("body").removeClass('preload');
 
 $( document ).ready(function() {
+    // remove preload class (which disables transitions)
+    // after nav status is checked/updated and page is loaded
+    $("body").removeClass('preload');
+
   // enable nav menu toggle behavior
   $("#menu-toggle").click(function(e) {
     e.preventDefault();
