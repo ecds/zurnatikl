@@ -124,18 +124,12 @@ by default; use page_rdf_type to override with a webpage subclass.
         crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
       <!-- Menu Toggle Script -->  {# todo: move into local.js #}
-      <script>
-      $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-      });
-      </script>
-
+      <script type="text/javascript" src="{% static 'js/local.js' %}"></script>
     {% comment %}
     {# TBD: how much of this do we need? #}
     {#<script src="{% static 'eultheme/js/selectize.js' %}"></script>
     <script src="{% static 'eultheme/js/eultheme.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/local.js' %}"></script>
+
     {% comment %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
     <script>
