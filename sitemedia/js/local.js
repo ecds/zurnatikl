@@ -1,24 +1,26 @@
-$( document ).ready(function() {
+// honor nav menu status in local storage on load (shows by default on desktop widths)
+// NOTE: runing before document.ready to avoid visible transition/jump
+if (window.sessionStorage && sessionStorage.getItem('nav') == 'hide') {
+  $("#wrapper").addClass('toggled');
+}
+// remove preload class after nav status is checked/updated
+$("body").removeClass('preload');
 
+$( document ).ready(function() {
   // enable nav menu toggle behavior
   $("#menu-toggle").click(function(e) {
     e.preventDefault();
     var wrapper = $("#wrapper");
     wrapper.toggleClass("toggled");
-    if (window.localStorage) {
+    // store hidden status
+    if (window.sessionStorage) {
         if (wrapper.hasClass('toggled')) {
-            localStorage.setItem('nav', 'hide');
+            sessionStorage.setItem('nav', 'hide');
         } else {
-            localStorage.removeItem('nav');
+            sessionStorage.removeItem('nav');
         }
     }
   });
-
-  // honor nav menu status in local storage on load
-  if (window.localStorage && localStorage.getItem('nav') == 'hide') {
-        console.log('hiding nav');
-      $("#wrapper").addClass('toggled');
-  }
 
 });
 

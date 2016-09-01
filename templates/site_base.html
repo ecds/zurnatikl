@@ -45,7 +45,7 @@ by default; use page_rdf_type to override with a webpage subclass.
 
     {% block head_extras %}{% endblock %}  {# any header metadata, etc #}
   </head>
-  <body class="{% block body_class %}{% endblock %}"{% block body_attrs %}{% endblock %}>
+  <body class="preload {% block body_class %}{% endblock %}"{% block body_attrs %}{% endblock %}>
 
   {# TODO: snippetize this in eultheme for easy inclusion in non-standard base-templates #}
     {% block beta_banner %}

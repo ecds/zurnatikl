@@ -48,7 +48,7 @@ section {
 		    color: $blue;
 		    position: relative;
 		    margin-top: 1em;
-		    
+
 		    &:hover {
 		    	text-decoration: none;
 		    	background-color: $white;
@@ -145,10 +145,10 @@ section {
 				font-weight: 300;
 			}
 	}
-	
+
 }
 
-@media(min-width:768px) { 
+@media(min-width:768px) {
 	/* Set 100% Height for Grid Effect and vertically align content div */
 	#wrapper {
 		height: 100%;
@@ -157,7 +157,7 @@ section {
 			.container-fluid {
 				padding-left: 3em;
 			}
-			.fill { 
+			.fill {
 	    		min-height: 100%;
 	    		height: 100%;
 	    		.row {
@@ -238,7 +238,15 @@ section {
 		    text-align: center;
 		}
 	}
-	
+
 }
 
+}
+
+/* disable transitions on preload */
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
 }
