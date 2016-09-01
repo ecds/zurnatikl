@@ -20,11 +20,12 @@
     <a class="btn btn-secondary btn-connect" href="{% url 'people:egograph' person.slug %}">View Connections</a>
 </div>
 
-{% comment %}  TODO
+{# display alternate names, if any #}
+{% if person.name_set.all.count %}
 <div class="alternate">
-Amiri Baraka, Leroi Jones
+    {{ person.name_set.all|join:', ' }}
 </div>
-{% endcomment %}
+{% endif %}
 
 {% comment %}  jump links disabled for now, based on resonance design
 {# only display nav if at least two sections are present #}

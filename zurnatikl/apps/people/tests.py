@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal
-from .models import Person, School
+from .models import Person, School, Name
 from .views import PeopleCSV
 
 
@@ -283,6 +283,16 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response,
             reverse('journals:journal', kwargs={'slug': item.issue.journal.slug}),
             msg_prefix='should link to journal for authored item')
+
+        # test that alternate names are displayed on person detail page
+        Name.objects.create(first_name='Doug', last_name='Mac', person=macarthur)
+        Name.objects.create(first_name='Dougy', last_name='M', person=macarthur)
+        response = self.client.get(reverse('people:person',
+            kwargs={'slug': macarthur.slug}))
+        for name in macarthur.name_set.all():
+            self.assertContains(response, unicode(name),
+                msg_prefix='alternate name %s should be on person detail page'\
+                % name)
 
     def test_egograph(self):
         # main egograph page just loads json & sigma js
