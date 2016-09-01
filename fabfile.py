@@ -246,6 +246,7 @@ fab deploy:remote_proxy=some.proxy.server:3128 -H servername
     configure_site()
     update_links()
     compare_localsettings()
+    rm_old_builds()
 
 
 @task
