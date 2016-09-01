@@ -25,7 +25,8 @@ class PeopleList(ListView):
     '''
     model = Person
 
-    queryset = Person.objects.journal_contributors_with_counts()
+    queryset = Person.objects.journal_contributors_with_counts() \
+                     .prefetch_related('name_set')
 
 
 class PersonDetail(DetailView):

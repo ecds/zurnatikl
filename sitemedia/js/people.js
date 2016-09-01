@@ -1,6 +1,6 @@
 $( document ).ready(function() {
     var options = {
-        valueNames: ['title', 'author', 'editor', 'translate']
+        valueNames: ['title', 'author', 'editor', 'translate', 'alternate']
     };
     var authorList = new List('authors', options);
 

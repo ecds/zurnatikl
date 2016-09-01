@@ -11,6 +11,7 @@
 {% block content %}
 {# TODO: use page_base ? #}
 <section class="row">
+{# NOTE: saundra says the column class can be removed; should be removed everywhere but text content pages, as it adds unnecessary padding elsewhere #}
     <div class="col-sm-12">  {# why col-sm-12 vs col-lg-12 in content pages? #}
         <div class="content">
             <h1>Journal Contributors</h1>
@@ -49,7 +50,12 @@
                                 <div class="translate">{{ person.num_translated }}</div>
                             {% endif %}
                         </div>
+
                         <div class="title">{{ person }}</div>
+                        {# display alternate names, if any #}
+                        {% if person.name_set.all.count %}
+                        <div class="alternate">{{ person.name_set.all|join:', ' }}</div>
+                        {% endif %}
                     </a>
                 </li>
                 {% endfor %}
