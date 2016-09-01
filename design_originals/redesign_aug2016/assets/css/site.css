@@ -112,8 +112,6 @@
     font-size: .75em;
     text-align: center;
     color: #748490; }
-    #authors ul .alternate:before {
-      content: 'ed: '; }
   #authors ul .count {
     position: absolute;
     top: -.75em;

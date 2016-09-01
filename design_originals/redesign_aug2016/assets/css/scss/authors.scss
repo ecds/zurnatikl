@@ -163,9 +163,6 @@
 			font-size: .75em;
 			text-align: center;
 			color: lighten($blue, 10%);
-			&:before {
-				content: 'ed: ';
-			}
 		}
 		.count {
 		    	position: absolute;
