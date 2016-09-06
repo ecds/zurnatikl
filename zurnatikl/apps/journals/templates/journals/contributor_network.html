@@ -244,6 +244,7 @@ $('#graph-container').on('graph:design_applied', function() {
     });
 
   // convert hex color to rgb
+  // thanks to http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
   function hexToRgb(hex) {
       hex = hex.replace('#', '');
       var bigint = parseInt(hex, 16);
