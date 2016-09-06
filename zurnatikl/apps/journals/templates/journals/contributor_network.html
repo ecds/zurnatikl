@@ -116,6 +116,24 @@ $('#graph-container').on('graph:design_applied', function() {
       });
     }
 
+    function color_edges_by_source_if_active() {
+      s.graph.edges().forEach(function(edge) {
+        var source = s.graph.nodes(edge.source);
+        var target = s.graph.nodes(edge.target);
+        // if both source and taget are active, color by source
+        if (source.active && target.active) {
+          edge.color = source.color;
+
+        // if only source is active, color by target
+        } else if (source.active) {
+          edge.color = target.color;
+        // otherwise color by source
+        } else {
+          edge.color = source.color;
+        }
+      });
+    }
+
     // initialize list of schools and color by school key
     var schools = [];
     function init_schools() {
@@ -161,6 +179,8 @@ $('#graph-container').on('graph:design_applied', function() {
     // color nodes based on their community
     function color_by_community() {
       console.log('color by community');
+      reset_graph_previous_state();
+      reset_school_filter();
       s.graph.nodes().forEach(function(node) {
         // server-side community detection currently set as community attribute
         node.color = colors[node.community];
@@ -176,6 +196,8 @@ $('#graph-container').on('graph:design_applied', function() {
     color_by_community();
 
     function color_by_school() {
+      reset_graph_previous_state();
+      reset_school_filter();
       s.graph.nodes().forEach(function(node) {
         if (!isNaN(node.school_index)) {
           node.color = colors[node.school_index];
@@ -203,7 +225,6 @@ $('#graph-container').on('graph:design_applied', function() {
        can user without createing it multiple times.
     */
 
-    var filter = sigma.plugins.filter(s);
 
     // node school
     var nodeSchoolElt = document.getElementById("node-school");
@@ -222,37 +243,106 @@ $('#graph-container').on('graph:design_applied', function() {
         schoolFilterElm.appendChild(label);
     });
 
-    function applySchoolFilter(selection){
-        var selectedSchool = selection.target.value;
-        if (!selectedSchool) {
-            filter.undo('schools').apply();
-        } else{
-                filter
-                .undo('schools')
-                .nodesBy(function(node){
-                    if (node.schools){
-                        // `indexOf` retuns `-1` if the string isn't found in the array.
-                        return node.schools.indexOf(selectedSchool, 0) != -1;
-                    } else {
-                        return false;
-                    }
-            }, 'schools')
-            .apply();}
+  // convert hex color to rgb
+  function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      var bigint = parseInt(hex, 16);
+      var r = (bigint >> 16) & 255;
+      var g = (bigint >> 8) & 255;
+      var b = bigint & 255;
+      return [r, g, b].join();
+  }
 
+  function reset_graph_previous_state() {
+    // use to restore to normal display after applying
+    // filter by school
+
+    // restore default label threshold
+    s.settings('labelThreshold', 10);
+    // restore previous node color and label
+    s.graph.nodes().forEach(function(node) {
+        node.active = true;
+        // restore previous label and color
+        if (node._color) {
+          node.color = node._color;
+          delete node._color;
+        }
+        if (node._label) {
+          node.label = node._label;
+          delete node._label;
+        }
+    });
+  }
+
+  function reset_school_filter() {
+    // reset school filter to no school selected (display all)
+    $('input[name="school-filter"]').val(['']);
+  }
+
+  function filter_by_school(selection) {
+      var selectedSchool = selection.target.value;
+      // no school is selected, reset
+      if (!selectedSchool) {
+        reset_graph_previous_state();
+      }
+
+      s.graph.nodes().forEach(function(node) {
+        // if a school is selected, filter display
+        if (selectedSchool) {
+          // set a low label threshold so labels for all nodes associated
+          // with the current school will be shown
+          s.settings('labelThreshold', 1);
+
+          // if node is associated with current school
+          if ((node.schools) && node.schools.indexOf(selectedSchool) != -1) {
+            // set to display normally
+            node.active = true;
+            // restore color and label if suppressed from a previous school filter
+            if ((node.color[0] != '#') && node._color) {
+              node.color = node._color;
+            }
+            if (!node.label && node._label) {
+              node.label = node._label;
+            }
+
+          // if node is NOT associated with current school
+          } else {
+            // suppress node not associated with current school
+            node.active = false;
+            // suppress node and label (using rgba opacity for color)
+            if (node.color[0] == '#') {
+              // copy color and label for later restoration.
+              node._color = node.color;
+              node._label = node.label;
+              // convert to transparent version of color
+              node.color = 'rgba(' + hexToRgb(node.color) + ', 0.1)';
+            }
+            // temporarily clear out label for display
+            node.label = '';
+          }
+        }
+      });
+      color_edges_by_source_if_active();
+      s.refresh({skipIndexation: true});
     }
 
-    schoolFilterElm.addEventListener("change", applySchoolFilter);
+    schoolFilterElm.addEventListener("change", filter_by_school);
+
+
+  $('#color-by-type').on("click", function() {
+      reset_graph_previous_state();
+      reset_school_filter();
+
+      $('#graph-container').trigger('graph:reapply_design');
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      //show node/edge type color key
+      $("#graph-type-colors").show();
+      s.refresh({skipIndexation: true});
+  });
 
 });
 
-$('#color-by-type').on("click", function() {
-    $('#graph-container').trigger('graph:reapply_design');
-    // hide irrelevant color keys
-    $('.color-key').hide();
-    //show node/edge type color key
-    $("#graph-type-colors").show();
-    s.refresh({skipIndexation: true});
-});
 
 $('#color-by-community').on("click", function() {
     $('#graph-container').trigger('graph:color_by_community');
