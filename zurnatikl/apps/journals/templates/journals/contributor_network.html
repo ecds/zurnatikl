@@ -116,20 +116,29 @@ $('#graph-container').on('graph:design_applied', function() {
       });
     }
 
-    function color_edges_by_source_if_active() {
+    // preserve current edge color, but make the color mostly opaque
+    // if both nodes are not active
+    // (used for filtering graph by school)
+    function color_edges_by_active() {
       s.graph.edges().forEach(function(edge) {
+        // active
         var source = s.graph.nodes(edge.source);
         var target = s.graph.nodes(edge.target);
-        // if both source and taget are active, color by source
+        // if both source and taget are active, full color
         if (source.active && target.active) {
-          edge.color = source.color;
-
-        // if only source is active, color by target
-        } else if (source.active) {
-          edge.color = target.color;
-        // otherwise color by source
+          // restore non-opaque  color if necessary
+          if ((edge.color[0] != '#') && edge._color) {
+             edge.color = edge._color;
+          }
+        // if both source and target are not active, adjust current
+        // color to be opaque
         } else {
-          edge.color = source.color;
+          if (edge.color[0] == '#') {
+                // copy color for later restoration.
+                edge._color = edge.color;
+                // convert to transparent version of color
+                edge.color = 'rgba(' + hexToRgb(edge.color) + ', 0.1)';
+              }
         }
       });
     }
@@ -185,7 +194,7 @@ $('#graph-container').on('graph:design_applied', function() {
         // server-side community detection currently set as community attribute
         node.color = colors[node.community];
       });
-        color_edges_by_source();
+      color_edges_by_source();
       // hide irrelevant color keys
       $('.color-key').hide();
       // show community color key
@@ -282,48 +291,52 @@ $('#graph-container').on('graph:design_applied', function() {
 
   function filter_by_school(selection) {
       var selectedSchool = selection.target.value;
-      // no school is selected, reset
+      // no school is selected, reset to current state
       if (!selectedSchool) {
         reset_graph_previous_state();
-      }
+        // re-apply currently selected color scheme, since we
+        // can't otherwise duplicate the logic correctly
+        // (specifically coloring edges by type)
+        $('input[name="graph-colors"]:checked').click();
+      } else {
+        s.graph.nodes().forEach(function(node) {
+          // if a school is selected, filter display
+          if (selectedSchool) {
+            // set a low label threshold so labels for all nodes associated
+            // with the current school will be shown
+            s.settings('labelThreshold', 1);
 
-      s.graph.nodes().forEach(function(node) {
-        // if a school is selected, filter display
-        if (selectedSchool) {
-          // set a low label threshold so labels for all nodes associated
-          // with the current school will be shown
-          s.settings('labelThreshold', 1);
+            // if node is associated with current school
+            if ((node.schools) && node.schools.indexOf(selectedSchool) != -1) {
+              // set to display normally
+              node.active = true;
+              // restore color and label if suppressed from a previous school filter
+              if ((node.color[0] != '#') && node._color) {
+                node.color = node._color;
+              }
+              if (!node.label && node._label) {
+                node.label = node._label;
+              }
 
-          // if node is associated with current school
-          if ((node.schools) && node.schools.indexOf(selectedSchool) != -1) {
-            // set to display normally
-            node.active = true;
-            // restore color and label if suppressed from a previous school filter
-            if ((node.color[0] != '#') && node._color) {
-              node.color = node._color;
+            // if node is NOT associated with current school
+            } else {
+              // suppress node not associated with current school
+              node.active = false;
+              // suppress node and label (using rgba opacity for color)
+              if (node.color[0] == '#') {
+                // copy color and label for later restoration.
+                node._color = node.color;
+                node._label = node.label;
+                // convert to transparent version of color
+                node.color = 'rgba(' + hexToRgb(node.color) + ', 0.1)';
+              }
+              // temporarily clear out label for display
+              node.label = '';
             }
-            if (!node.label && node._label) {
-              node.label = node._label;
-            }
-
-          // if node is NOT associated with current school
-          } else {
-            // suppress node not associated with current school
-            node.active = false;
-            // suppress node and label (using rgba opacity for color)
-            if (node.color[0] == '#') {
-              // copy color and label for later restoration.
-              node._color = node.color;
-              node._label = node.label;
-              // convert to transparent version of color
-              node.color = 'rgba(' + hexToRgb(node.color) + ', 0.1)';
-            }
-            // temporarily clear out label for display
-            node.label = '';
           }
-        }
-      });
-      color_edges_by_source_if_active();
+        });
+        color_edges_by_active();
+      }
       s.refresh({skipIndexation: true});
     }
 
