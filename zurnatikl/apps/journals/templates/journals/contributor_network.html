@@ -326,11 +326,15 @@ $('#graph-container').on('graph:design_applied', function() {
               if (node.color[0] == '#') {
                 // copy color and label for later restoration.
                 node._color = node.color;
-                node._label = node.label;
                 // convert to transparent version of color
                 node.color = 'rgba(' + hexToRgb(node.color) + ', 0.1)';
               }
               // temporarily clear out label for display
+              if (! node._label) {
+                // only set stored label if not already stored,
+                // *don't* replace with an empty label.
+                node._label = node.label;
+              }
               node.label = '';
             }
           }
