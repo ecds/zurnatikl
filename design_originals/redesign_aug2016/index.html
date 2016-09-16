@@ -146,6 +146,14 @@
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
         });
+        $( window ).resize(function() {
+            if ($(window).width() < 768 && $!("#wrapper.toggled")) {
+         $("#wrapper").toggleClass("toggled");
+         }else{
+         //handle else
+         }
+    
+});
         </script>
     </body>
 </html>
