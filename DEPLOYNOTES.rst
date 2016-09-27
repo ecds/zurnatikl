@@ -122,6 +122,14 @@ Upgrade Notes
 1.5
 ---
 
+* Run migrations to apply database updates related to the upgrade to
+  Django 1.9::
+
+      python manage.py migrate
+
+1.5
+---
+
 * Run migrations for changes and updates to the database structure::
 
       python manage.py migrate
