@@ -1,8 +1,76 @@
 CHANGELOG
 =========
 
+Release 1.6 - Redesign and public release
+-----------------------------------------
+
+* As a user I want the network graphs to be generated more efficiently
+  so I don’t have to wait while they are loaded and processed on my
+  machine before they are displayed.
+* As a user, I want to see an overlay of the Allen schools on the full
+  contributor graph, so I can see how the network derived from his
+  anthology relates to the network derived from the little magazine
+  publication data.
+* As a user, I want to be able to see that the Schooling Donald Allen
+  site is part of a larger Digital Danowski initiative that encompasses
+  multiple projects.
+* As a user, I want to see labels for the network graph edges so I can
+  more clearly understand how the network nodes are linked.
+* As a user, I want to be able to see a contributor's "Name Used" for
+  each item on his/her contributor page so I can determine which name(s)
+  contributors were using for specific purposes.
+* As a user, I want to be able to download bibliographic data and
+  biographical data for people associated with the journals in CSV and
+  network graph formats so I can conduct my own, independent research.
+* As a user, I want to see a contributors' co-authors on his or her
+  contributor page so that I get an accurate sense of their publication
+  network.
+* As a user, I want to filter journal contributors according to their
+  roles so that I can explore the contributors that interest me.
+* As a user, I want to see consistently designed content pages so that
+  I have a consistent experience as I move through the site.
+* As a user, on the journal contributor page, I want to see an indication
+  of the number of items associated with each author & translator and
+  the number of issues associated with each editor so that I can easily
+  see how much data exists for every contributor.
+* As a user, I want to be able to search the journal contributor names
+  so that I can easily see if the database contains information about
+  authors I care about.
+* As a user, when I come to the site homepage, I want to see the main
+  parts of the site and how to navigate to the parts that interest me.
+* As a user, I want to be able to search the NNAP site from the navigation
+  panel on any page so that I can explore specific terms in the project data.
+* As a user, I want to see updated styling and navigation so that I have a
+  consistent experience as I move through the site.
+* As a user, I want to navigate forward and backward through journal issue
+  pages using links at the top and bottom of each issue page so that I can
+  navigate without having to scroll too much.
+* As a user, I want to see breadcrumbs on the website so I can easily
+  view and navigate the site hierarchy.
+* As a user, I want to see a list of journals, a list of issues for each
+  journal, and the detail pages for each journal issue in a style that matches
+  the rest of the site so that I can easily explore the information that interests me.
+* As a user, I want to see individual contributor pages with updated style
+  and navigation so that I have a consistent experience as I move through the site.
+* As a user, I want to see network graph pages with updated style and
+  navigation so that I have a consistent experience as I move through the site.
+* As a user, when I filter journal contributors by type of contribution I want
+  the filtered page to show up in my browser history so I can easily return to
+  the filtered list if I navigate away from the contributor page.
+* As a user, I want to see contributors' alternate names on their individual
+  pages so I can learn about other names that contributors use.
+* As a user, if I toggle the menu bar closed, I want it to stay closed as I
+  navigate around the site or if I reload pages so I can tailor my interaction
+  with the site.
+* As a user, I want to be able to see and search alternate names and aliases
+  in the contributor list so that I can easily find data based on the names I know.
+* As a user, when I filter the contributor network graph by school, I want to
+  be able to see the other nodes so I can better understand how the schools
+  relate to the entire graph.
+* Updates to site text content
+
 Upgrade to Django 1.9
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 * Tests were changed to call `save` on some test objects due to `new behavior for related objects <https://docs.djangoproject.com/en/1.9/releases/1.9/#bulk-behavior-of-add-method-of-related-managers>`_.
 * Updated url files to make them plain lists. `django.conf.urls.patterns()` `will be removed in 1.10 <https://docs.djangoproject.com/en/1.9/ref/urls/>`_.
 * `SortedDict` `was moved <https://docs.djangoproject.com/en/1.8/ref/utils/#django.utils.datastructures.SortedDict>`_ from `django.utils.datastructures.SortedDict` to `collections.OrderedDict`.
