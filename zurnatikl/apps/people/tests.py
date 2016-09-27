@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
 from zurnatikl.apps.journals.models import Journal
-from .models import Person, School
+from .models import Person, School, Name
 from .views import PeopleCSV
 
 
@@ -171,6 +171,38 @@ class PeopleTestCase(TestCase):
             self.assert_(mensch not in contributors,
                 'mentioned non-author/editor people should not contributors')
 
+    def test_journal_contributors_with_counts(self):
+        contributors = Person.objects.journal_contributors_with_counts()
+
+        # same tests as above, did we include and exclude the right
+        # people?
+        editors = Person.objects.filter(issues_edited__isnull=False)
+        for ed in editors:
+            self.assert_(ed in contributors,
+                'editors should be included in journal contributors')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(auth in contributors,
+                'authors should be included in journal contributors')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(mensch not in contributors,
+                'mentioned non-author/editor people should not contributors')
+
+        # test counts
+        for contrib in contributors:
+            self.assertEqual(contrib.num_created,
+                             contrib.items_created.all().count())
+            self.assertEqual(contrib.num_edited,
+                             contrib.issues_edited.all().count())
+            self.assertEqual(contrib.num_translated,
+                             contrib.items_translated.all().count())
+
 
 class PeopleViewsTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -251,6 +283,16 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response,
             reverse('journals:journal', kwargs={'slug': item.issue.journal.slug}),
             msg_prefix='should link to journal for authored item')
+
+        # test that alternate names are displayed on person detail page
+        Name.objects.create(first_name='Doug', last_name='Mac', person=macarthur)
+        Name.objects.create(first_name='Dougy', last_name='M', person=macarthur)
+        response = self.client.get(reverse('people:person',
+            kwargs={'slug': macarthur.slug}))
+        for name in macarthur.name_set.all():
+            self.assertContains(response, unicode(name),
+                msg_prefix='alternate name %s should be on person detail page'\
+                % name)
 
     def test_egograph(self):
         # main egograph page just loads json & sigma js

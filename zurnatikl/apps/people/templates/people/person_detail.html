@@ -4,17 +4,28 @@
 
 {% block page-subtitle %} | People | {{ person.firstname_lastname }}{% endblock %}
 
-{% block content %}
-<div class="col-md-12 person-detail">
-<ol class="breadcrumb">
+{% block breadcrumb-links %}
   <li><a href="{% url 'people:list' %}">People</a></li>
   <li class="active">{{ person.firstname_lastname }}</li>
-</ol>
+{% endblock %}
 
-<h2>{{ person.firstname_lastname }}</h2>
+{% block content %}
+{# todo: page content? #}
+<section class="row">
+    <div class="col-lg-12">
+        <div class="content">
 
-<p><a href="{% url 'people:egograph' person.slug %}">View connections.</a></p>
+<div class="top-bar">
+    <h1>{{ person.firstname_lastname }}</h1>
+    <a class="btn btn-secondary btn-connect" href="{% url 'people:egograph' person.slug %}">View Connections</a>
+</div>
 
+{# display alternate names, if any #}
+{% if person.name_set.all.count %}
+<div class="alternate">
+    {{ person.name_set.all|join:', ' }}
+</div>
+{% endif %}
 
 {% comment %}  jump links disabled for now, based on resonance design
 {# only display nav if at least two sections are present #}
@@ -36,107 +47,102 @@
 {% endcomment %}
 
 {% if person.items_created.all.exists %}
-{# <h3><a name="author">As Author</a></h3> #}
-<h3>As Author</h3>
+
+<h2 class="author count">As Author<span class="author">{{ person.items_created.all|length }}</span></h2>
+
 {# group by journal then by issue for nested list of items by journal/issue #}
 {% regroup person.items_created.all by issue.journal as items_by_journal %}
-<ul>
 {% for item_group in items_by_journal %}
     {% with journal=item_group.grouper %}
-    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
-        <ul>
+    <h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+        <dl>
         {% regroup item_group.list by issue as items_by_issue %}
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
-            <li class="p-issue-li">{% include 'journals/snippets/issue_link.html' %}
-                <ul>
-                    {% for item in issue_items.list %}
-                    <li class="p-article-li">{{ item }}{% if item.translators.all %}, trans.
-                    {% for translator in item.translators.all %}
-                    <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
-                    {% endfor %}
+            <dt>{% include 'journals/snippets/issue_link.html' %}</dt>
+
+                {% for item in issue_items.list %}
+                <dd>
+                {{ item }}{% if item.translators.all %}, trans.
+                {% for translator in item.translators.all %}
+                <a href="{{translator.get_absolute_url}}">{{translator}}</a>{% if item.translators.all.count == 1 %}{% elif forloop.counter == item.translators.all.count %}{% else %},{% endif %}
+                {% endfor %}
+                {% endif %}
+                {# display person's name used for this piece if set #}
+                {% for cn in item.creatorname_set.all %}
+                    {% if cn.person == person and cn.name_used %}
+                    <i>(as {{ cn.name_used }})</i>
                     {% endif %}
-                    {# display person's name used for this piece if set #}
+                {% endfor %}
+                {# display co-authors if any #}
+                {% if item.creatorname_set.count > 1 %}
+                    <p class="co-authors">With
                     {% for cn in item.creatorname_set.all %}
-                        {% if cn.person == person and cn.name_used %}
-                        <i>(as {{ cn.name_used }})</i>
+                        {% if cn.person != person %} {# don't display current person #}
+                            <span class="name"><a href="{{ cn.person.get_absolute_url }}">
+                                {{ cn.person.firstname_lastname }}</a>{% if cn.name %} (as {{ cn.name }}){% endif %}</span>
                         {% endif %}
                     {% endfor %}
-                    {# display co-authors if any #}
-                    {% if item.creatorname_set.count > 1 %}
-                        <p>With
-                        {% for cn in item.creatorname_set.all %}
-                            {% if cn.person != person %}
-                                <a href="{{ cn.person.get_absolute_url }}">
-                                    {{ cn.person.firstname_lastname }}
-                                </a>{% if cn.name %} (as {{ cn.name }}){% endif %}{% if not forloop.last %}, {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        </p>
-                    {% endif %}
-
-                    </li>
-                    {% endfor %}
-                </ul>
-            </li>
+                    </p>
+                {% endif %}
+            </dd>
+            {% endfor %}
             {% endwith %} {# end issue group #}
         {% endfor %}
-    </ul>{# end journal group #}
+    </dl> {# end journal group #}
     {% endwith %}
 {% endfor %}
-</ul>
 {% endif %}
 
 {% if person.issues_edited.all.exists %}
-{# <h3><a name="editor">As Editor</a></h3> #}
-<h3>As Editor</h3>
+
+<h2 class="editor count">As Editor<span class="editor">{{ person.issues_edited.all|length }}</span></h2>
 {# group issues by journal to generate nested list #}
 {% regroup person.issues_edited.all by journal as issues_by_journal %}
-<ul>
+
 {% for issue_group in issues_by_journal %}
     {% with journal=issue_group.grouper %}
-    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
-    <ul>
+    <h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+    <dl>
         {% for issue in issue_group.list %}
-          <p>{% include 'journals/snippets/issue_link.html' with ed_with=person %}</p>
+          <dt>{% include 'journals/snippets/issue_link.html' with ed_with=person %}</dt>
         {% endfor %}
-    </ul>
-    </li>
+    </dl>
     {% endwith %}
 {% endfor %}
-</ul>
+
 {% endif %}
 
 {% if person.items_translated.all.exists %} {# NOTE: basically the same as author #}
-{# <h3><a name="translator">As Translator</a></h3> #}
-<h3>As Translator</h3>
+<h2 class="translate count">As Translator<span class="translate">{{ person.items_translated.all|length }}</span></h2>
 {# group by journal then by issue for nested list of items by journal/issue #}
 {% regroup person.items_translated.all by issue.journal as items_by_journal %}
-<ul>
+
 {% for item_group in items_by_journal %}
     {% with journal=item_group.grouper %}
-    <li class="p-journal-li"><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></li>
-        <ul>
+    <h3><a href="{% url 'journals:journal' journal.slug %}">{{ journal }}</a></h3>
+        <dl>
         {% regroup item_group.list by issue as items_by_issue %}
         {% for issue_items in items_by_issue %}
             {% with issue=issue_items.grouper %}
-            <li p-issue-li>{% include 'journals/snippets/issue_link.html' %}
-                <ul>
-                    {% for item in issue_items.list %}
-                    <li class="p-article-li">{{ item }}{% if item.creators.all %}, by
-                        {% for creator in item.creators.all %}
-                        <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
-                        {% endfor %}
-                    {% endif %}</li>
+            <dt>{% include 'journals/snippets/issue_link.html' %}</dt>
+                {% for item in issue_items.list %}
+                <dd>{{ item }}{% if item.creators.all %}, by
+                    {% for creator in item.creators.all %}
+                    <a href="{{creator.get_absolute_url}}">{{creator.firstname_lastname}}</a>{% if item.creators.all.count == 1 %}{% elif forloop.counter == item.creators.all.count %}{% else %},{% endif %}
                     {% endfor %}
-                </ul>
-            </li>
+                {% endif %}
+                </dd>
+                {% endfor %}
             {% endwith %} {# end issue group #}
         {% endfor %}
-    </ul></li>{# end journal group #}
+    </dl>{# end journal group #}
     {% endwith %}
 {% endfor %}
-</ul>
+
 {% endif %}
+
 </div>
+</div>
+</section>
 {% endblock %}

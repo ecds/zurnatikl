@@ -1,10 +1,14 @@
-{% extends 'site_base.html' %}
+{% extends 'page_base.html' %}
 
 {% block page-subtitle %} | Credits{% endblock %}
 
-{% block content %}
-  <h2>Credits</h2>
+{% block content-title %}Credits{% endblock %}
 
+{% block breadcrumb-links %}
+  <li class="active">Credits</li>
+{% endblock %}
+
+{% block page-content %}
 <p>Schooling Donald Allen is a collaboration between the <a href="http://digitalscholarship.emory.edu/">Emory Center for Digital Scholarship</a> (ECDS) and the <a href="http://rose.library.emory.edu/collections/literature-poetry/danowski-library.html">Raymond Danowski Poetry Library</a> of the <a href="http://rose.library.emory.edu/">Stuart A. Rose Manuscript, Archives &amp; Rare Book Library</a>.</p>
 
 <p>The project site and network graphs are built with <a href="https://github.com/emory-libraries-ecds/zurnatikl/">zurnatikl</a>, a Django web application created to investigate and analyze the networks among journal contributors such as authors, editors, and translators.</p>
@@ -31,6 +35,4 @@
 <p>The website design is by <a href="http://withresonance.com/">Resonance Marketing</a>.</p>
 
 <p>Thanks to Allen Tullos, Wayne Morse, and all who helped with the project.</p>
-
-
 {% endblock %}

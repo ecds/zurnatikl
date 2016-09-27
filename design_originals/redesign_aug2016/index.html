@@ -40,23 +40,30 @@
                             Networking the <strong>New American Poetry</strong>
                         </a>
                     </li>
-                    <ul>
                         <li>
-                        <a href="intro">Home</a>
+                        <a href="index.html" class="current">Home</a>
                         </li>
                         <li>
-                        <a href="intro">Learn About the Project</a>
+                        <a href="about.html">Learn About the Project</a>
                         </li>
                         <li>
-                        <a href="one" >Browse the Journals</a></li>
-                        <li><a href="two">Meet the Authors</a>
+                        <a href="journals.html" >Browse the Journals</a></li>
+                        <li><a href="authors.html">Meet the Authors</a>
                         </li>
                         <li>
-                        <a href="three">View the Connections</a>
+                        <a href="graph.html">View the Connections</a>
                         </li>
-                    </ul>
                     
                 </ul>
+                <div class="footer">
+                    <p>A <a href="danowski.html">Digital Danowski</a> Initiative</p>
+                    <nav>
+                        <ul>
+                        <li><a href="credits.html">Credits</a></li>
+                        <li><a href="credits.html">Legal</a></li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
             <!-- /#sidebar-wrapper -->
             <!-- Page Content -->
@@ -80,7 +87,7 @@
                             <h1>About the Project</h1>
                             <h2>Networking the New American Poetry</h2>
                             <p class="lead">Drawing on the impressive holdings of the Raymond Danowski Poetry Library at Emory University, Schooling Donald Allen uses data from a dozen midcentury poetry journals to visualize and debate the schools of poetry established by Allen’s noted anthology The New American Poetry: 1945-1960. The results complicate and challenge some key narratives and assumptions of postwar literary history.</p>
-                            <a href="" class="btn btn-default">Learn More</a>
+                            <a href="about.html" class="btn btn-default">Learn More</a>
                         </div>
                         </div>
                     </section>
@@ -93,7 +100,7 @@
                             <h1>Browse the Journals</h1>
                             <h2>Explore complete runs of iconic and rare postward poetry journals</h2>
                             <p class="lead">From New York to Los Angeles, the Beats to Black Mountain poets, the project includes some of the most important poetry publications of the twentieth century.</p>
-                            <a href="" class="btn btn-default">Browse the Journals</a>
+                            <a href="journals.html" class="btn btn-default">Browse the Journals</a>
                         </div>
                         </div>
                     </section>
@@ -106,7 +113,7 @@
                             <h1>Meet the Authors</h1>
                             <h2>Track authors, editors and translaters</h2>
                             <p class="lead">Schooling Donald Allen collects publication data on over 750 different authors, editors, and translators featured in a robust sample of rare and influential magazines. The results allow unprecedented insight into who was publishing where, with whom, and when.</p>
-                            <a href="" class="btn btn-default">Meet The Authors</a>
+                            <a href="authors.html" class="btn btn-default">Meet The Authors</a>
                         </div>
                         </div>
                     </section>
@@ -119,7 +126,7 @@
                             <h1>View the Connections</h1>
                             <h2>Visualize the Relationships</h2>
                             <p class="lead">Investigate network graphs that visualize the relationships among the authors, editors, translators, and the journals they contributed to, and compare how the print communities measure against the familiar poetic schools.</p>
-                            <a href="" class="btn btn-default">View the Graphs</a>
+                            <a href="graph.html" class="btn btn-default">View the Graphs</a>
                         </div>
                         </div>
                     </section>
@@ -139,6 +146,14 @@
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
         });
+        $( window ).resize(function() {
+            if ($(window).width() < 768 && $!("#wrapper.toggled")) {
+         $("#wrapper").toggleClass("toggled");
+         }else{
+         //handle else
+         }
+    
+});
         </script>
     </body>
 </html>

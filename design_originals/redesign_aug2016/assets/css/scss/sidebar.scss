@@ -32,6 +32,7 @@ body {
     z-index: 1000;
     position: fixed;
     left: 250px;
+    top: 0;
     width: 0;
     height: 100%;
     margin-left: -250px;
@@ -41,6 +42,33 @@ body {
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    .footer {
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        color: lighten($blue, 40%);
+        width: 100%;
+        nav {
+            ul {
+                padding-left: 0;
+                list-style: none;
+                li {
+                    display: inline-block;
+                    &:last-child {
+                        &:after {
+                            content: "";
+                        }
+                    }
+                    &:after {
+                        content: "  |  ";
+                    }
+                }
+            }
+        }
+        a {
+            color: lighten($blue, 50%);;
+        }
+    }
 }
 #page-content-wrapper {
     width: 100%;
@@ -71,6 +99,20 @@ body {
     list-style: none;
     text-transform: uppercase;
     font-weight: 300;
+    ::-webkit-input-placeholder { /* Chrome */
+        color: $white;
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+      color: $white;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+      color: $white;
+      opacity: .9;
+    }
+    :-moz-placeholder { /* Firefox 4 - 18 */
+      color: $white;
+      opacity: .9;
+    }
     .input-group {
         margin-top: .5em;
         width: 90%;
@@ -80,6 +122,7 @@ body {
             border: darken($blue, 10%);
             background: lighten($blue, 10%);
             color: $white;
+            width: 80%;
         }
         .btn {
             background: lighten($blue, 10%);
@@ -103,7 +146,7 @@ body {
             display: block;
             text-decoration: none;
             color: $white;
-            &:hover {
+            &:hover, &.current {
                 text-decoration: none;
                 color: lighten($blue, 40%);
             }
@@ -158,4 +201,26 @@ body {
                 }
     }
 
+}
+
+
+@media(max-height:600px) { 
+    .sidebar-nav {
+        li {
+            padding: 1em;
+            line-height: 1em;
+        }
+    }
+}
+
+@media(max-height:500px) { 
+    .sidebar-nav {
+        li {
+            padding: 1em;
+            line-height: 1em;
+        }
+        > .sidebar-brand {
+            padding: .5em 1em;
+        }
+    }
 }

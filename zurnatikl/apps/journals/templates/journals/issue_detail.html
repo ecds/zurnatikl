@@ -4,34 +4,42 @@
 
 {% block page-subtitle %} | Journals | {{ issue.journal.title }} | {{ issue.label }}{% endblock %}
 
-{% block content %}
-<ol class="breadcrumb">
+{% block breadcrumb-links %}
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></li>
   <li class="active">{{ issue.label }}</li>
-</ol>
+{% endblock %}
 
-<h2><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h2>
+{% block content %}
+<h1><a href="{% url 'journals:journal' issue.journal.slug %}">{{ issue.journal.title }}</a></h1>
+
+{% include 'journals/snippets/issue_nextprev.html' %}
 
 <div class="j-issues">
 
-<h3>{{ issue.label }} ({{ issue.date }})</h3>
+<h2>{{ issue.label }} ({{ issue.date }})</h2>
 
 {# editors #}
 {% with editors=issue.editors.all %}
 {% if editors %}
+<div class="editors">
+  <div class="title">Editors:</div>
 {% for editor in editors %}
- <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>
   {% endfor %}
+</div>
 {% endif %}
 {% endwith %}
 
 {# contributing editors #}
 {% with editors=issue.contributing_editors.all %}
 {% if editors %}
+<div class="editors">
+  <div class="title">Contributing Editors:</div>
 {% for editor in editors %}
- <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>{% if editors.count == 1 %}{% elif forloop.counter == editors.count %}{% else %},{% endif %}
+ <a href="{{editor.get_absolute_url}}">{{editor.firstname_lastname}}</a>
   {% endfor %}
+</div>
 {% endif %}
 {% endwith %}
 
@@ -50,16 +58,14 @@
 <p>Price per issue: ${{ issue.price }}</p>
 {% endif %}
 
+
 <div class="toc">
-    <div class="toc-header">
-      <span>Start Page</span>
-      <span>End Page</span>
-      <span>Contents</span>
-    </div>
+    <ul class="toc-header">
+      <li>Contents</li>
+      <li>Pages</li>
+    </ul>
 {% for item in issue.item_set.all %}
   <ul>
-    <li>{{ item.start_page }}</li>
-    <li>{{ item.end_page }}</li>
     <li>{{ item.title }}{% if item.creatorname_set.exists or item.translators.exists %},{% endif %}
       {% if item.creatorname_set.exists %}
       {% for cn in item.creatorname_set.all %}
@@ -67,41 +73,18 @@
       {% endfor %}
       {% endif %}
       {% if item.translators.exists %}
-       trans. {{ item.translators.all|readable_list:'firstname_lastname' }}
+       trans. {% for tn in item.translators.all %}<a href="{{ tn.get_absolute_url }}">{{ tn.firstname_lastname }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
       {% endif %}
     </li>
+
+    <li>{{ item.start_page }}{% if item.start_page != item.end_page %} - {{ item.end_page }}{% endif %}</li>
   </ul>
 
 {% endfor %}
-</div>
+</div> {# toc #}
+
+{% include 'journals/snippets/issue_nextprev.html' %}
+
 </div> {# j-issues #}
-
-
-  <div class="j-image">
-
-{% comment %}   <picture>
-      <source srcset="beatitude-issue-9-img.png" media="(max-width: 320px)" class="img-responsive">
-      <source srcset="beatitude-issue-9-img.png" class="img-responsive">
-      <img srcset="beatitude-issue-9-img.png" alt="My default image" class="img-responsive">
-    </picture>{% endcomment %}
-  </div>
-
-
-<nav>
-  <ul class="pager">
-    {% if issue.previous_issue %}
-    <li class="previous"><a href="{% url 'journals:issue' issue.journal.slug issue.previous_issue.id %}"><span aria-hidden="true">&larr;</span> {{ issue.previous_issue.label }}</a></li>
-    {% else %}
-    <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span></a></li>
-    {% endif %}
-    {% if issue.next_issue %}
-    <li class="next"><a href="{% url 'journals:issue' issue.journal.slug issue.next_issue.id %}">{{ issue.next_issue.label }} <span aria-hidden="true">&rarr;</span></a></li>
-    {% else %}
-    <li class="next disabled"><a href="#"><span aria-hidden="true">&rarr;</span></a></li>
-    {% endif %}
-  </ul>
-</nav>
-
-</div>
 {% endblock %}
 

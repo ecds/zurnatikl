@@ -136,28 +136,38 @@ function init_sigma_graph(opts) {
 }
 
 
-
 /* off-canvas menu for graph control panel & color key
 adapted from http://tympanus.net/Development/OffCanvasMenuEffects/cornermorph.html
 */
 $(document).ready(function() {
 
-    var menu_openbtn = $('#open-button'),
-        menu_isopen = false,
-        filter_openbtn = $('#open-filter-button');
-
-
-    function toggleMenu() {
-        // console.log(this.id);
-        if (menu_isopen) {
-            $(document.body).removeClass('show-menu');
-        } else {
-            $(document.body).addClass('show-menu');
+    // on fullscreen change event, add or remove fullscreen class
+    // to enable custom styling fullscreen graph element
+    var screen_change_events = "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange";
+    $(document).on(screen_change_events, function () {
+        var fullscreen_el;
+        if (document.fullscreenEnabled) {
+          fullscreen_el = document.fullscreenElement;
+        } else if (document.mozFullScreenEnabled) {
+          fullscreen_el = document.mozFullScreenElement;
+        } else if (document.msFullscreenEnabled) {
+          fullscreen_el = document.msFullscreenElement;
+        } else if (document.webkitFullscreenEnabled) {
+            fullscreen_el = document.webkitFullscreenElement;
         }
-        menu_isopen = !menu_isopen;
+
+        if (fullscreen_el != undefined) {
+            $(fullscreen_el).addClass('fullscreen');
+        } else {
+            $('.fullscreen').removeClass('fullscreen');
+        }
+    });
+
+    // control panel toggle
+    var menu_openbtn = $('.menu-button');
+    function toggleMenu() {
+        $("#graphMenu").toggle();
+        $(this).toggleClass('active')
     }
-
     menu_openbtn.on("click", toggleMenu);
-    filter_openbtn.on("click", toggleMenu);
-
 });

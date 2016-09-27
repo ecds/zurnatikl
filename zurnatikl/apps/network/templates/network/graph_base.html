@@ -6,7 +6,7 @@
 {% block css %}
   {{ block.super }}
   <link href="{% static 'network/css/sigma.css' %}" rel="stylesheet"/>
-  <link href="{% static 'css/cornermenu.css' %}" rel="stylesheet"/>
+  {# <link href="{% static 'css/cornermenu.css' %}" rel="stylesheet"/> #}
 {% endblock %}
 
 {% block javascript %}
@@ -18,13 +18,19 @@
     <script src="{% static 'js/sigma/plugins/sigma.renderers.customEdgeShapes.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.renderers.parallelEdges.min.js' %}"></script>
     <script src="{% static 'js/sigma/plugins/sigma.plugins.fullScreen.min.js' %}"></script>
-    <script src="{% static 'js/sigma/plugins/sigma.plugins.filter.min.js' %}"></script>
     <script src="{% static 'network/js/initgraph.js' %}"></script>
+    {% block graph-init %} {# extend to override config options #}
+    <script>
+    var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
+
+    </script>
+    {% endblock %}
 {% endblock %}
 
-{% block content_full %}
-
-<div class="container"> {# FIXME: without this, graphs don't display; may need to drop main/secondary-main ? #}
+{% block content %}
+<section class="row">
+    <div class="col-sm-12">
+        <div class="content">
 
 {% block pregraph-content %}{% endblock %}
 
@@ -35,12 +41,50 @@
         <span id="text">Loading</span>... <i class="fa fa-spinner fa-spin"></i>
       </span>
       </div>
+
+
+  {# graph control panel #}
+  <div class="filter-container">
+      {# download menu #}
+      {% block download-graph %}{% endblock %}
+      {# button to make graph fullscreen  #}
+      <div>
+          <a class="btn btn-secondary" id="graph-fullscreen" title="View Graph in Full Screen"><span class="fa fa-arrows-alt"></span></a>
+      </div>
+      {# control panel / key #}
+      <div>
+          <a class="btn btn-default settings-btn menu-button"><span class="fa fa-cogs"></span><span class="caret"></span></a>
+          <div id="graphMenu" class='settings-menu'>
+              <nav class="menu">
+                  {% block graph-controls %}{% endblock %}
+                  <div id="graph-color-key">
+                      <h4>Color Guide</h4>
+                      {# all graphs will have the option of showing color key for node/type #}
+                      <div id="graph-type-colors" class="color-key">
+                        <div id="type">
+                            <h5>Nodes</h5>
+                            <dl class="graph-colors" id="node-colors"></dl>
+                               {% comment %} actual colors will be added by graph init in this format
+                              <dt style="background-color:#004052"/>
+                              <dd>Person</dd> {% endcomment %}
+                            <h5>Edges</h5>
+                            <dl class="graph-colors" id="edge-colors"></dl>
+                        </div>
+                      </div>
+                      {% block graph-color-keys %}{% endblock %}
+                  </div>
+              </nav>
+          </div>
+      </div>
+
+  </div>
   </div>
 </div>
 
 {# control panel for graph interaction #}
 {# NOTE: putting this inside the graph-container div makes it available in fullscreen #}
 {# but probably need additional/different style/position for fullscreen #}
+{% comment %}
 <div class="menu-wrap">
         <nav class="menu">
          {# allow extending template to add controls #}
@@ -53,7 +97,7 @@
              <dl class="graph-colors" id="node-colors"></dl>
              {% comment %} actual colors will be added by graph init in this format
               <dt style="background-color:#004052"/>
-              <dd>Person</dd>{% endcomment %}
+              <dd>Person</dd>
                <h5>Edges</h5>
               <dl class="graph-colors" id="edge-colors"></dl>
           </dl>
@@ -61,16 +105,14 @@
         </nav>
       </div>
       <button class="menu-button" id="open-button"><i class="fa fa-fw fa-cog"></i><span>Open Menu</span></button>
-      <!-- <button class="menu-button" id="open-filter-button"><i class="fa fa-fw fa-filter"></i><span>Open Filters</span></button> -->
+      <!-- <button clas="menu-button" id="open-filter-button"><i class="fa fa-fw fa-filter"></i><span>Open Filters</span></button> -->
       <button class="menu-button" id="graph-fullscreen" title="view fullscreen"><i class="fa fa-arrows-alt"></i> </button>
 </div>
+{% endcomment %}
 {% block postgraph-content %}{% endblock %}
 
-{% block graph-init %} {# extend to override config options #}
-<script>
-var s = init_sigma_graph({json_url: "{% block json-url %}{% endblock %}"});
 
-</script>
-{% endblock %}
 </div>
+</div>
+</section>
 {% endblock %} {# content #}

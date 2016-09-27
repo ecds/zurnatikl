@@ -4,18 +4,22 @@
 
 {% block page-subtitle %} | People | {{ person.firstname_lastname }} | Egograph{% endblock %}
 
-{% block pregraph-content %}
-<ol class="breadcrumb">
+{% block breadcrumb-links %}
   <li><a href="{% url 'people:list' %}">People</a></li>
   <li><a href="{% url 'people:person' person.slug %}">{{ person.firstname_lastname }}</a></li>
   <li class="active">Egograph</li>
-</ol>
+{% endblock %}
 
-{% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
-{% url 'people:egograph-export' person.slug 'gml' as gml_url %}
-{% include 'network/snippets/download_graph.html' %}
+{% block download-graph %}
+    {% url 'people:egograph-export' person.slug 'graphml' as graphml_url %}
+    {% url 'people:egograph-export' person.slug 'gml' as gml_url %}
+    {% include 'network/snippets/download_graph.html' %}
+{% endblock %}
 
-<h2>{{ person.firstname_lastname }}'s Connections</h2>
+{% block pregraph-content %}
+
+
+<h1>{{ person.firstname_lastname }}'s Connections</h1>
 
 {% endblock %}
 

@@ -1,12 +1,15 @@
-{% extends 'site_base.html' %}
+{% extends 'page_base.html' %}
 {% load static %}
 
 {% block page-subtitle %} | Networks{% endblock %}
 
-{% block content %}
-<!--Need to add square images of the Allen and Journals network graphs and add links to their pages after first para-->
-<!--Need to add links to people page in para 1 and 4; journals page in para 1-->
-  <h2>Networks</h2>
+{% block content-title %}Networks{% endblock %}
+
+{% block breadcrumb-links %}
+  <li class="active">Networks</li>
+{% endblock %}
+
+{% block page-content %}
 <p>The network graphs here aim to illustrate literary communities. One graph is generated from Donald Allen’s remarks about poetic schools in the introduction to <em>The New American Poetry</em>. Allen associates people, places, and journals with certain schools of poetry: the New York School, the Beats, Black Mountain, and so on. The other network graph visualizes connections among <a href="{% url 'people:list' %}">editors, authors, and translators</a> of <a href="{% url 'journals:list' %}">twelve poetry journals</a> of the era. <em>Schooling Donald Allen</em> seeks to compare the schools Allen describes with the communities detected in the journals’ data.</p>
 
 <div class="row">

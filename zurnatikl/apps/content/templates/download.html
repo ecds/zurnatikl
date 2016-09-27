@@ -1,15 +1,19 @@
-{% extends 'site_base.html' %}
+{% extends 'page_base.html' %}
 
 {% block page-subtitle %} | Download Data{% endblock %}
 
-{% block content %}
-  <h2>Download Data</h2>
+{% block content-title %}Download Data{% endblock %}
 
+{% block breadcrumb-links %}
+  <li class="active">Download the Data</li>
+{% endblock %}
+
+{% block page-content %}
   <p>Brief description of the data and how it was collected here - link to
   Rose Library, Danowski Poetry Library; reference number of items/journals/people
   included? what else?</p>
 
-  <h3>CSV Data</h3>
+  <h2>CSV Data</h2>
   <p>
       <ul>
           <li>
@@ -25,7 +29,7 @@
       </ul>
   </p>
 
-  <h3>Network Graphs</h3>
+  <h2>Network Graphs</h2>
   <p>
     <ul>
       <li>Schools categorized by Donald Allen:
@@ -43,20 +47,20 @@
     </ul>
   </p>
 
-<h3>Preferred Citation</h3>
+<h2>Preferred Citation</h2>
 
 <p>TODO</p>
 
-<h3>Data Summary</h3>
+<h2>Data Summary</h2>
 
-<h4>Format</h4>
+<h3>Format</h3>
 
 <p>Data is currently available as CSV files generated from the database,
 and as network graph files.  (More detail here - fields, which are multiple,
 which are optional, etc?  How the separate csv files can be related?)  TODO: also describe
 the various network graphs and how they are generated.</p>
 
-<h4>Data Quality</h4>
+<h3>Data Quality</h3>
 
 <p>data quality statement here?  manually entered rather than OCR;
 reference fields that are incomplete or inconsistently filled out across

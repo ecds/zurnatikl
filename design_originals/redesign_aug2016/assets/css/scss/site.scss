@@ -1,5 +1,7 @@
 @import 'variables';
 @import 'authors';
+@import 'breadcrumbs';
+@import 'toc';
 
 html, body {
     height: 100%;
@@ -29,6 +31,11 @@ section {
 			font-size: 18px;
 			line-height: 1.75em;
 		}
+		figure {
+			img.img-responsive {
+				width: 100%;
+			}
+		}
 		figcaption {
 			padding-top: .5em;
 			text-align: right;
@@ -41,7 +48,7 @@ section {
 		    color: $blue;
 		    position: relative;
 		    margin-top: 1em;
-		    
+
 		    &:hover {
 		    	text-decoration: none;
 		    	background-color: $white;
@@ -52,6 +59,8 @@ section {
 		    	img {
 		    		width: 100%;
 		    		height: 100%;
+		    		object-fit: cover;
+		    		object-position: 50%;
 		    	}
 		    }
 		    .title {
@@ -62,7 +71,7 @@ section {
 		    }
 		}
 		.btn {
-			border-radius: 25px;
+			border-radius: $borderRadius;
 			padding: 1em 1.5em;
 			text-transform: uppercase;
 			border: solid 1px $accent;
@@ -73,6 +82,15 @@ section {
 					background-color: $white;
 					color: $accent;
 
+				}
+			}
+			&.btn-secondary {
+				background-color: $gray;
+				color: $blue;
+				border: solid 1px $blue;
+				&:hover {
+					background-color: $blue;
+					color: $white;
 				}
 			}
 		}
@@ -118,7 +136,7 @@ section {
 	}
 	&.intro {
 			background-attachment: fixed;
-		    background-image: url("images/network-graph-01.svg");
+		    background-image: url("images/network-graph.svg");
 		    background-position: top right;
 		    background-repeat: no-repeat;
 		    background-size: cover;
@@ -127,16 +145,19 @@ section {
 				font-weight: 300;
 			}
 	}
-	
+
 }
 
-@media(min-width:768px) { 
+@media(min-width:768px) {
 	/* Set 100% Height for Grid Effect and vertically align content div */
 	#wrapper {
 		height: 100%;
 		#page-content-wrapper {
 			height: 100%;
-			.fill { 
+			.container-fluid {
+				padding-left: 3em;
+			}
+			.fill {
 	    		min-height: 100%;
 	    		height: 100%;
 	    		.row {
@@ -217,7 +238,15 @@ section {
 		    text-align: center;
 		}
 	}
-	
+
 }
 
+}
+
+/* disable transitions on preload */
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: all 0 none !important;
 }

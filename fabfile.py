@@ -103,6 +103,9 @@ def prep_source():
     # create a tar archive of the specified version and extract inside the bulid directory
     local('git archive --format=tar --prefix=%(build_dir)s/ %(git_rev)s | (cd build && tar xf -)' % env)
 
+    # remove design files from build, not needed for deploy
+    local('rm -rf build/%(build_dir)s/design_originals/' % env)
+
     # local settings handled remotely
 
     if env.url_prefix:
@@ -243,6 +246,7 @@ fab deploy:remote_proxy=some.proxy.server:3128 -H servername
     configure_site()
     update_links()
     compare_localsettings()
+    rm_old_builds()
 
 
 @task

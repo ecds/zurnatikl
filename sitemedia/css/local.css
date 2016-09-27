@@ -75,23 +75,6 @@
     max-width: 934px;
 }
 
-.breadcrumb {
-    background-color: #fff;
-    text-align: right;
-    padding-right: 15px;
-    padding-bottom: 0px;
-    margin-bottom: 5px;
-}
-
-.breadcrumb>.active {
-     color: #000;
-}
-
-.breadcrumb>li+li:before {
-    content: "/\00a0";
-    padding: 0 0px;
-    color: #000;
-}
  .col-md-12, .col-md-2, .col-md-10 {
     padding-left: 0px;
     padding-right: 0px;
@@ -128,4 +111,14 @@
 
 .main-home {
 margin-left: -30px;
+}
+
+/* use css to make co-author list comma separated
+ (can't accurately detect last name when skipping current author */
+.co-authors .name:after {
+    content: ", ";
+}
+
+.co-authors .name:last-child:after {
+    content: "";
 }
