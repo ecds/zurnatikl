@@ -17,6 +17,8 @@ urlpatterns = [
         name='about'),
     url(r'^credits/$', TemplateView.as_view(template_name="credits.html"),
         name='credits'),
+    url(r'^legal/$', TemplateView.as_view(template_name="legal.html"),
+        name='legal'),
     url(r'^network/', include('zurnatikl.apps.network.urls',
         namespace='network')),
     url(r'^journals/', include('zurnatikl.apps.journals.urls',
