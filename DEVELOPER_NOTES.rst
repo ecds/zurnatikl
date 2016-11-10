@@ -32,3 +32,14 @@ Note that the version of sigma.js used in this project is the
 version distributed by linkurious.js.
 
 Linkurious documentation: https://github.com/Linkurious/linkurious.js/wiki
+
+
+Regenerate graph cache
+-----------------------
+The graph cache is set to never expire. When new data is added by admins, the cache has to be regenerated.
+
+* In the Django shell::
+
+   from django.core.cache import cache
+   cache.clear() 
+* restart apache
