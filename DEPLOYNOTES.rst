@@ -119,6 +119,11 @@ tables and initial data using::
 Upgrade Notes
 =============
 
+1.6.2
+---
+
+* Need to copy ./design_originals/digital_danowski_landing_sept2016/www/index.html to the /home/danowski/www/ directory when there are changes applied to the index.html. This file is the landing page of the danowski site.
+
 1.5
 ---
 
