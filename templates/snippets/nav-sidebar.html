@@ -44,7 +44,7 @@
                 <nav>
                     <ul>
                     <li><a href="{% url 'credits' %}">Credits</a></li>
-                    <li><a href="#">Legal</a></li>
+                    <li><a href="{% url 'legal' %}">Legal</a></li>
                     {% if user.is_staff %} {# admin link for logged-in staff #}
                     <li>
                       <a href="{% url 'admin:index' %}" title="Admin">Admin{# <i class="fa fa-cog"></i>#}</a>
