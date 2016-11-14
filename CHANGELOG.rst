@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+Release 1.6.2 - Text Update and Landing Page Deployment Notes
+-------------------------------------------------------------
+* As a user, I want to see updated text on the Digital Danowski landing
+  page and New American Poetry "Journals" page so I can better understand
+  the nature of the project.
+* As a developer, I want to know how to update the landing page so that we
+  could easily make changes to the site homepage.
+
 Release 1.6 - Redesign and public release
 -----------------------------------------
 

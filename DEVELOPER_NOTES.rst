@@ -41,5 +41,9 @@ The graph cache is set to never expire. When new data is added by admins, the ca
 * In the Django shell::
 
    from django.core.cache import cache
-   cache.clear() 
+   cache.clear()
 * restart apache
+
+Deployment Note about the Landing Page
+--------------------------------------
+Starting from version 1.6.2, we need to copy ./design_originals/digital_danowski_landing_sept2016/www/index.html to the /home/danowski/www/ directory when there are changes applied to the index.html. This file is the landing page of the Danowski site.
