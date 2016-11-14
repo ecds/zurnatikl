@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import OrderedDict
 from django.db import models
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -6,9 +6,9 @@ from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 import itertools
 import logging
-import networkx as nx
 import time
 
+from igraph import Graph
 from django_date_extensions import fields as ddx
 from stdimage.models import StdImageField
 
@@ -80,6 +80,7 @@ class JournalManager(models.Manager):
     def by_author(self, person):
         return self.get_queryset().by_author(person)
 
+
 class Journal(models.Model):
     'A Journal or Magazine'
 
@@ -145,6 +146,9 @@ class Journal(models.Model):
 
     admin_thumbnail.short_description = 'thumbnail'
 
+    #: node type to be used in generated networks
+    network_type = 'Journal'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -153,7 +157,7 @@ class Journal(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self)}
+        attrs = {'type': self.network_type, 'label': unicode(self)}
         if self.publisher:
             attrs['publisher'] = self.publisher
         return attrs
@@ -167,169 +171,157 @@ class Journal(models.Model):
         #: list of tuples for edges in the network
         return [(self.network_id, school.network_id) for school in self.schools.all()]
 
+    contributor_network_cache_key = 'journal-contributor-network'
 
     @classmethod
-    def contributor_network(self):
+    def contributor_network(cls):
         'Network graph of authors, editors, translators, and journals'
 
-        # NOTE: this is probably a bit slow to be generating on the fly.
+        # NOTE: this is a bit slow to be generating on the fly.
         # For now, cache the network after it's generated, but that
-        # will need to be refined
-        graph = cache.get('journal_auth_ed_network')
+        # should probably be refined
+        graph = cache.get(cls.contributor_network_cache_key)
         if graph:
+            logger.debug('Using cached journal contributor network graph')
             return graph
-        graph = nx.MultiGraph()
+
+        graph = Graph()
+        graph.to_directed()   # we want a directed graph
         full_start = time.time()
+        # gather edges in an ordered dict to avoid generating duplicate
+        # edges, and so edge weights can be added efficiently
+        # - key is a tuple of source & target nodes, edge label, i.e.
+        #   ((source, target), label)
+        # - value is the count or weight of that edge
+        edges = OrderedDict()
 
-        start = time.time()
-        journals = Journal.objects.all()
-        graph.add_nodes_from(
-            # node id, node attributes
-            [(j.network_id, {'label': unicode(j)}) for j in journals],
-            type='Journal')
+        # helper method to add edges:
+        # set count to 1 if not already present; increase count if present
+        def add_edge(edge):
+            if edge not in edges:
+                edges[edge] = 1
+            else:
+                edges[edge] += 1
+
+        # start = time.time()
+        # prefetch journal contributors all at once, for efficiency
+        journals = Journal.objects.all().prefetch_related(
+            'schools', 'issue_set__editors', 'issue_set__item_set__creators',
+            'issue_set__item_set__translators')
+        # NOTE: this query is currently the slowest step in generating the
+        # graph, nearly ~4s in dev.  It can only be timed here if it is
+        # forced to evaluate via list or similar, but it is slightly more
+        # efficient not to evaluate it that way
+        # logger.debug('Retrieved journal contributor data from db in %.2f sec',
+                    # time.time() - start)
+
         for j in journals:
-            count = 0
-            # editors of the journal
-            editors = Person.objects.filter(issues_edited__journal=j).distinct()
-            # add people to the graph
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in editors],
-                type='Person')
-            # editors are connected to the journal they edited
-            graph.add_edges_from([(p.network_id, j.network_id) for p in editors],
-                label='editor')
-            count += editors.count()
+            start = time.time()
+            # starting count, to easily calculate number of nodes & edges added
+            vtx_count = len(graph.vs())
+            edge_count = len(edges)
+            graph.add_vertex(j.network_id, label=unicode(j),
+                             type=j.network_type,
+                             schools=[s.name for s in j.schools.all()])
 
-            # authors who contributed to the journal
-            authors = Person.objects.filter(items_created__issue__journal=j).distinct()
-            # this could be redundant if a person was added elsewhere
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in authors],
-                type='Person')
-            count += authors.count()
-            # authors are connected to the journal they contributed to
-            graph.add_edges_from([(p.network_id, j.network_id) for p in authors],
-                label='contributor')
+            # journal editors are at the issue level
+            for issue in j.issue_set.all():
+                editors = issue.editors.all()
+                for i, editor in enumerate(editors):
+                    # only add if not already present
+                    if editor.network_id not in graph.vs['name']:
+                        graph.add_vertex(editor.network_id,
+                                         type=editor.network_type,
+                                         label=editor.firstname_lastname)
+                    add_edge(((editor.network_id, j.network_id), 'editor'))
 
-            # translators who contributed to the journal
-            translators = Person.objects.filter(items_translated__issue__journal=j).distinct()
-            # this could be redundant if a person was added elsewhere
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname}) for p in translators],
-                type='Person')
-            count += translators.count()
-            # translators are connected to the journal they contributed to
-            graph.add_edges_from([(p.network_id, j.network_id) for p in translators],
-                label='translator')
+                    # add a co-editor rel to any other editors on this issue
+                    for co_editor in editors[i+1:]:
+                        add_edge(((editor.network_id, co_editor.network_id),
+                                 'co-editor'))
 
-            logger.debug('Added %d journal edges for editors/authors/translators for %s in %.2f sec' % \
-                (count, j, time.time() - start))
+                # authors and translators are at the item level
+                for item in issue.item_set.all():
+                    authors = item.creators.all()
+                    for i, author in enumerate(authors):
+                        # only add person if not already present in the graph
+                        if author.network_id not in graph.vs['name']:
+                            graph.add_vertex(author.network_id,
+                                             label=author.firstname_lastname,
+                                             type=author.network_type)
+                        # author is a journal contributor
+                        add_edge(((author.network_id, j.network_id),
+                                 'contributor'))
 
-        # co-editors
+                        # each author is connected to the issue editors who
+                        # edited their work
+                        for editor in editors:
+                            add_edge(((editor.network_id, author.network_id),
+                                     'edited'))
+
+                        # add a co-author to any other authors on this item
+                        for co_author in authors[i+1:]:
+                            add_edge(((author.network_id, co_author.network_id),
+                                     'co-author'))
+
+                    for translator in item.translators.all():
+                        # only add person if not already present in the graph
+                        if translator.network_id not in graph.vs['name']:
+                            graph.add_vertex(translator.network_id,
+                                             label=translator.firstname_lastname,
+                                             type=translator.network_type)
+
+                        # translators are connected to the journal they contributed to
+                        add_edge(((translator.network_id, j.network_id),
+                                 'translator'))
+                        # and to the author whose work they translated
+                        for author in authors:
+                            add_edge(((translator.network_id, author.network_id),
+                                     'translated'))
+
+            logger.debug('Added %d nodes and %d edges for %s in %.2f sec',
+                         len(graph.vs()) - vtx_count, len(edges) - edge_count,
+                         j, time.time() - start)
+
+        # add person-school associations
+        # - only a fairly small number of people are associated with
+        # schools, so it should be most efficient to handle separately
         start = time.time()
-        co_editors = Person.objects.filter(issues_edited__isnull=False) \
-            .annotate(editor_count=models.Count('issues_edited__editors')) \
-            .filter(editor_count__gt=1).distinct()
-        # for each editor, find the people they edited with
-        for ed in co_editors:
-            co_eds = Person.objects.filter(issues_edited__editors=ed) \
-                                   .exclude(pk=ed.id).distinct()
-            graph.add_edges_from([(ed.network_id, co_ed.network_id) for co_ed in co_eds],
-                label='co-editor')
-            # NOTE: this is redundant since we will be setting relationships
-            # both directions
-        logger.debug('Added co-editor edges in %.2f sec' % (time.time() - start))
+        schooled_people = Person.objects.filter(schools__isnull=False) \
+                                .prefetch_related('schools')
+        for person in schooled_people:
+            try:
+                graph.vs.find(name=person.network_id)['schools'] = \
+                    [s.name for s in person.schools.all()]
 
-        # find co-authors via items with more than one creator
+            except ValueError:
+                # it's possible we have people associated with schools
+                # who are not contributors to our journals, so this is
+                # not an error, but providea  warning.
+                logger.warn('School-associated person %s not found in contributor network graph',
+                            person)
+        logger.debug('Added school associations for %d people in %.2f sec',
+                     schooled_people.count(), time.time() - start)
+
         start = time.time()
-        edge_count = len(graph.edges())
-        coauthored_items = Item.objects.annotate(creator_count=models.Count('creators')) \
-            .filter(creator_count__gt=1).distinct()
-        # each item has at least two; add an edge for first and second co-author
-        graph.add_edges_from([(item.creators.all()[0].network_id, item.creators.all()[1].network_id)
-            for item in coauthored_items],
-            label='co-author')
-        # only a handful have more than two authors, so handle them separately
-        for item in coauthored_items:
-            if item.creators.count() > 2:
-                # associate each creator with every other creator
-                idx = 0
-                for idx in range(item.creators.count()):
-                    coauth = item.creators.all()[idx]
-                    other_authors = item.creators.all()[idx+1:]
-                    # for the first author, skip the second author
-                    # (that edge already added for all items)
-                    if idx == 0:
-                         other_authors = other_authors[1:]
-                    graph.add_edges_from([(coauth.network_id, creator.network_id)
-                                          for creator in other_authors],
-                                         label='co-author')
+        # split edge information into source/target tuple and edge label
+        edge_src_target, edge_labels = zip(*edges.keys())
+        # add the edges to the graph
+        graph.add_edges(edge_src_target)
+        # set the edge labels
+        graph.es['label'] = edge_labels
+        # set edge weight based on number of occurrences
+        graph.es['weight'] = edges.values()
 
-        logger.debug('Added %d co-author edges via items in %.2f sec' % \
-            (len(graph.edges()) - edge_count, time.time() - start))
+        logger.debug('Added edges and edge sizes in %.2f sec',
+                     time.time() - start)
 
-        # author/editor and translator/editor
-        start = time.time()
-        editors = Person.objects.filter(issues_edited__isnull=False).distinct()
-        for ed in editors:
-            # Note that we could do this in a single query,
-            # but it seems to be faster to do separately
-            authors = Person.objects.filter(items_created__issue__editors=ed.pk)
-            graph.add_edges_from([(ed.network_id, person.network_id) for person in authors],
-                label='edited')
-            translators = Person.objects.filter(items_translated__issue__editors=ed.pk)
-            graph.add_edges_from([(ed.network_id, person.network_id) for person in translators],
-                label='edited')
-        logger.debug('Added author/editor and translator/editor edges in %.2f sec' % (time.time() - start))
+        logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec',
+                     len(graph.vs()), len(graph.es()), time.time() - full_start)
 
-
-        # author/translator
-        start = time.time()
-        translators = Person.objects.filter(items_translated__isnull=False) \
-            .distinct()
-        # for each translator, find the person whose work they translated
-        for translator in translators:
-            authors = Person.objects.filter(items_created__translators=translator) \
-                                   .exclude(pk=translator.id).distinct()
-            graph.add_edges_from([(translator.network_id, auth.network_id) for auth in authors],
-                label='translated')
-        logger.debug('Added translator/author edges in %.2f sec' % (time.time() - start))
-
-        # consolidate parallel edges of the same type
-        start = time.time()
-        edge_count = len(graph.edges())
-        for node in graph.nodes_iter():
-            old_edges = graph.edges(node, data=True, keys=True)
-            # gather edges by label, then count edges to the same target
-            edges = {}
-            # source for each edge is current node
-            for s, t, key, data in old_edges:
-                edge_type = data['label']
-                if edge_type not in edges:
-                    edges[edge_type] = defaultdict(int)
-                edges[edge_type][t] += 1
-
-            # remove the old edges and add the new, consolidated ones
-            graph.remove_edges_from(old_edges)
-            parallels = defaultdict(int)
-            for label, edges in edges.iteritems():
-                for target, count in edges.iteritems():
-                    parallels[target] += 1
-                    graph.add_edge(node, target, label=label,
-                        size=count * 10, count=parallels[target] * 3)
-                    # size and count are display-specific fields for sigma.js
-                    # parallel edges
-                    # count indicates spacing for parallel edges
-                    # size affects display size and when labels are visible
-                    # NOTE: size may be set too low for smaller graphs
-
-        logger.debug('Consolidated parallel edges (%d to %d) in %.2f sec' % \
-            (edge_count, len(graph.edges()), (time.time() - start)))
-
-        logger.debug('Complete journal contributor graph (%d nodes, %d edges) generated in %.2f sec' \
-            % (len(graph.nodes()), len(graph.edges()), time.time() - full_start))
-
-        cache.set('journal_auth_ed_network', graph)
+        # store the generated graph in the cache for the next time
+        # for now, set cached graph to never time out
+        cache.set(cls.contributor_network_cache_key, graph, None)
         return graph
 
 
@@ -376,7 +368,7 @@ class Issue(models.Model):
         help_text="address where issue was printed",
         related_name='issues_printed_at', null=True)
     #: mailing addresses, many-to-many relation to :class:`~zurnatikl.apps.geo.models.Location`
-    mailing_addresses  = models.ManyToManyField(Location, blank=True,
+    mailing_addresses = models.ManyToManyField(Location, blank=True,
         help_text="addresses where issue was mailed",
         related_name='issues_mailed_to')
     #: physical description
@@ -437,6 +429,9 @@ class Issue(models.Model):
             if prev_issues.exists():
                 return prev_issues.last()
 
+    #: node type to be used in generated networks
+    network_type = 'Issue'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -445,7 +440,7 @@ class Issue(models.Model):
     @property
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
-        attrs = {'label': unicode(self)}
+        attrs = {'type': self.network_type, 'label': unicode(self)}
         if self.volume:
             attrs['volume'] = self.volume
         if self.issue:
@@ -567,6 +562,9 @@ class Item(models.Model):
                                               self._meta.model_name),
                        args=(self.id,))
 
+    #: node type to be used in generated networks
+    network_type = 'Item'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -576,6 +574,7 @@ class Item(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         attrs = {
+            'type': self.network_type,
             'label': self.title,
             'anonymous': self.anonymous,
             'no creator': self.no_creator,
@@ -612,6 +611,7 @@ class Item(models.Model):
              if placename.location is not None])
 
         return edges
+
 
 
 class CreatorNameManager(models.Manager):

@@ -1,0 +1,59 @@
+{% load widget_tweaks %}
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+            <div class="input-group col-md-12">
+           {% if search_form %}
+            <form {# class="form-search navbar-search"#} role="form" method="GET" action="{% url 'journals:search' %}">
+                <label class="sr-only" for="{{ search_form.keyword.name }}">{{ search_form.keyword.label }}</label>
+                {% render_field search_form.keyword class+="search-query form-control" placeholder='Search' data-toggle="tooltip" data-placement="bottom" data-animation="true" autocomplete="off" data-original-title=search_form.keyword.help_text %}
+                <span class="input-group-btn">
+                    <button class="btn btn-danger" type="button">
+                        <span class=" glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </form>
+           {% endif %} {# search form #}
+           </div>
+                <li class="sidebar-brand">
+                    <a href="{% url 'site-index' %}">
+                        Networking the <strong>New American Poetry</strong>
+                    </a>
+                </li>
+                <ul>
+                    <li>
+                        <a href="{% url 'about' %}">Learn About the Project</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'journals:list' %}">Browse the Journals</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'people:list' %}">Journal Contributors</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'network:index' %}">View the Connections</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'download' %}">Download the Data</a>
+                    </li>
+                </ul>
+            </ul>
+
+            <div class="footer">
+                <p>A <a href="https://danowski.digitalscholarship.emory.edu/">Digital Danowski</a> Initiative</p>
+                <nav>
+                    <ul>
+                    <li><a href="{% url 'credits' %}">Credits</a></li>
+                    <li><a href="{% url 'legal' %}">Legal</a></li>
+                    {% if user.is_staff %} {# admin link for logged-in staff #}
+                    <li>
+                      <a href="{% url 'admin:index' %}" title="Admin">Admin{# <i class="fa fa-cog"></i>#}</a>
+                    </li>
+                    {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+
+        </div>
+        <!-- /#sidebar-wrapper -->

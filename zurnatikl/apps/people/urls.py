@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views import PeopleList, PersonDetail, Egograph, \
-   EgographJSON, EgographExport
+   EgographJSON, EgographExport, PeopleCSV
 
 urlpatterns = [
     url(r'^$', PeopleList.as_view(), name='list'),
@@ -9,6 +9,7 @@ urlpatterns = [
         name='egograph'),
     url(r'^(?P<slug>[\w-]+)/egograph.json$', EgographJSON.as_view(),
         name='egograph-json'),
-    url(r'^(?P<slug>[\w-]+)/egograph.(?P<fmt>gexf|graphml)$', EgographExport.as_view(),
+    url(r'^(?P<slug>[\w-]+)/egograph.(?P<fmt>graphml|gml)$', EgographExport.as_view(),
         name='egograph-export'),
+    url(r'^data/people.csv$', PeopleCSV.as_view(), name='csv'),
 ]

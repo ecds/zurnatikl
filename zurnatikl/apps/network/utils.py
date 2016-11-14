@@ -1,42 +1,114 @@
 # utility methods for generating network graphs from application data
-
-import time
+from collections import OrderedDict
 import logging
+from operator import add
 import unicodedata
+
 
 logger = logging.getLogger(__name__)
 
-def to_ascii(d):
+
+def to_ascii(data):
     # convert unicode to ascii, converting accented characters to
     # non-accented equivalents where possible
-    return {k: unicodedata.normalize('NFD', v).encode('ascii', 'ignore') if isinstance(v, unicode) else v
-                 for k, v in d.iteritems()}
+    return {k: unicodedata.normalize('NFD', v).encode('ascii', 'ignore')
+            if isinstance(v, unicode) else v
+            for k, v in data.iteritems()}
 
-# NOTE: it might be cleaner to refactor into graph class with these methods
 
-def add_nodes_to_graph(qs, graph, node_type, use_ascii=False, chunksize=1000):
-    # some models have large number of items, handle them in chunks
-    for i in xrange(0, qs.count(), chunksize):
-        chunk = qs[i:i + chunksize]
-        # add to the network with attributes and the specified type
-        start = time.time()
-        graph.add_nodes_from(
-            [(n.network_id,
-              to_ascii(n.network_attributes) if use_ascii else n.network_attributes)
-             for n in chunk],
-            type=node_type)
-        logger.debug('Added %d %s nodes in %.2f sec' % \
-            (len(chunk), node_type, time.time() - start))
+def encode_unicode(data):
+    # encode as utf-8 (e.g., for output via igraph write methods)
+    return {k: v.encode("utf-8") if isinstance(v, unicode) else v
+            for k, v in data.iteritems()}
 
-def add_edges_to_graph(qs, graph, node_type):
-    # NOTE: should be possible to add a list of edges all at once,
-    # but will require testing to see if that is more efficient
-    logger.debug('adding %s edges' % node_type)
-    start = time.time()
-    for node in qs:
-        if node.has_network_edges:
-            graph.add_edges_from(node.network_edges)
+# NOTE: it might be cleaner to refactor into graph subclass with these methods
 
-    logger.debug('Added edges for %d nodes in %.2f sec' % \
-        (qs.count(), time.time() - start))
 
+def egograph(graph, vertex):  # support configurable radius?
+    '''Filter a graph around a specified vertex to generate an egograph.
+    Currently only supports a radius of one.'''
+
+    # identify the set of vertices we want to keep: the central
+    # vertex and all its immediate neighbors
+    neighbors = graph.neighbors(vertex)
+    vertices = set([vertex]) | set(neighbors)
+
+    # NOTE: should be possible to support radius > 1 by iteratively
+    # fnding and adding neighbors of neighbors
+
+    # filter the graph to just the requested vertices
+    return graph.subgraph(vertices)
+
+
+def annotate_graph(graph, fields):
+    '''Annotate graph vertices with calculated values like degree for
+    use in export and display.
+    '''
+    in_degree = out_degree = None
+    if 'in_degree' in fields:
+        in_degree = graph.indegree()
+        graph.vs['in_degree'] = in_degree
+    if 'out_degree' in fields:
+        out_degree = graph.outdegree()
+        graph.vs['out_degree'] = out_degree
+    if 'degree' in fields:
+        # igraph doesn't expose a method for degree directly
+        # so calculate by adding in & out degrees
+        if in_degree is None:
+            in_degree = graph.indegree()
+        if out_degree is None:
+            out_degree = graph.outdegree()
+        degree = map(add, in_degree, out_degree)
+        # add degree to as node data
+        graph.vs['degree'] = degree
+
+    # NOTE: previous networkx annotate_graph method
+    # also supported betweenness_centrality and eigenvector_centrality,
+    # but those do not seem to be used anywhere currently
+
+    return graph
+
+
+def node_link_data(graph, layout=None, cluster=None):
+    '''Generate node and edge dictionary to be output as json
+    for use with sigma.js.  If a layout is specified, it will be used
+    to set coordinates on each node.  If a clustering is specified,
+    it will be used to set a community value on each node.'''
+    graph_data = OrderedDict([
+        ('directed', graph.is_directed()),
+        ('multigraph', any(graph.is_multiple())),
+        ('nodes', []),
+        ('edges', [])
+    ])
+
+    # should layout and clustering algorithms be included in the
+    # data so they can easily be reported to the user?
+
+    for i, vtx in enumerate(graph.vs):
+        # include any vertex attributes present in the graph
+        vtx_data = vtx.attributes()
+        vtx_data['id'] = vtx.index
+        # if layout is present, set x & y coords
+        if layout is not None:
+            x, y = layout[i]
+            vtx_data.update({'x': x, 'y': y})
+
+        if cluster is not None:
+            for i, comm in enumerate(cluster):
+                if vtx.index in comm:
+                    vtx_data['community'] = i
+                    break
+
+        graph_data['nodes'].append(vtx_data)
+
+    for edge in graph.es:
+        # include edge attributes, like labels and size
+        edge_data = edge.attributes()
+        edge_data.update({
+            'id': edge.index,
+            'source': edge.source,
+            'target': edge.target
+        })
+        graph_data['edges'].append(edge_data)
+
+    return graph_data

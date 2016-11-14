@@ -1,12 +1,15 @@
-from django.test import TestCase
+from collections import defaultdict
+from django.db.models import Q, Count
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
-from zurnatikl.apps.journals.models import Journal, Issue, Item, \
-    PlaceName
-from zurnatikl.apps.journals.templatetags.journal_extras import \
-    readable_list, all_except
 from zurnatikl.apps.people.models import School, Person
+
+from .models import Journal, Issue, Item, PlaceName
+from .templatetags.journal_extras import readable_list, all_except
+from .views import JournalIssuesCSV, JournalItemsCSV
+
 
 class JournalTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -53,6 +56,128 @@ class JournalTestCase(TestCase):
         self.assertEqual(beat.schools.count(), len(edges))
         # target element of the first edge should be the id of the first school
         self.assertEqual(beat.schools.first().network_id, edges[0][1])
+
+    def test_contributor_network(self):
+        graph = Journal.contributor_network()
+
+        # graph should include all journals and any person who
+        # contributed to a journal as editor, author, or translator
+        journals = Journal.objects.all()
+        people = Person.objects.filter(
+            Q(items_created__isnull=False) |
+            Q(items_translated__isnull=False) |
+            Q(issues_edited__isnull=False)
+        ).distinct()
+        expected_node_count = people.count() + journals.count()
+        self.assertEqual(expected_node_count, len(graph.vs),
+            '# of nodes should be total of journals & journal contributors ' +
+            'expected %d, got %d' % (expected_node_count, len(graph.vs)))
+
+        for journal in journals:
+            node = graph.vs.find(name=journal.network_id)
+            self.assertEqual(journal.network_type, node['type'])
+            self.assertEqual(unicode(journal), node['label'])
+            # school association, if any, should be present
+            for sch in journal.schools.all():
+                self.assert_(sch.name in node['schools'])
+
+        for person in people:
+            # node should only be included once
+            self.assertEqual(1, len(graph.vs.select(name=person.network_id)))
+            node = graph.vs.find(name=person.network_id)
+            self.assertEqual(person.network_type, node['type'])
+            self.assertEqual(person.firstname_lastname, node['label'])
+            # school association, if any, should be present
+            for sch in person.schools.all():
+                self.assert_(sch.name in node['schools'])
+
+            # test that edges have been added as expected
+            # collect journal & editor counts to check against edges
+            journal_ids = defaultdict(int)
+            editor_ids = defaultdict(int)
+            for item in person.items_created.all():
+                journal_ids[item.issue.journal.network_id] += 1
+                for editor in item.issue.editors.all():
+                    editor_ids[editor.network_id] += 1
+            # author -> journal
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='contributor')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+            # author-> editor
+            for editor, count in editor_ids.iteritems():
+                editor_node = graph.vs.find(editor)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=editor_node.index,
+                                     _target=node.index,
+                                     label='edited')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # editor -> journal
+            journal_ids = defaultdict(int)
+            for issue in person.issues_edited.all():
+                journal_ids[issue.journal.network_id] += 1
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='editor')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # translator -> journal
+            journal_ids = defaultdict(int)
+            author_ids = defaultdict(int)
+            for item in person.items_translated.all():
+                journal_ids[item.issue.journal.network_id] += 1
+                for author in item.authors.all():
+                    author_ids[author.network_id] += 1
+            for journal, count in journal_ids.iteritems():
+                journal_node = graph.vs.find(journal)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=journal_node.index,
+                                     label='translator')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+            # translator -> author
+            for author, count in author_ids.iteritems():
+                author_node = graph.vs.find(author)
+                # edge should exist (this raises an error if not)
+                edge = graph.es.find(_source=node.index,
+                                     _target=author_node.index,
+                                     label='translated')
+                # weight should match count
+                self.assertEqual(count, edge['weight'])
+
+        # co-editors & co-authors
+        co_editors = 0  # count of expected # of edges
+        for issue in Issue.objects.all():
+            if issue.editors.count() > 1:
+                for i, editor in enumerate(issue.editors.all()):
+                    co_editors += len(issue.editors.all()[i+1:])
+        graph_co_ed_count = len(graph.es.select(label='co-editor'))
+        self.assertEqual(co_editors, graph_co_ed_count,
+                         'expected %d co-editor edges, found %d' %
+                         (co_editors, graph_co_ed_count))
+
+        co_authors = 0   # count of expected # of edges
+        for item in Item.objects.all():
+            if item.creators.count() > 1:
+                for i, creator in enumerate(item.creators.all()):
+                    co_authors += len(item.creators.all()[i+1:])
+        graph_co_auth_count = len(graph.es.select(label='co-author'))
+        self.assertEqual(co_authors, graph_co_auth_count,
+                         'expected %d co-author edges, found %d' %
+                         (co_authors, graph_co_auth_count))
+
 
 class IssueTestCase(TestCase):
     fixtures = ['test_network.json']
@@ -137,13 +262,19 @@ class ItemTestCase(TestCase):
         # add places mentioned for testing purposes
         pn = PlaceName(name='somewhere over the rainbow')
         pn.location = Location.objects.first()
+        pn.item_id = item.id
+        pn.save()
         item.placename_set.add(pn)
         pn2 = PlaceName(name='the world\'s end')
         pn2.location = Location.objects.all()[1]
+        pn2.item_id = item.id
+        pn2.save()
         item.placename_set.add(pn2)
         # placenames can apparently have an empty location?
         # placename without location can't contribute a network edge
         pn3 = PlaceName(name='Xanadu')
+        pn3.item_id = item.id
+        pn3.save()
         item.placename_set.add(pn3)
 
         # network id
@@ -241,7 +372,9 @@ class JournalViewsTestCase(TestCase):
         self.assertContains(response, '(%s)' % issue.publication_date,
             msg_prefix='issue detail should include issue publication date')
         ed = issue.editors.all().first()
-        self.assertContains(response, '<h3>%s %s, editor</h3>' % (ed.first_name, ed.last_name),
+        self.assertContains(
+            response, '<a href="%s">%s %s</a>' % (ed.get_absolute_url(),
+                                                  ed.first_name, ed.last_name),
             html=True, msg_prefix='issue detail should list editor')
         self.assertContains(response, 'Published at %s' % issue.publication_address.display_label,
             msg_prefix='issue detail should include publication address')
@@ -286,24 +419,18 @@ class JournalViewsTestCase(TestCase):
         self.assertContains(response, 'Price per issue: $%s' % new_issue.price,
             msg_prefix='issue detail should include price if set')
 
-        # list of names display
-        eds = new_issue.editors.all()
-        self.assertContains(response,
-            '<h3>%s, %s, and %s, editors</h3>' % \
-             (eds[0].firstname_lastname,
-             eds[1].firstname_lastname,
-             eds[2].firstname_lastname),
-             html=True,
-             msg_prefix='multiple editor names should be listed')
-        # NOTE: using html test so whitespace differences will be ignored
+        # editors should be displayed, linked
+        for ed in new_issue.editors.all():
+            self.assertContains(response, ed.firstname_lastname,
+                msg_prefix='each editor should be listed by full name')
+            self.assertContains(response, ed.get_absolute_url(),
+                msg_prefix='each editor profile link should be available')
 
-        c_eds = new_issue.contributing_editors.all()
-        self.assertContains(response,
-            '<h3>%s %s and %s %s, contributing editors</h3>' % \
-             (c_eds[0].first_name, c_eds[0].last_name,
-             c_eds[1].first_name, c_eds[1].last_name),
-             html=True,
-             msg_prefix='multiple contributing editor names should be listed')
+        for contrib_ed in new_issue.contributing_editors.all():
+            self.assertContains(response, contrib_ed.firstname_lastname,
+                msg_prefix='contributing editor should be listed by full name')
+            self.assertContains(response, contrib_ed.get_absolute_url(),
+                msg_prefix='contributing editor profile link should be available')
 
         # check 404 - valid issue id with wrong journal slug should 404
         response = self.client.get(reverse('journals:issue',
@@ -340,6 +467,77 @@ class JournalViewsTestCase(TestCase):
                 kwargs={'journal_slug': item.issue.journal.slug,
                         'id': item.issue.id}),
             msg_prefix='search results should link to issue the item belongs to')
+
+    def test_issue_csv_export(self):
+        response = self.client.get(reverse('journals:csv-issues'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(JournalIssuesCSV.header_row) in response_content)
+
+        for issue in Issue.objects.all():
+            self.assert_(issue.journal.title in response_content)
+            self.assert_(issue.volume in response_content)
+            self.assert_(issue.issue in response_content)
+            self.assert_(unicode(issue.publication_date) in response_content)
+            self.assert_(u'; '.join(unicode(ed) for ed in issue.editors.all())
+                         in response_content)
+            self.assert_(u'; '.join(unicode(ed) for ed in issue.contributing_editors.all())
+                         in response_content)
+            self.assert_(unicode(issue.publication_address) in response_content)
+            if issue.print_address is not None:
+                self.assert_(unicode(issue.print_address) in response_content)
+            self.assert_(u'; '.join(unicode(loc) for loc in issue.mailing_addresses.all())
+                         in response_content)
+            self.assert_(issue.physical_description in response_content)
+            self.assert_(unicode(issue.numbered_pages) in response_content)
+            if issue.price is not None:
+                self.assert_(unicode(issue.price) in response_content)
+            if issue.sort_order is not None:
+                self.assert_(unicode(issue.sort_order) in response_content)
+            self.assert_(issue.notes.replace('\n', ' ').replace('\r', ' ')
+                         in response_content)
+            self.assert_(issue.get_absolute_url() in response_content)
+
+    def test_item_csv_export(self):
+        response = self.client.get(reverse('journals:csv-items'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(JournalItemsCSV.header_row) in response_content)
+
+        for item in Item.objects.all():
+            self.assert_(item.issue.journal.title in response_content)
+            self.assert_(item.issue.volume in response_content)
+            self.assert_(item.issue.issue in response_content)
+            self.assert_(item.title in response_content)
+            self.assert_(unicode(item.anonymous) in response_content)
+            self.assert_(unicode(item.no_creator) in response_content)
+            self.assert_(unicode(item.start_page) in response_content)
+            self.assert_(unicode(item.end_page) in response_content)
+            self.assert_(u', '.join(g.name for g in item.genre.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(cn.person) for cn in item.creatorname_set.all())
+                         in response_content)
+            self.assert_(u', '.join(cn.name_used for cn in item.creatorname_set.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(p) for p in item.translators.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(p) for p in item.persons_mentioned.all())
+                         in response_content)
+            self.assert_(u', '.join(unicode(loc) for loc in item.addresses.all())
+                         in response_content)
+            self.assert_(unicode(item.abbreviated_text) in response_content)
+            self.assert_(unicode(item.literary_advertisement)
+                         in response_content)
+            self.assert_(item.notes.replace('\n', ' ').replace('\r', ' ')
+                         in response_content)
 
 
 ## test custom template tags

@@ -1,0 +1,169 @@
+body {
+  overflow-x: hidden; }
+
+/* Toggle Styles */
+#wrapper {
+  padding-left: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; }
+  #wrapper.toggled {
+    padding-left: 250px; }
+    #wrapper.toggled #sidebar-wrapper {
+      width: 250px; }
+    #wrapper.toggled #page-content-wrapper {
+      position: absolute;
+      margin-right: -250px; }
+      #wrapper.toggled #page-content-wrapper #menu-toggle {
+        left: 250px; }
+
+#sidebar-wrapper {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  margin-left: -250px;
+  overflow-y: auto;
+  background: #5d6a74;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; }
+  #sidebar-wrapper .footer {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    color: #c9cfd4;
+    width: 100%; }
+    #sidebar-wrapper .footer nav ul {
+      padding-left: 0;
+      list-style: none; }
+      #sidebar-wrapper .footer nav ul li {
+        display: inline-block; }
+        #sidebar-wrapper .footer nav ul li:last-child:after {
+          content: ""; }
+        #sidebar-wrapper .footer nav ul li:after {
+          content: "  |  "; }
+    #sidebar-wrapper .footer a {
+      color: #e5e8eb; }
+
+#page-content-wrapper {
+  width: 100%;
+  position: absolute; }
+  #page-content-wrapper #menu-toggle {
+    position: fixed;
+    top: 0;
+    left: 0px;
+    background: #5d6a74;
+    padding: 1em;
+    color: #FFFFFF;
+    z-index: 9999;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease; }
+
+/* Sidebar Styles */
+.sidebar-nav {
+  position: absolute;
+  top: 0;
+  width: 250px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-transform: uppercase;
+  font-weight: 300; }
+  .sidebar-nav ::-webkit-input-placeholder {
+    /* Chrome */
+    color: #FFFFFF; }
+  .sidebar-nav :-ms-input-placeholder {
+    /* IE 10+ */
+    color: #FFFFFF; }
+  .sidebar-nav ::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #FFFFFF;
+    opacity: .9; }
+  .sidebar-nav :-moz-placeholder {
+    /* Firefox 4 - 18 */
+    color: #FFFFFF;
+    opacity: .9; }
+  .sidebar-nav .input-group {
+    margin-top: .5em;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto; }
+    .sidebar-nav .input-group input {
+      border: #465058;
+      background: #748490;
+      color: #FFFFFF;
+      width: 80%; }
+    .sidebar-nav .input-group .btn {
+      background: #748490;
+      color: #FFFFFF;
+      border: 1px solid #748490;
+      border-bottom: none; }
+  .sidebar-nav ul {
+    padding-left: 0; }
+  .sidebar-nav li {
+    border-bottom: solid 2px #748490;
+    text-align: right;
+    padding: 1.5em 1em;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.75em; }
+    .sidebar-nav li a {
+      display: block;
+      text-decoration: none;
+      color: #FFFFFF; }
+      .sidebar-nav li a:hover, .sidebar-nav li a.current {
+        text-decoration: none;
+        color: #c9cfd4; }
+      .sidebar-nav li a:active, .sidebar-nav li a:focus {
+        text-decoration: none; }
+
+.sidebar-nav > .sidebar-brand {
+  font-size: 1.5em;
+  border-bottom: none;
+  width: 100%;
+  line-height: 1.25em; }
+  .sidebar-nav > .sidebar-brand a {
+    color: #FFFFFF; }
+    .sidebar-nav > .sidebar-brand a:hover {
+      text-decoration: none; }
+
+@media (min-width: 768px) {
+  #wrapper {
+    padding-left: 250px; }
+    #wrapper.toggled {
+      padding-left: 0; }
+      #wrapper.toggled #sidebar-wrapper {
+        width: 0; }
+      #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0; }
+        #wrapper.toggled #page-content-wrapper #menu-toggle {
+          left: 0px; }
+
+  #sidebar-wrapper {
+    width: 250px; }
+
+  #page-content-wrapper {
+    position: relative; }
+    #page-content-wrapper #menu-toggle {
+      left: 250px; } }
+@media (max-height: 600px) {
+  .sidebar-nav li {
+    padding: 1em;
+    line-height: 1em; } }
+@media (max-height: 500px) {
+  .sidebar-nav li {
+    padding: 1em;
+    line-height: 1em; }
+  .sidebar-nav > .sidebar-brand {
+    padding: .5em 1em; } }
+
+/*# sourceMappingURL=sidebar.css.map */

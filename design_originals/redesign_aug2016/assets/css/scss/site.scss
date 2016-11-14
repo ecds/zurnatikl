@@ -1,0 +1,252 @@
+@import 'variables';
+@import 'authors';
+@import 'breadcrumbs';
+@import 'toc';
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: $bodyFont;
+}
+
+/* Set 100% Height for Grid Effect and vertically align content div */
+
+
+/* Styles */
+section {
+	padding-bottom: 1em;
+	&:nth-child(even) {
+		background-color: $paper;
+		border-bottom: solid 1px #CCC;
+		border-top: solid 1px #CCC;
+	}
+	&:last-child {
+		border-bottom: none;
+	}
+	.content {
+		padding: 1em;
+		p, ul {
+			font-size: 18px;
+			line-height: 1.75em;
+		}
+		figure {
+			img.img-responsive {
+				width: 100%;
+			}
+		}
+		figcaption {
+			padding-top: .5em;
+			text-align: right;
+		}
+		.tile {
+		    border: solid 1px #CCC;
+		    padding: 0;
+		    background-color: $paper;
+		    display: block;
+		    color: $blue;
+		    position: relative;
+		    margin-top: 1em;
+
+		    &:hover {
+		    	text-decoration: none;
+		    	background-color: $white;
+		    }
+		    figure {
+		    	height: 96px;
+		    	overflow: hidden;
+		    	img {
+		    		width: 100%;
+		    		height: 100%;
+		    		object-fit: cover;
+		    		object-position: 50%;
+		    	}
+		    }
+		    .title {
+		    		text-align: center;
+		    		font-size: 1.25em;
+		    		text-transform: uppercase;
+		    		padding: .5em;
+		    }
+		}
+		.btn {
+			border-radius: $borderRadius;
+			padding: 1em 1.5em;
+			text-transform: uppercase;
+			border: solid 1px $accent;
+			&.btn-default {
+				background-color: $accent;
+				color: $white;
+				&:hover {
+					background-color: $white;
+					color: $accent;
+
+				}
+			}
+			&.btn-secondary {
+				background-color: $gray;
+				color: $blue;
+				border: solid 1px $blue;
+				&:hover {
+					background-color: $blue;
+					color: $white;
+				}
+			}
+		}
+		h1 {
+			text-transform: uppercase;
+			font-size: 3em;
+			text-align: center;
+			color: $blue;
+			font-weight: 300;
+			strong {
+				color: $accent;
+			}
+		}
+		h2 {
+			font-size: 2em;
+			margin-bottom: 1em;
+			font-weight: 300;
+			&:after {
+				content: "";
+			    border-bottom: 2px solid $accent;
+			    width: 25%;
+			    height: 10px;
+			    display: block;
+			}
+		}
+		&.center {
+			text-align: center;
+		}
+		&.full-height {
+			padding: 0;
+			.image {
+				height: 250px;
+				padding: 0;
+				overflow: hidden;
+				img {
+					width: 100%;
+					object-fit: cover;
+					object-position: center;
+					margin-top: -50%;
+				}
+			}
+		}
+	}
+	&.intro {
+			background-attachment: fixed;
+		    background-image: url("images/network-graph.svg");
+		    background-position: top right;
+		    background-repeat: no-repeat;
+		    background-size: cover;
+		    h1 {
+				font-size: 3em;
+				font-weight: 300;
+			}
+	}
+
+}
+
+@media(min-width:768px) {
+	/* Set 100% Height for Grid Effect and vertically align content div */
+	#wrapper {
+		height: 100%;
+		#page-content-wrapper {
+			height: 100%;
+			.container-fluid {
+				padding-left: 3em;
+			}
+			.fill {
+	    		min-height: 100%;
+	    		height: 100%;
+	    		.row {
+	    			height: 100%;
+	    			> div {
+	    				height: 100%;
+	    				overflow: hidden;
+	    				.content {
+	    				 	position: relative;
+					    	top: 50%;
+					    	transform: translatey(-50%);
+	    				 }
+	    			}
+	    		}
+			}
+		}
+	}
+section {
+	padding-bottom: 0;
+	&:first-child {
+		h1 {
+			margin-top: 13px;
+		}
+	}
+	.content {
+		padding: 0em 2.25em;
+		h1 {
+			font-size: 3em;
+			text-align: left;
+		}
+		&.full-height {
+			padding: 0;
+			height: 100%;
+			> div {
+				position: relative;
+				top: 50%;
+				transform: translatey(-50%);
+			}
+			.image {
+				padding: 0;
+				height: 100%;
+				img {
+					min-width: 100%;
+					height: 100%;
+					object-fit: cover;
+					margin-top: 0;
+				}
+			}
+		}
+	.filter-list {
+			text-align: left;
+			.filter {
+				padding: .75em;
+			}
+		}
+	}
+	&.intro {
+		h1 {
+			font-size: 5em;
+		}
+		p {
+			font-size: 21px;
+		}
+		&:after {
+			height: 50px;
+			width: 50px;
+			content: "\f078";
+			color: $white;
+			font-size: 2em;
+			padding: 1em;
+			font: normal normal normal 20px/1 FontAwesome;
+			border-radius: 50%;
+			background-color: $blue;
+		    position: absolute;
+		    right: 2%;
+		    bottom: 2%;
+		    opacity: 0.5;
+		    text-align: center;
+		}
+	}
+
+}
+
+}
+
+/* disable transitions on preload */
+.preload * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: all 0 none !important;
+}

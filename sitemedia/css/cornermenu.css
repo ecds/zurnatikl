@@ -51,8 +51,13 @@ body,
 	background: transparent;
 	outline: none;
 }
+
+.menu-button#open-filter-button {
+	/*top: 335px;*/
+}
+
 .menu-button#graph-fullscreen {
-	top: 325px;
+	top: 335px;
 }
 
 .menu-button span {

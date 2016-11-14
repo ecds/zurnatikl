@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
 
 from zurnatikl.apps.geo.models import Location
-from zurnatikl.apps.people.models import Person, School
+from zurnatikl.apps.journals.models import Journal
+from .models import Person, School, Name
+from .views import PeopleCSV
 
 
 class SchoolTestCase(TestCase):
@@ -35,40 +38,50 @@ class SchoolTestCase(TestCase):
         # generate network from all schools in our fixture data
         graph = School.schools_network(schools)
 
-
         # each school and every associated person, place, and journal
         # should be included in the network and have an edge
         # connecting school and corresponding person/place/journal
 
         for s in schools:
-            self.assert_(s.network_id in graph.nodes())
-            node = graph.node[s.network_id]
-            self.assertEqual('School', node['type'])
-            self.assertEqual(unicode(s), node['label'])
+            school_node = graph.vs.find(name=s.network_id)
+            self.assert_(school_node)
+            self.assertEqual('School', school_node['type'])
+            self.assertEqual(unicode(s), school_node['label'])
 
-            for p in s.person_set.all():
-                self.assert_(p.network_id in graph.nodes())
-                node = graph.node[p.network_id]
-                self.assertEqual('Person', node['type'])
-                self.assertEqual(p.firstname_lastname, node['label'])
+        # people associated with schools should be in the network
+        for p in Person.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=p.network_id)
+            self.assert_(node)
+            self.assertEqual('Person', node['type'])
+            self.assertEqual(p.firstname_lastname, node['label'])
 
-                self.assert_(s.network_id in graph.edge[p.network_id])
+            for sch in p.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
-            for j in s.journal_set.all():
-                self.assert_(j.network_id in graph.nodes())
-                node = graph.node[j.network_id]
-                self.assertEqual('Journal', node['type'])
-                self.assertEqual(unicode(j), node['label'])
+        # journals associated with schools should be in the network
+        for j in Journal.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=j.network_id)
+            self.assert_(node)
+            self.assertEqual('Journal', node['type'])
+            self.assertEqual(unicode(j), node['label'])
 
-                self.assert_(s.network_id in graph.edge[j.network_id])
+            for sch in j.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
-            for loc in s.locations.all():
-                self.assert_(loc.network_id in graph.nodes())
-                node = graph.node[loc.network_id]
-                self.assertEqual('Place', node['type'])
-                self.assertEqual(loc.short_label, node['label'])
+        for loc in Location.objects.filter(schools__isnull=False):
+            node = graph.vs.find(name=loc.network_id)
+            self.assert_(node)
+            self.assertEqual('Place', node['type'])
+            self.assertEqual(loc.short_label, node['label'])
 
-                self.assert_(s.network_id in graph.edge[loc.network_id])
+            for sch in loc.schools.all():
+                sch_node = graph.vs.find(name=sch.network_id)
+                self.assert_(graph.es.find(_source=sch_node.index,
+                                           _target=node.index))
 
 
 class PeopleTestCase(TestCase):
@@ -106,10 +119,11 @@ class PeopleTestCase(TestCase):
         self.assertFalse(net_attrs['translator'])
         self.assertFalse(net_attrs['mentioned'])
 
-        # network edges - no location
-        self.assertFalse(berrigan.has_network_edges,
-            'person with no location should have no network edges')
-        self.assertEqual([], berrigan.network_edges)
+        # network edges - no location or school
+        zhang = Person.objects.get(last_name='Zhang')
+        self.assertFalse(zhang.has_network_edges,
+            'person with no location or school should have no network edges')
+        self.assertEqual([], zhang.network_edges)
 
         # construct a fictional person with all fields
         sf = Location.objects.filter(city='San Francisco').first()
@@ -135,6 +149,59 @@ class PeopleTestCase(TestCase):
         edge_targets = [t for s, t in edges]
         self.assert_(sf.network_id in edge_targets)
         self.assert_(fifthschool.network_id in edge_targets)
+
+    def test_journal_contributor(self):
+        contributors = Person.objects.journal_contributors()
+
+        editors = Person.objects.filter(issues_edited__isnull=False)
+        for ed in editors:
+            self.assert_(ed in contributors,
+                'editors should be included in journal contributors')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(auth in contributors,
+                'authors should be included in journal contributors')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(mensch not in contributors,
+                'mentioned non-author/editor people should not contributors')
+
+    def test_journal_contributors_with_counts(self):
+        contributors = Person.objects.journal_contributors_with_counts()
+
+        # same tests as above, did we include and exclude the right
+        # people?
+        editors = Person.objects.filter(issues_edited__isnull=False)
+        for ed in editors:
+            self.assert_(ed in contributors,
+                'editors should be included in journal contributors')
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(auth in contributors,
+                'authors should be included in journal contributors')
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(mensch not in contributors,
+                'mentioned non-author/editor people should not contributors')
+
+        # test counts
+        for contrib in contributors:
+            self.assertEqual(contrib.num_created,
+                             contrib.items_created.all().count())
+            self.assertEqual(contrib.num_edited,
+                             contrib.issues_edited.all().count())
+            self.assertEqual(contrib.num_translated,
+                             contrib.items_translated.all().count())
 
 
 class PeopleViewsTestCase(TestCase):
@@ -217,6 +284,16 @@ class PeopleViewsTestCase(TestCase):
             reverse('journals:journal', kwargs={'slug': item.issue.journal.slug}),
             msg_prefix='should link to journal for authored item')
 
+        # test that alternate names are displayed on person detail page
+        Name.objects.create(first_name='Doug', last_name='Mac', person=macarthur)
+        Name.objects.create(first_name='Dougy', last_name='M', person=macarthur)
+        response = self.client.get(reverse('people:person',
+            kwargs={'slug': macarthur.slug}))
+        for name in macarthur.name_set.all():
+            self.assertContains(response, unicode(name),
+                msg_prefix='alternate name %s should be on person detail page'\
+                % name)
+
     def test_egograph(self):
         # main egograph page just loads json & sigma js
         # berrigan - edited one issue in test data, no items created
@@ -241,20 +318,11 @@ class PeopleViewsTestCase(TestCase):
         self.assert_('edges' in response.content)
         self.assert_('nodes' in response.content)
 
-
     def test_egograph_export(self):
         berrigan = Person.objects.get(last_name='Berrigan')
         # basic testing that the export formats are correct
         # and include the requested person
         # testing the generated network should happen elsewhere
-
-        # gexf format
-        response = self.client.get(reverse('people:egograph-export',
-            kwargs={'slug': berrigan.slug, 'fmt': 'gexf'}))
-        self.assertEqual(response['content-type'], 'application/gexf+xml')
-        self.assertContains(response, '<gexf')
-        self.assertContains(response, berrigan.network_id)
-        self.assertContains(response, berrigan.firstname_lastname)
 
         # graphml
         response = self.client.get(reverse('people:egograph-export',
@@ -264,4 +332,59 @@ class PeopleViewsTestCase(TestCase):
         self.assertContains(response, berrigan.network_id)
         self.assertContains(response, berrigan.firstname_lastname)
 
+        # gml format
+        response = self.client.get(reverse('people:egograph-export',
+            kwargs={'slug': berrigan.slug, 'fmt': 'gml'}))
+        self.assertEqual(response['content-type'], 'text/plain')
+        self.assertContains(response, 'Creator "igraph version')
+        self.assertContains(response, berrigan.network_id)
+        self.assertContains(response, berrigan.firstname_lastname)
+
+    def test_csv_export(self):
+        response = self.client.get(reverse('people:csv'))
+        self.assertEqual(response['content-type'],
+                         'text/csv; charset=utf-8')
+
+        response_content = u''.join([
+            chunk.decode('utf-8') for chunk in response.streaming_content])
+
+        self.assert_(','.join(PeopleCSV.header_row) in response_content)
+
+        def person_fields(p):
+            return ','.join([
+                ', '.join(p.race or []), p.racial_self_description, p.gender,
+                ', '.join(sch.name for sch in p.schools.all()),
+                p.uri,
+                '; '.join([unicode(loc) for loc in p.dwellings.all()])
+                # p.notes.replace('\n', ' ').replace('\r', ' ')
+            ])
+
+        editors = Person.objects.filter(
+            Q(issues_edited__isnull=False) |
+            Q(issues_contrib_edited__isnull=False))
+        for ed in editors:
+            self.assert_(
+                u'%s,%s' % (ed.last_name, ed.first_name) in response_content,
+                'editors should be included in person CSV export')
+
+            self.assert_(person_fields(ed) in response_content)
+            self.assert_(ed.get_absolute_url() in response_content)
+
+        authors = Person.objects.filter(items_created__isnull=False)
+        for auth in authors:
+            self.assert_(
+                u"%s,%s" % (auth.last_name, auth.first_name) in response_content,
+                'authors should be included in person CSV export')
+            self.assert_(person_fields(auth) in response_content)
+            self.assert_(auth.get_absolute_url() in response_content)
+
+        mentions = Person.objects.filter(
+            Q(items_mentioned_in__isnull=False) &
+            Q(issues_edited__isnull=True) &
+            Q(issues_contrib_edited__isnull=True) &
+            Q(items_created__isnull=True))
+        for mensch in mentions:
+            self.assert_(
+                u'%s,%s' % (mensch.last_name, mensch.first_name) not in response_content,
+                'mentioned people should not be included in CSV export')
 

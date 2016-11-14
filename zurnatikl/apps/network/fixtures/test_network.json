@@ -125,7 +125,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [3],
         "slug": "john-kelly"
     },
     "model": "people.person",
@@ -141,7 +141,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [1],
         "slug": "ted-berrigan"
     },
     "model": "people.person",
@@ -157,7 +157,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [2],
         "slug": "allen-de-loach"
     },
     "model": "people.person",
@@ -221,7 +221,7 @@
         "notes": "",
         "uri": "",
         "race": "",
-        "schools": [],
+        "schools": [4],
         "slug": "douglas-macarthur"
     },
     "model": "people.person",
@@ -398,7 +398,7 @@
         "journal": 6,
         "publication_address": 4,
         "editors": [
-            1
+            1, 3, 5
         ],
         "volume": "",
         "contributing_editors": [],
@@ -623,6 +623,33 @@
     },
     "model": "journals.creatorname",
     "pk": 3
+},
+{
+    "fields": {
+        "person": 1,
+        "name_used": "",
+        "item": 3
+    },
+    "model": "journals.creatorname",
+    "pk": 4
+},
+{
+    "fields": {
+        "person": 3,
+        "name_used": "",
+        "item": 3
+    },
+    "model": "journals.creatorname",
+    "pk": 5
+},
+{
+    "fields": {
+        "person": 3,
+        "name_used": "",
+        "item": 1
+    },
+    "model": "journals.creatorname",
+    "pk": 6
 },
 {
     "fields": {

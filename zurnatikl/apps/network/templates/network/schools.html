@@ -4,23 +4,24 @@
 
 {% block page-subtitle %} | Networks | Schools | {{ object_list.0.categorizer_name }}{% endblock %}
 
-{% block pregraph-content %}
-<ol class="breadcrumb">
-  <li>Networks</li>
+{% block breadcrumb-links %}
   <li>Schools</li>
   <li class="active">Categorized by {{ object_list.0.categorizer_name }}</li>
-</ol>
+{% endblock %}
 
+{% block download-graph %}
+  {% with object_list.0.categorizer as slug %}
+    {% url 'network:schools-export' slug 'graphml' as graphml_url %}
+    {% url 'network:schools-export' slug 'gml' as gml_url %}
+    {% include 'network/snippets/download_graph.html' %}
+  {% endwith %}
+{% endblock %}
+
+{% block pregraph-content %}
 <div class="container">
 
-{% with object_list.0.categorizer as slug %}
-  {% url 'network:schools-export' slug 'gexf' as gexf_url %}
-  {% url 'network:schools-export' slug 'graphml' as graphml_url %}
-  {% include 'network/snippets/download_graph.html' %}
 
-{% endwith %}
-
-<h2>Schools categorized by {{ object_list.0.categorizer_name }}</h2>
+<h1>Schools categorized by {{ object_list.0.categorizer_name }}</h1>
 <p>People, journals, and locations associated with schools as
     categorized by {{ object_list.0.categorizer_name }}.</p>
 {# schools available in object_list if we want to list them #}

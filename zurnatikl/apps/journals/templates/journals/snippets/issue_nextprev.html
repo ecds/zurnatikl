@@ -1,0 +1,13 @@
+{# issue detail next/previous navigation #}
+{% if issue.previous_issue or issue.next_issue %}
+<nav>
+  <ul class="pager">
+    {% if issue.previous_issue %}
+    <li class="previous"><a href="{% url 'journals:issue' issue.journal.slug issue.previous_issue.id %}"><span aria-hidden="true">&larr;</span> {{ issue.previous_issue.label }}</a></li>
+    {% endif %}
+    {% if issue.next_issue %}
+    <li class="next"><a href="{% url 'journals:issue' issue.journal.slug issue.next_issue.id %}">{{ issue.next_issue.label }} <span aria-hidden="true">&rarr;</span></a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

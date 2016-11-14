@@ -1,78 +1,139 @@
-{% extends 'site_base.html' %}
+{% extends 'page_base.html' %}
 
 {% block page-subtitle %} | About{% endblock %}
 
-{% block content %}
-  <h2>About</h2>
+{% block content-title %}About{% endblock %}
 
-    <p><strong>Schooling Donald Allen: Networking the New American Poetry</strong> uses data
-    from a dozen representative and rare poetry journals to visualize and debate the schools of
-    poetry in Allen’s noted anthology, <em>The New American Poetry: 1945-1960</em>. A partnership between
-    the <a href="http://digitalscholarship.emory.edu/">Emory Center for Digital Scholarship</a> (ECDS) and the <a href="http://rose.library.emory.edu/collections/literature-poetry/danowski-library.html">Raymond Danowski Poetry Library</a> at
-    Emory University, Schooling Donald Allen uses over 10,000 data points to answer fundamental
-    questions — and question our assumptions — about the nature of poetry and culture in the second
-    half of the twentieth century.</p>
+{% block breadcrumb-links %}
+  <li class="active">About the Project</li>
+{% endblock %}
 
-    <p>Specifically, the project seeks to test Allen’s
-    taxonomy of postwar poetic schools against the networks of publication, collaboration, and
-    editorial labor captured in the Danowski Poetry Library’s wide-ranging archive of postwar
-    magazines, periodicals, newsletters, and literary journals.</p>
+{% block page-content %}
 
-     <p>To visualize those networks, the project undertook ambitious data
-    collection, recording bibliographic and other information from twelve journals of midcentury
-    American poetry—including
-    <a href="{% url 'journals:journal' 'beatitude' %}">Beatitude</a>,
-    <a href="{% url 'journals:journal' 'black-mountain-review' %}">The Black Mountain Review</a>,
-    <a href="{% url 'journals:journal' 'origin' %}">Origin</a>,
-    <a href="{% url 'journals:journal' 'measure' %}">Measure</a>,
-    <a href="{% url 'journals:journal' 'floating-bear' %}">The Floating Bear</a>,
-    <a href="{% url 'journals:journal' 'intrepid' %}">Intrepid</a>,
-    <a href="{% url 'journals:journal' 'yugen' %}">Yugen</a>,
-    <a href="{% url 'journals:journal' 'c-a-journal-of-poetry' %}">“C”: A Journal of Poetry</a>,
-    <a href="{% url 'journals:journal' 'big-table' %}">Big Table</a>,
-    <a href="{% url 'journals:journal' 'fuck-you' %}">Fuck You: A Magazine of the Arts</a>,
-    <a href="{% url 'journals:journal' 'j-a-magazine-of-poetry' %}">J: A Magazine of Poetry</a>, and
-    <a href="{% url 'journals:journal' 'evergreen-review' %}">Evergreen Review</a>—many
-    available digitally for the first time.
-    The resulting resource documents over 750 different authors, editors, and translators, and
-    includes over 10,000 pieces of data.</p>
-
-    <p>With the first round data collection completed, we are undertaking the
-    next phase of the project. This work includes creating <a href="{% url 'network:index' %}">network graphs</a>—visual analyses of
-    connections among schools, poets, journals,and geographical location—and expanding the
-    scope of the data questions. Initial findings have already been presented at two conferences
-    presentations in June 2015: by Lisa Chinn at the DHSI (Digital Humanities Summer Institute)
-    and Brian Croxall at the CSDH/SCHN Digital Humanities Conference. We anticipate sharing
-    full results for Schooling Donald Allen by summer 2016.</p>
-
-    <a name="DigitalDanowski"></a><h2>Digital Danowski</h2>
-    <p>The poetry library of record for the twentieth century, the <a href="http://rose.library.emory.edu/collections/literature-poetry/danowski-library.html">Raymond Danowski Poetry Library</a> includes 75,000 volumes, 50,000 issues of journals, thousands of broadsides,
-    countercultural material, manuscripts, recordings, and objects. Assembled by collector
-    Raymond Danowski over 30 years, the collection is thought to have been the largest library
-    in private hands until its arrival at Emory in 2004.</p>
-
-    <p><strong>Digital Danowski</strong> is a new initiative of the Danowski Poetry Library that
-    seeks to make visible portions of the collection otherwise unseen. Goals for the projects include:
-
-    <ul>
-        <li>Challenging received narratives of literary history</li>
-        <li>Increasing awareness of &amp; access to rare and influential periodicals in collection</li>
-        <li>Fostering collaborations among archivists, software engineers, digital scholars, and poetry lovers</li>
-        <li>Employing graduate students to learn data collection &amp; digital scholarship methodologies</li>
-        <li>Exploring new scholarly uses of journals &amp; open access to project data results</li>
-        <li>Creating a model for future digital projects at Emory &amp; our peer institutions</li>
-    </ul>
+    <a name="Overview"></a><h2>Overview</h2>
+    <p>
+      A partnership between the <a href="http://digitalscholarship.emory.edu/">Emory Center for Digital Scholarship</a> (ECDS) and the <a href="http://rose.library.emory.edu/collections/literature-poetry/danowski-library.html">Raymond Danowski Poetry Library</a> at Emory University, <strong>Networking the New American Poetry</strong> uses over 10,000 data points to question key narratives about American literary culture in the second half of the twentieth century. The project began as an attempt to test a taxonomy of postwar poetic schools that appeared in Donald Allen’s influential anthology, <em>The New American Poetry, 1945-1960</em>. Curious about exactly how the anthology has shaped the way we think about American poetry, we looked to the Danowski Poetry Library’s wide-ranging archive of postwar magazines, periodicals, newsletters, and literary journals—materials we thought could shed new light on how Allen’s schools fit into the actual shape of the publishing community. We wanted to see if the networks of publication, collaboration, and editorial labor outlined in the anthology match the archival evidence.
     </p>
 
-  <p>The inaugural project of the initiative, Schooling Donald Allen began with an
-    exciting set of research questions that aimed to complicate and challenge some key narratives
-    and assumptions of U.S. literary history. The project's findings provide compelling grounds for a significant
-    reappraisal of scholarly understandings of the postwar period, as well as a rich data set
-    that can be mined further for any number of future Digital Danowski projects. </p>
+    <p>
+      <strong>Networking the New American Poetry</strong> uses data from a dozen rare poetry journals to visualize writing and publishing communities formed by mid-century American poets, including the poets Donald Allen anthologized. To visualize the networks, we undertook thorough data collection, recording bibliographic and other information from twelve journals of midcentury American poetry—<a href="{% url 'journals:journal' 'beatitude' %}">Beatitude</a>,
+      <a href="{% url 'journals:journal' 'black-mountain-review' %}">The Black Mountain Review</a>,
+      <a href="{% url 'journals:journal' 'origin' %}">Origin</a>,
+      <a href="{% url 'journals:journal' 'measure' %}">Measure</a>,
+      <a href="{% url 'journals:journal' 'floating-bear' %}">The Floating Bear</a>,
+      <a href="{% url 'journals:journal' 'intrepid' %}">Intrepid</a>,
+      <a href="{% url 'journals:journal' 'yugen' %}">Yugen</a>,
+      <a href="{% url 'journals:journal' 'c-a-journal-of-poetry' %}">“C”: A Journal of Poetry</a>,
+      <a href="{% url 'journals:journal' 'big-table' %}">Big Table</a>,
+      <a href="{% url 'journals:journal' 'fuck-you' %}">Fuck You: A Magazine of the Arts</a>,
+      <a href="{% url 'journals:journal' 'j-a-magazine-of-poetry' %}">J: A Magazine of Poetry</a>, and
+      <a href="{% url 'journals:journal' 'evergreen-review' %}">Evergreen Review</a>. Through our investigation we are making the data from several of these journals available digitally for the first time. The resulting resource documents over 750 different authors, editors, and translators, and includes over 10,000 pieces of data.
+    </p>
 
-    <p>We look ahead to further Digital Danowski projects in the near future.</p>
+    <a name="ChallengingLiteraryHistory"></a><h2>Challenging Literary History</h2>
+    <p>
+      In 1945, little magazines were not a new phenomenon for American poetry. Most famously, and enduringly, Harriet Monroe founded <em>Poetry: A Magazine of Verse</em> in Chicago in 1912, which boasts a strong readership to this day. Around 1945, however, a new generation of editors was beginning to make innovative changes to the form of the magazine with the aid of widely accessible reproduction technologies like the mimeograph, spirit duplicator, and xerography. The new technologies meant that almost anyone could publish without having either to vie for an editor’s favor at a large publishing house or to invest in the heavy and expensive machinery previously required to publish texts at any meaningful scale.<sup><a href="#fn1" id="ref1">1</a></sup>
+    </p>
 
-<h2>Credits</h2>
-Learn more about the <a href="{% url 'credits' %}">individuals who have contributed to this project</a>.
+    <p>
+      American poets took up that torch with considerable energy during a period of escalating sociopolitical tensions that generated strong antipathy toward official institutions, universities not least. These tensions found an expressive outlet, among other places, in poetry published in little magazines.<sup><a href="#fn2" id="ref2">2</a></sup> Importantly, the magazines and their poems were geared toward coterie circulation rather than broad distribution, but their topics ranged widely, encompassing everything from geopolitical activism and crude humor to indecipherable in-jokes and what would eventually become canonical poetry.
+    </p>
+
+    <p>
+      In an attempt to focus public attention on this wave of countercultural poetry and its thriving text communities, Donald Allen used his position as editor at Grove Press to redress what he saw as conspicuous silences enforced by an official literary culture that overlooked writers like Ed Sanders, Cid Corman, Diane di Prima, Allen Ginsberg, and LeRoi Jones (later Amiri Baraka) who published in the little magazines. With the support of Grove Press, Allen published an anthology entitled <em>The New American Poetry, 1945-1960</em>. The anthology was to prove enormously influential in the way we think about the history of poetry in America and the ways in which we imagine the aesthetic dimensions of avant-garde American poetry.<sup><a href="#fn3" id="ref3">3</a></sup> As the literary critic Alan Golding put it in 1998, “… Donald Allen's <em>The New American Poetry</em> (1960) is generally considered the single most influential poetry anthology of the post-World War II period.”<sup><a href="#fn4" id="ref4">4</a></sup> While critics such as Golding have uncovered archival resources to explain Allen’s rationale for inclusion and categorization, scholarly accounts of the period stand to benefit from a fuller picture of the community from which Allen selected his poets. We know who Allen chose to anthologize, but who did he exclude? Historians of the period perhaps recognize a few of the absences, but they might be harder pressed to determine how those absences relate to one another. This is where our work begins.
+    </p>
+
+    <a name="ProjectChallenges"></a><h2>Project Challenges</h2>
+    <p>
+      As with any project of this scale, our project team faced a number of challenges along the way. Based on information gathered in an exit questionnaire, some of our team felt that the most significant challenge was turnover in project leadership and membership.  For instance, the two researchers who formulated the original project proposal moved on to other jobs and locations while the project was in progress.  When they left Emory, ECDS chose to keep the project in-house, bringing new people on board and reshuffling roles as needed. According to the project team’s technical lead, Rebecca Sutton Koeser,
+      <q>
+        There were... some technical challenges with the data, and generating and displaying large network graphs from a fairly significant database, although these technical challenges are not nearly as difficult as the organizational and personal ones.
+      </q>
+      These issues highlight the salience of ongoing discussions about the character of intellectual property and the best way to undertake digital projects that command significant resources and require the contributions of numerous individuals.<sup><a href="#fn5" id="ref5">5</a></sup>
+    </p>
+
+    <p>
+      Ultimately, we believe that <em>Networking the New American Poetry</em> productively employs the tensions that multidisciplinary digital scholarship provokes. For instance, we are motivated to reach a public beyond the walls of academe, so we try to strike a balance between specialized and accessible language. At the level of project leadership, we at times found ourselves struggling to define <em>Networking the New American Poetry</em>. Is it a scholarly project? Is it an archival project? Are these designations mutually exclusive? Questions of method and theory also arise. At the level of method, how well do the social ties that we represent as publication networks correspond to the social ties that formal social network analysis typically depicts? At the level of theory, how might the network graphs tacitly reconfigure the way literary scholars tend to think about agency and creativity? How might the graph’s ability to flatten several years of activity into one visual moment silently foreclose thinking about social forms that change over time, like rhythms or hierarchies? These questions index sites of vigorous debate, and we are excited to share our visualizations and bibliographic data in an accessible manner that we hope will be useful both to scholars and to the intellectually curious around the world.
+    </p>
+
+    <a name="TheWorkOfCommunity"></a><h2>The Work of Community</h2>
+    <p>
+      At the core of the project is a bibliographic record of the little magazines we examined. These data points were gathered by hand in the Stuart A. Rose Manuscript, Archives, & Rare Book Library and entered into databases, the structure of which we developed based on initial, exploratory research. Our current team has made the data searchable on this site, and it is now possible to scan through issues of the little magazines sequentially to examine tables of contents, release schedules, issue sequencing conventions, or even the ways in which the editors chose to number their pages. We also provide an easy way to filter journal contributors according to their roles. You can browse through a list of people who served as editors, for example, without having to sift through the full list of contributors. Finally, we include images of the journal covers to foreground the physicality of the little magazines and to provide a point of aesthetic reference for researchers.
+    </p>
+    <p>
+      In working to leverage the data we gathered, we developed a way to quickly and efficiently generate network graphs from the published media. Through conversations we held over the course of the data gathering process, we looked closely at the context of small-run publications to determine what social connections seemed most important and significant, and we developed a Django web application (zurnatikl) to display those connections on the web as a way to begin to explore and share our data.
+    </p>
+
+    <p>
+      There are of course some limitations to the graphs we developed. For instance, the graphs are static, synchronic models and do not currently shed light on how the networks evolved over time. Also, we used the materials available to us in Emory’s collections, so while we believe our data are representative enough to warrant some generalization about the literary culture of the period, we are also sensitive to the fact that additional data from other little magazines would change the shape of our network, and we would be delighted to see other scholars continue this work.
+    </p>
+
+    <a name="TheFutureOfCommunity"></a><h2>The Future of Community</h2>
+    <p>
+      That’s to say, our data and graphs are significant technical and scholarly achievements, but they are also a starting point for new scholarly work. As one of our researchers, Aaron Goldsman, put it, “...I think the really exciting next step for the project would be inviting/encouraging scholars to make use of this data.” And as Koeser emphasizes,
+      <q>
+        There is scholarship in all the decisions that go into deciding how to generate the graphs, and what connections are significant, but I firmly believe that should be a starting point and not an end.
+      </q>
+      Collectively, we see numerous opportunities and directions for work that could follow this project. Here at Emory, one immediate application for the bibliographic data would be to use it to enhance the existing library catalog records for these items, which are held by the Rose Library. With our project data, it would be possible to make the tables of contents and contributing authors searchable when researchers look for these items or authors in the standard library catalog interface.
+    </p>
+
+    <p>
+      Beyond Emory, other researchers could expand on the data we've collected or find new ways to use the data contained in our downloads. While we don’t make use of it in the network graphs on this website, our downloads include information on race, gender, and locations associated with journal contributors and with individual journal issues (although those data points currently may not be consistently available for all of the little magazines or all of the contributors). We also recorded some information about which poets or poems used typographical abbreviations like "yr" for your and "wd" for would. The current bibliographic data could also be augmented with digitized content and text analysis, perhaps to enable comparison of poetic styles or topics across the network and over time, or an examination of those styles and topics against the associated "schools" of poetry.
+    </p>
+
+    <p>
+      It would also be of scholarly value to apply the same software and tools to a different set of journals or publications. Small publishing communities proliferated during the mid-20th century, and these tools can help us to understand with impressive fidelity the shape of those communities and how they changed over time. One could also imagine using OCR text to scale up to a larger corpus of archival texts, which would enable scholarly analyses at a different social scale.
+    </p>
+
+    <a name="Conclusion"></a><h2>Conclusion</h2>
+    <p>
+      In reflecting on what we’ve done and where to go from here, Koeser has helpfully and repeatedly emphasized to our team that “the most interesting or exciting uses of the project data are probably things we won't think of ourselves.” In a way, that’s the most exciting thing about this sort of work—the possibility of continued, innovative research that helps us to better understand the ways in which the world has evolved alongside the stories we tell about it. We are delighted to make this data and our visualizations available.
+    </p>
+
+    <p>
+      <em>
+        This section was peer reviewed by Walter B. Kalaidjian, Department of English, Emory University.
+      </em>
+    </p>
+
+    <a name="Credits"></a><h2>Credits</h2>
+    Learn more about the <a href="{% url 'credits' %}">individuals who have contributed to this project</a>.
+
+    <hr></hr>
+    
+    <p>
+    <sup id="fn1">
+      1. Kristen MacLeod dates the rise of “experimental and amateurish” fad magazines (or fadazines) to the turn of the century. As she notes, these were referred to with “names like freak magazine, fadlet, ephemeral, and bibelot, including, occasionally, the term now more commonly used, little magazine.” See Kristen MacLeod, “American Little Magazines of the 1890s and the Rise of the Professional-Managerial Class,” <em>English Studies in Canada</em> 41, no. 1 (2015), 41-42.
+      <a href="#ref1" title="Jump back to footnote 1 in the text.">↩</a>
+    </sup>
+    </p>
+
+    <p>
+    <sup id="fn2">
+      2. For detailed accounts of modernist little magazines in America and beyond, see  Frederick J. Hoffman et al., <em>The Little Magazine: A History and Bibliography</em> (Princeton University Press, 1946);  Elliott Anderson et al., <em>The Little Magazine in America: A Modern Documentary History</em> (Yonkers, NY: Pushcart, 1978); Suzanne W. Churchill and Adam McKible, “Little Magazines and Modernism: An Introduction,” <em>American Periodicals: A Journal of History, Criticism, and Bibliography</em> 15, no. 1 (2005): 1–5; Eric White, <em>Transatlantic Avant-Gardes: Little Magazines and Localist Modernism: Little Magazines and Localist Modernism</em> (Edinburgh University Press, 2013).
+      <a href="#ref2" title="Jump back to footnote 2 in the text.">↩</a>
+    </sup>
+    </p>
+
+    <p>
+    <sup id="fn3">
+      3. For an excellent overview of key poets and critical debates, see Walter B. Kalaidjian, ed., <em>The Cambridge Companion to Modern American Poetry</em> (New York: Cambridge University Press, 2015).
+      <a href="#ref3" title="Jump back to footnote 3 in the text.">↩</a>
+    </sup>
+    </p>
+
+    <p>
+    <sup id="fn4">
+      4. Alan Golding, “The New American Poetry Revisited, Again,” <em>Contemporary Literature</em> 39, no. 2 (Summer 1998), 180.
+      <a href="#ref4" title="Jump back to footnote 4 in the text.">↩</a>
+    </sup>
+    </p>
+
+    <p>
+    <sup id="fn5">
+      5. For a nuanced discussion of some of the relevant intellectual property issues, see Robin Wharton, “Digital Humanities, Copyright Law, and the Literary” 7, no. 1 (2013), http://www.digitalhumanities.org/dhq/vol/7/1/000147/000147.html. For more on division of labor issues, see Katrina Anderson et al., “Student Labour and Training in Digital Humanities” 10, no. 1 (2016), http://www.digitalhumanities.org/dhq/vol/10/1/000233/000233.html.
+      <a href="#ref5" title="Jump back to footnote 5 in the text.">↩</a>
+    </sup>
+    </p>
 
 {% endblock %}

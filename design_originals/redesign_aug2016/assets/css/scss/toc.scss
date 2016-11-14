@@ -1,0 +1,63 @@
+@import 'variables';
+
+.j-issues {
+	
+	.editors {
+		margin: .75em 0;
+		font-size: 1.25em;
+	    line-height: .5em;
+		&:after {
+			content: "";
+		    border-bottom: 3px solid $editor;
+		    width: 25%;
+		    height: 10px;
+		    display: block;
+		}
+		.title {
+			display: block;
+			font-size: .75em;
+			padding-bottom: .5em;
+			padding-bottom: 1em;
+		}
+		a {
+			color: $editor;
+			&:after {
+				content: "\f05a";
+				font: $fontAwesome;
+				padding-left: .25em;
+				padding-right: .5em;
+				}
+			
+		}
+	}
+}
+.toc {
+	font-size: 1em;
+	.toc-header {
+		width: 100%;
+		background-color: $paper;
+	}
+	ul {
+		border-bottom: solid 1px #CCC;
+		padding: 1em;
+		
+		&:first-child, &:last-child {
+			border-bottom: none;
+		}
+		li {
+			display: inline-block;
+			width: 10%;
+			text-align: center;
+			&:first-child {
+				width: 85%;
+				text-align: left;
+			}
+		}
+	}
+}
+
+@media(min-width:768px) {  
+	.toc {
+		font-size: 1.25em;
+	}
+	}

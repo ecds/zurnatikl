@@ -1,6 +1,6 @@
 from django import template
 from django.conf import settings
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict as SortedDict
 
 
 register = template.Library()
@@ -9,8 +9,8 @@ register = template.Library()
 # from http://www.djangosnippets.org/snippets/1937/
 def register_render_tag(renderer):
     """
-    Decorator that creates a template tag using the given renderer as the 
-    render function for the template tag node - the render function takes two 
+    Decorator that creates a template tag using the given renderer as the
+    render function for the template tag node - the render function takes two
     arguments - the template context and the tag token
     """
     def tag(parser, token):

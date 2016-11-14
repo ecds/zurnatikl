@@ -2,41 +2,71 @@
 {% load static %}
 {# display all contributors to all journals #}
 
-{% block javascript %}
-    {{ block.super }}
-    <script src="{% static 'js/sigma/plugins/sigma.statistics.louvain.min.js' %}"></script>
-{% endblock %}
-
 {% block page-subtitle %} | Journals | Contributor Network{% endblock %}
 
-{% block pregraph-content %}
-<ol class="breadcrumb">
+{% block breadcrumb-links %}
   <li><a href="{% url 'journals:list' %}">Journals</a></li>
   <li class="active">Contributor Network</li>
-</ol>
+{% endblock %}
 
-<h2>Journal Contributors</h2>
+{% block download-graph %}
+  {% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
+  {% url 'journals:contributor-network-export' 'gml' as gml_url %}
+  {% include 'network/snippets/download_graph.html' %}
+{% endblock %}
 
-{% url 'journals:contributor-network-export' 'gexf' as gexf_url %}
-{% url 'journals:contributor-network-export' 'graphml' as graphml_url %}
-{% include 'network/snippets/download_graph.html' %}
+{% block pregraph-content %}
+<h1>Journal Contributors</h1>
+
 {% endblock %}
 
 {% block graph-controls %}
-<div>
+<div id="graph-mode">
   <h4>Color by:</h4>
   <div class="radio">
     <label>
       <input type="radio" name="graph-colors" id="color-by-community" value="community" checked="checked"/>
-      detected communities
+      Detected Communities
     </label>
   </div>
   <div class="radio">
     <label>
       <input type="radio" name="graph-colors" id="color-by-type" value="type"/>
-      node/edge type
+      Node/Edge Type
   </label>
   </div>
+  <div class="radio">
+    <label>
+      <input type="radio" name="graph-colors" id="color-by-school" value="type"/>
+      School
+  </label>
+  </div>
+</div>
+
+<div>
+    <h4>Filter by School</h4>
+    <div class="radio" id="school-radio">
+        <label>
+            <input type="radio" name="school-filter" id="all-schools" value="" checked="checked"/>
+            All Schools
+        </label>
+    </div>
+    <!-- <select id="node-school">
+        <option value="" selected>All schools</option>
+    </select> -->
+</div>
+{% endblock %}
+
+{% block graph-color-keys %}
+
+<div id="graph-school-colors" class="color-key">
+  <h4>Schools</h4>
+  <dl class="graph-colors" id="school-colors"></dl>
+</div>
+
+<div id="graph-community-colors" class="color-key">
+  <h4>Communities</h4>
+  <dl class="graph-colors" id="community-colors"></dl>
 </div>
 {% endblock %}
 
@@ -49,72 +79,296 @@ var s = init_sigma_graph({
       labelThreshold: 10,
       drawEdgeLabels: false,  {# graph is too large for edge labels, unless we can customize by zoom level #}
   },
-  forceLink:  {
-      autoStop: true,
-      maxIterations: 100,
-      iterationsPerRender: 10,
-      barnesHutOptimize: true,
-  },
   styles: {
       nodes: {
         size: {
           min: 0.5,
-        }
+        },
       }
     }
 });
 
 
-// community detection should happen either on graph:layout_complete or
-// graph:design_applied, because otherwise design colors override
-// community colors
+// coloring by community must happen after graph:design_applied,
+// because otherwise node-type colors override community colors
 $('#graph-container').on('graph:design_applied', function() {
-    // NOTE: could include in status, but community detection is
-    // so fast that it doesn't actually show up, so it isn't helpful
+    // community detection for the contributer network is now handled
+    // server-side; nodes should include a community number which can
+    // be used to set colors
 
-    // community detection via louvain plugins
-    console.log('Starting louvain community detection');
-    var louvain = sigma.plugins.louvain(s.graph);
-    console.log('# of partitions = ' + louvain.countPartitions(louvain.getPartitions()));
+    // TODO: should colors be handled server-side as well?
 
     // placeholder colors for now
     var colors = ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"];
-    // network colors from resonance
+    // network colors from resonance design
     var colors = ["#004052", "#996628", "#e5c951",
       "#bc1626", "#0aa3aa", "#d84f05",
       "#11203d" ,"#872675", "#577469",
       "#0c7549", "#28236b", "#de03a7",
       "#a2d23a", "#ffa700"];
 
-    // TODO: set edges to use source node color (? or gray?)
+    // NOTE: should we set edges to use source node color (or gray?)
+    // when nodes are colored based on community?
+
+    function color_edges_by_source() {
+      s.graph.edges().forEach(function(edge) {
+        edge.color = s.graph.nodes(edge.source).color;
+      });
+    }
+
+    // preserve current edge color, but make the color mostly opaque
+    // if both nodes are not active
+    // (used for filtering graph by school)
+    function color_edges_by_active() {
+      s.graph.edges().forEach(function(edge) {
+        // active
+        var source = s.graph.nodes(edge.source);
+        var target = s.graph.nodes(edge.target);
+        // if both source and taget are active, full color
+        if (source.active && target.active) {
+          // restore non-opaque  color if necessary
+          if ((edge.color[0] != '#') && edge._color) {
+             edge.color = edge._color;
+          }
+        // if both source and target are not active, adjust current
+        // color to be opaque
+        } else {
+          if (edge.color[0] == '#') {
+                // copy color for later restoration.
+                edge._color = edge.color;
+                // convert to transparent version of color
+                edge.color = 'rgba(' + hexToRgb(edge.color) + ', 0.1)';
+              }
+        }
+      });
+    }
+
+    // initialize list of schools and color by school key
+    var schools = [];
+    function init_schools() {
+      s.graph.nodes().forEach(function(node) {
+        if (node.schools) {
+          node.schools.forEach(function(school){
+            if (schools.indexOf(school) == -1) {
+              schools.push(school);
+            }
+            // TODO: handle multiple schools
+            node.school_index = schools.indexOf(school);
+          });
+        }
+      });
+      // add school colors to color key menu
+      var school_key_dl = $('#school-colors');
+      schools.forEach(function(school) {
+        var idx = schools.indexOf(school);
+        school_key_dl.append($('<dt style="background-color:' + colors[idx] + '"/>'));
+        school_key_dl.append($('<dd>' + school + '</dd>'));
+      })
+    }
+    init_schools();
+
+
+    function init_communities() {
+      // determine number of communities
+      var community_max = 0;
+      s.graph.nodes().forEach(function(node) {
+        community_max = Math.max(community_max, node.community);
+      })
+
+      // add communities to color key menu
+      var community_key_dl = $('#community-colors');
+      for(var i=0; i <= community_max; i++){
+        community_key_dl.append($('<dt style="background-color:' + colors[i] + '"/>'));
+        // display with 1-based numbers
+        community_key_dl.append($('<dd>Community ' + (i + 1) + '</dd>'));
+      }
+    }
+    init_communities();
 
     // color nodes based on their community
     function color_by_community() {
+      console.log('color by community');
+      reset_graph_previous_state();
+      reset_school_filter();
       s.graph.nodes().forEach(function(node) {
-        // by default, assigned community number is set to _louvain
-        node.color = colors[node._louvain];
+        // server-side community detection currently set as community attribute
+        node.color = colors[node.community];
       });
-      // hide color key since it isn't relevant
-      $("#graph-color-key").hide();
-      // refresh sigma renderersr
+      color_edges_by_source();
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      // show community color key
+      $("#graph-community-colors").show();
+      // refresh sigma renderer
       s.refresh({skipIndexation: true});
     }
     color_by_community();
 
-    // add a trigger to reset color by community
+    function color_by_school() {
+      reset_graph_previous_state();
+      reset_school_filter();
+      s.graph.nodes().forEach(function(node) {
+        if (!isNaN(node.school_index)) {
+          node.color = colors[node.school_index];
+        } else {
+          // node.color = "#ABABAB";
+          node.color = 'rgba(128, 128, 128, 0.5)';  // partially transparent gray
+        }
+      });
+      color_edges_by_source();
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      // show school color key
+      $("#graph-school-colors").show();
+      // refresh sigma renderer
+      s.refresh({skipIndexation: true});
+    }
+
+    // add triggers to switch to color by community or school
     $('#graph-container').on('graph:color_by_community', color_by_community);
+    $('#graph-container').on('graph:color_by_school', color_by_school);
+
+    /* Set up the filter nodes by school. I put it here instead of in an `on graph:data_loaded`
+       so I could use the array of schools that exists here. If we start adding more filters,
+       we might want to refactor to build the array of schools in a scope that both
+       can user without createing it multiple times.
+    */
+
+
+    // node school
+    var nodeSchoolElt = document.getElementById("node-school");
+    var schoolFilterElm = document.getElementById("school-radio");
+    schools.forEach(function(school) {
+        // Create the radio buttons.
+        var label = document.createElement("label"),
+            radio = document.createElement("input");
+        radio.setAttribute('type', 'radio');
+        radio.setAttribute('name', 'school-filter');
+        radio.setAttribute('id', school.toLowerCase().replace(/[^\w-]+/g,'-') + '-filter');
+        radio.setAttribute('value', school);
+
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(school));
+        schoolFilterElm.appendChild(label);
+    });
+
+  // convert hex color to rgb
+  // thanks to http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+  function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      var bigint = parseInt(hex, 16);
+      var r = (bigint >> 16) & 255;
+      var g = (bigint >> 8) & 255;
+      var b = bigint & 255;
+      return [r, g, b].join();
+  }
+
+  function reset_graph_previous_state() {
+    // use to restore to normal display after applying
+    // filter by school
+
+    // restore default label threshold
+    s.settings('labelThreshold', 10);
+    // restore previous node color and label
+    s.graph.nodes().forEach(function(node) {
+        node.active = true;
+        // restore previous label and color
+        if (node._color) {
+          node.color = node._color;
+          delete node._color;
+        }
+        if (node._label) {
+          node.label = node._label;
+          delete node._label;
+        }
+    });
+  }
+
+  function reset_school_filter() {
+    // reset school filter to no school selected (display all)
+    $('input[name="school-filter"]').val(['']);
+  }
+
+  function filter_by_school(selection) {
+      var selectedSchool = selection.target.value;
+      // no school is selected, reset to current state
+      if (!selectedSchool) {
+        reset_graph_previous_state();
+        // re-apply currently selected color scheme, since we
+        // can't otherwise duplicate the logic correctly
+        // (specifically coloring edges by type)
+        $('input[name="graph-colors"]:checked').click();
+      } else {
+        s.graph.nodes().forEach(function(node) {
+          // if a school is selected, filter display
+          if (selectedSchool) {
+            // set a low label threshold so labels for all nodes associated
+            // with the current school will be shown
+            s.settings('labelThreshold', 1);
+
+            // if node is associated with current school
+            if ((node.schools) && node.schools.indexOf(selectedSchool) != -1) {
+              // set to display normally
+              node.active = true;
+              // restore color and label if suppressed from a previous school filter
+              if ((node.color[0] != '#') && node._color) {
+                node.color = node._color;
+              }
+              if (!node.label && node._label) {
+                node.label = node._label;
+              }
+
+            // if node is NOT associated with current school
+            } else {
+              // suppress node not associated with current school
+              node.active = false;
+              // suppress node and label (using rgba opacity for color)
+              if (node.color[0] == '#') {
+                // copy color and label for later restoration.
+                node._color = node.color;
+                // convert to transparent version of color
+                node.color = 'rgba(' + hexToRgb(node.color) + ', 0.1)';
+              }
+              // temporarily clear out label for display
+              if (! node._label) {
+                // only set stored label if not already stored,
+                // *don't* replace with an empty label.
+                node._label = node.label;
+              }
+              node.label = '';
+            }
+          }
+        });
+        color_edges_by_active();
+      }
+      s.refresh({skipIndexation: true});
+    }
+
+    schoolFilterElm.addEventListener("change", filter_by_school);
+
+
+  $('#color-by-type').on("click", function() {
+      reset_graph_previous_state();
+      reset_school_filter();
+
+      $('#graph-container').trigger('graph:reapply_design');
+      // hide irrelevant color keys
+      $('.color-key').hide();
+      //show node/edge type color key
+      $("#graph-type-colors").show();
+      s.refresh({skipIndexation: true});
+  });
+
 });
 
-$('#color-by-type').on("click", function() {
-    $('#graph-container').trigger('graph:reapply_design');
-    $("#graph-color-key").show();
-    s.refresh({skipIndexation: true});
-});
 
 $('#color-by-community').on("click", function() {
     $('#graph-container').trigger('graph:color_by_community');
 });
 
+$('#color-by-school').on("click", function() {
+    $('#graph-container').trigger('graph:color_by_school');
+});
+
 </script>
 {% endblock %}
-

@@ -147,6 +147,9 @@ class Location(models.Model):
         unique_together = ('street_address', 'city', 'state', 'zipcode', 'country')
         ordering = ['street_address', 'city', 'state', 'zipcode', 'country']
 
+    #: node type to be used in generated networks
+    network_type = 'Place'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -156,6 +159,7 @@ class Location(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         attrs = {
+            'type': self.network_type,
             'label': unicode(self),
             'city': self.city,
             # boolean flag to allow filtering out mentioned places in output

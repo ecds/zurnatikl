@@ -1,27 +1,47 @@
 {% extends 'site_base.html' %}
+{% load static %}
 {# list all journals #}
 
 {% block page-subtitle %} | Journals{% endblock %}
 
+{% block breadcrumb-links %}
+  <li class="active">Journals</li>
+{% endblock %}
+
 {% block content %}
-<h2>Journals</h2>
+<section class="row">
+    <div class="content">
+
+<h1>Journals</h1>
 <p>Explore complete runs of twelve different midcentury magazines.</p>
 
 <p><a href="{% url 'journals:contributor-network' %}">View connections</a>
 among the journals and their contributors.</p>
 
-<div class="journal">
 {% for journal in object_list %}
-    <div class="journal-col" >
-        <a href="{% url 'journals:journal' journal.slug %}">
-        {# TODO: fallback display for no image? #}
-        <p>
-            <img src="{{ journal.image.thumbnail.url }}" alt="" width="150" height="50">
-        </p>
-        <p>{{ journal.title }}</p>
+   <div class="col-lg-2 col-md-4 col-sm-6">
+        <a class="tile" href="{% url 'journals:journal' journal.slug %}">
+        {# NOTE: images previously had width=150 height=50 #}
+            <figure>
+                <img src="{{ journal.image.thumbnail.url }}" class="img-responsive"/>
+            </figure>
+            <div class="title">{{ journal.title }}</div>
         </a>
     </div>
 {% endfor %}
 
+        </div> {# content #}
+    </div> {# column #}
+</section>
 {% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/jquery.matchHeight-min.js' %}"></script>
+    <script>
+       $(function() {
+         $('.tile').matchHeight();
+       });
+    </script>
+{% endblock %}
+
 

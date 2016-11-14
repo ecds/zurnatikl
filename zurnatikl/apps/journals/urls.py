@@ -8,10 +8,13 @@ urlpatterns = [
     # journal contributor network urls
     url(r'^network/$', views.ContributorNetwork.as_view(), name='contributor-network'),
     url(r'^network.json$', views.ContributorNetworkJSON.as_view(), name='contributor-network-json'),
-    url(r'^contributors.(?P<fmt>gexf|graphml)$', views.ContributorNetworkExport.as_view(),
+    url(r'^contributors.(?P<fmt>graphml|gml)$', views.ContributorNetworkExport.as_view(),
         name='contributor-network-export'),
     # greedier matching url patterns must come last
     url(r'^(?P<slug>[\w-]+)/$', views.JournalDetail.as_view(), name='journal'),
     url(r'^(?P<journal_slug>[\w-]+)/(?P<id>\d+)/$', views.IssueDetail.as_view(), name='issue'),
+    url(r'^data/issues.csv$', views.JournalIssuesCSV.as_view(),
+        name='csv-issues'),
+    url(r'^data/items.csv$', views.JournalItemsCSV.as_view(), name='csv-items')
 
 ]

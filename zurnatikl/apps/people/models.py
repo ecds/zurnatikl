@@ -1,11 +1,12 @@
 import itertools
+from collections import defaultdict
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from igraph import Graph
 import logging
 from multiselectfield import MultiSelectField
-import networkx as nx
 import time
 
 from zurnatikl.apps.geo.models import Location
@@ -60,6 +61,8 @@ class School(models.Model):
     def categorizer_name(self):
         'display form (non-slug) of the school categorizer'
         return self.CATEGORIZERS[self.categorizer]
+    #: node type to be used in generated networks
+    network_type = 'School'
 
     @property
     def network_id(self):
@@ -70,6 +73,7 @@ class School(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         return {
+            'type': self.network_type,
             'label': unicode(self),
             'categorizer': self.categorizer,
         }
@@ -85,59 +89,97 @@ class School(models.Model):
         # source node id, target node id, optional dict of attributes (i.e. edge label)
         return [(self.network_id, loc.network_id) for loc in self.locations.all()]
 
-
-
     @classmethod
     def schools_network(cls, schools):
         # generate a network graph for people, places, and journals
         # associated with a set of schools (e.g., all schools categorized
         # by a particular person)
-        graph = nx.Graph()
-        graph.add_nodes_from(
-            # node id, node attributes
-            [(s.network_id, {'label': unicode(s)}) for s in schools],
-            type='School')
 
-        # add people, places, & journals associated with each school
+        # igraph requires numerical id; zurnatikl uses network id to
+        # differentiate content types & database ids
+
+        # prefetch related people and locations for efficiency
+        schools = schools.prefetch_related('person_set', 'locations')
+
+        graph_start = time.time()
+        graph = Graph()
+
         for s in schools:
+            # add the school itself to the graph
+            graph.add_vertex(s.network_id, label=unicode(s),
+                             type=s.network_type)
+
+            # add people, places, & journals associated with each school
             start = time.time()
             # a school may have one or more locations
-            graph.add_nodes_from(
-                [(loc.network_id, {'label': loc.short_label})
-                for loc in s.locations.all()],
-                type='Place')
-            graph.add_edges_from([(s.network_id, loc.network_id)
-                                  for loc in s.locations.all()])
+            for loc in s.locations.all():
+                # only add location if it is not already in the graph
+                if loc.network_id not in graph.vs['name']:
+                    graph.add_vertex(loc.network_id, label=loc.short_label,
+                                     type=loc.network_type)
+                graph.add_edge(s.network_id, loc.network_id)
 
             # people can be associated with one or more schools
-            graph.add_nodes_from(
-                [(p.network_id, {'label': p.firstname_lastname})
-                  for p in s.person_set.all()],
-                type='Person')
-            graph.add_edges_from([(s.network_id, p.network_id)
-                                  for p in s.person_set.all()])
+            for p in s.person_set.all():
+                # only add person if not already in the graph
+                if p.network_id not in graph.vs['name']:
+                    graph.add_vertex(p.network_id, label=p.firstname_lastname,
+                                     type=p.network_type)
+                graph.add_edge(s.network_id, p.network_id)
 
             # journals can also be associated with a school
-            graph.add_nodes_from(
-                [(j.network_id, {'label': unicode(j)})
-                for j in s.journal_set.all()],
-                type='Journal')
-            graph.add_edges_from([(s.network_id, j.network_id)
-                                  for j in s.journal_set.all()])
+            for j in s.journal_set.all():
+                if j.network_id not in graph.vs['name']:
+                    graph.add_vertex(j.network_id, label=unicode(j),
+                                     type=j.network_type)
+                graph.add_edge(s.network_id, j.network_id)
 
-            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec' % \
-                (s.locations.all().count(), s.person_set.all().count(),
-                 s.journal_set.all().count(), s, time.time() - start))
+            logger.debug('Added %d locations, %s people, and %d journals for %s in %.2f sec',
+                         s.locations.all().count(), s.person_set.all().count(),
+                         s.journal_set.all().count(), s, time.time() - start)
 
+        logger.debug('schools network graph generated in %.2f sec',
+                     time.time() - graph_start)
         return graph
-
-
 
 
 # Person and person parts
 class PersonManager(models.Manager):
     def get_by_natural_key(self, first_name, last_name):
         return self.get(first_name=first_name, last_name=last_name)
+
+    def journal_contributors(self):
+        '''Return a queryset of
+        :class:`~zurnatikl.apps.people.models.Person` objects who have
+        edited at least one :class:`~zurnatikl.apps.journals.models.Issue',
+        authored one :class:`~zurnatikl.apps.journals.models.Item`,
+        or translated one :class:`~zurnatikl.apps.journals.models.Item`.
+        '''
+        return super(PersonManager, self).get_queryset().filter(
+            models.Q(issues_edited__isnull=False) |
+            models.Q(items_created__isnull=False) |
+            models.Q(items_translated__isnull=False)
+        ).distinct()
+
+    def journal_contributors_with_counts(self):
+        '''Return a queryset of
+        :class:`~zurnatikl.apps.people.models.Person` objects who have
+        edited at least one :class:`~zurnatikl.apps.journals.models.Issue',
+        authored one :class:`~zurnatikl.apps.journals.models.Item`,
+        or translated one :class:`~zurnatikl.apps.journals.models.Item`, with
+        total counts of the number of items created, items translated,
+        or issues edited as `num_created`, `num_translated`, and `num_edited`.
+        '''
+        return super(PersonManager, self).get_queryset() \
+            .annotate(num_created=models.Count('items_created', distinct=True),
+                      num_translated=models.Count('items_translated', distinct=True),
+                      num_edited=models.Count('issues_edited', distinct=True)) \
+            .filter(models.Q(num_created__gt=0) |
+                    models.Q(num_edited__gt=0) |
+                    models.Q(num_translated__gt=0)) \
+            .distinct()
+
+
 
 class Person(models.Model):
     'A person associated with a school of poetry, journal issue, item, etc.'
@@ -233,6 +275,9 @@ class Person(models.Model):
     def firstname_lastname(self):
         return ' '.join([n for n in [self.first_name, self.last_name] if n])
 
+    #: node type to be used in generated networks
+    network_type = 'Person'
+
     @property
     def network_id(self):
         #: node identifier when generating a network
@@ -242,6 +287,7 @@ class Person(models.Model):
     def network_attributes(self):
         #: data to be included as node attributes when generating a network
         attrs = {
+            'type': self.network_type,
             'label': unicode(self),
             'last name': self.last_name,
             # yes/no flags for kinds of relations, to enable easily

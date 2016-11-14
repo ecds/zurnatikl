@@ -11,3 +11,5 @@ coverage.xml
 
 zurnatikl/localsettings.py
 media/
+.DS_Store
+env

@@ -1,0 +1,19 @@
+@import 'variables';
+
+.breadcrumb {
+	padding-left: 4em;
+    padding-top: 1em;
+    background-color: transparent;
+	li {
+		&+li:before {
+			content: ">"
+		}
+		a {
+			color: $gray;
+			
+			&.active {
+				color: $blue;
+			}
+		}
+	}
+}

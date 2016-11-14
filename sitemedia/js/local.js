@@ -1,54 +1,29 @@
+// honor nav menu status in local storage on load (shows by default on desktop widths)
+// NOTE: runing before document.ready to avoid visible transition/jump
+if (window.sessionStorage && sessionStorage.getItem('nav') == 'hide') {
+  $("#wrapper").addClass('toggled');
+}
 
+$( document ).ready(function() {
+    // remove preload class (which disables transitions)
+    // after nav status is checked/updated and page is loaded
+    $("body").removeClass('preload');
 
-$(document).ready(function(){
-var options = {
-  valueNames: [ 'categoryauthor','categoryeditor', 'categorytranslator' ],
-  page:1000
-};
-
-var featureList = new List('lovely-things-list', options);
-
-$('#filter-author').click(function() {
-  $(this).addClass('active').siblings().removeClass('active');
-  featureList.filter(function(item) {
-    if (item.values().categoryauthor == "author") {
-      return true;
-    } else {
-      return false;
+  // enable nav menu toggle behavior
+  $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    var wrapper = $("#wrapper");
+    wrapper.toggleClass("toggled");
+    // store hidden status
+    if (window.sessionStorage) {
+        if (wrapper.hasClass('toggled')) {
+            sessionStorage.setItem('nav', 'hide');
+        } else {
+            sessionStorage.removeItem('nav');
+        }
     }
   });
-  return false;
-});
 
-$('#filter-editor').click(function() {
-  $(this).addClass('active').siblings().removeClass('active');
-  featureList.filter(function(item) {
-    if (item.values().categoryeditor == "editor") {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  return false;
-});
-
-$('#filter-translator').click(function() {
-  $(this).addClass('active').siblings().removeClass('active');
-  featureList.filter(function(item) {
-    if (item.values().categorytranslator == "translator") {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  return false;
-});
-
-$('#filter-none').click(function() {
-  $(this).addClass('active').siblings().removeClass('active');
-  featureList.filter();
-  return false;
 });
 
 
-});
