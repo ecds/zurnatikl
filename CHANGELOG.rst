@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+Release 1.6.3 - Copyrights and LITS Logo
+----------------------------------------
+* Add LITS logo to Digital Danowski landing page and deploy to production
+* Update Copyrights from 2016 to 2017
+
 Release 1.6.2 - Text Update and Landing Page Deployment Notes
 -------------------------------------------------------------
 * As a user, I want to see updated text on the Digital Danowski landing
