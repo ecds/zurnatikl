@@ -2,6 +2,7 @@ import logging
 from django.db.models import Count
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
+from django.http import Http404
 
 from .models import Person
 from zurnatikl.apps.journals.models import Journal
@@ -72,8 +73,11 @@ class EgographBaseView(SingleObjectMixin):
         graph = Journal.contributor_network()
         # restrict graph to an egograph around the current person
         # with a radius of 1 before export
-        node = graph.vs.find(name=person.network_id)
-        return egograph(graph, node)
+        try:
+            node = graph.vs.find(name=person.network_id)
+            return egograph(graph, node)
+        except ValueError:
+            raise Http404('Vertex does not exist.')
 
 
 class EgographJSON(SigmajsJSONView, EgographBaseView):
