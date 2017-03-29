@@ -3,14 +3,14 @@ mysql-python
 django-admin-bootstrapped<=2.5
 
 #partial dates
--e git://github.com/dracos/django-date-extensions#egg=django_date_extensions
+-e git+https://github.com/dracos/django-date-extensions.git#egg=django_date_extensions
 django-ajax-selects>=1.4.3
 django-multiselectfield
 
 python-igraph
 lxml
 
--e git://github.com/emory-libraries/django-eultheme#egg=django_eultheme
+-e git+https://github.com/emory-libraries/django-eultheme.git#egg=django_eultheme
 django-widget-tweaks
 django-stdimage
 
