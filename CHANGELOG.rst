@@ -3,6 +3,7 @@ CHANGELOG
 Release 1.6.4 - Fix for mixing vertex
 -------------------------------------
 * Added a 404 hadler to an unhandled `ValueError` exception.
+* Updated Django package installation to via https
 
 Release 1.6.3 - Copyrights and LITS Logo
 ----------------------------------------
